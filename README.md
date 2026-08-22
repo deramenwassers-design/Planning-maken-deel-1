@@ -103,3 +103,20 @@ bestand niet wijzigen. Bijwerken gebeurt daarom door een nieuw bestand met dezel
 uploaden en het oude naar de prullenbak te zetten. Blijkt de Drive-map ook lokaal op de pc
 gesynchroniseerd te staan, dan is rechtstreeks bewerken met openpyxl beter — dat is een kleine
 aanpassing in STAP 5 van `bevestigingen-opvolgen` en STAP 4 van `bevestigingen-herinnering`.
+
+## Het opdrachtenbord
+
+Eén pagina om alle taken te starten vanaf de gsm:
+**https://claude.ai/code/artifact/06f9ca0b-929c-4a42-9b31-1847e98de982**
+
+De bron staat in [`artifact/opdrachtenbord.html`](artifact/opdrachtenbord.html). Republiceren gaat
+met de Artifact-tool op datzelfde bestandspad, of vanuit een ander gesprek met de URL hierboven als
+`url` — dan blijft de link dezelfde.
+
+De Start-knop roept de Google Drive-connector van de kijker aan (`copy_file`) en zet een kopie van
+het bijhorende menukaartje in "Claude opdrachten". De pc pikt die kopie op, net zoals bij een kopie
+die met de hand gemaakt is. De bestandsnaam is bewerkbaar op de pagina, want die naam ís de
+opdracht.
+
+Bestands-id's staan hard in de pagina. Vervang je een menukaartje in Drive (een nieuw bestand krijgt
+een nieuw id), werk dan ook `OPDRACHTEN` in het artifact bij.

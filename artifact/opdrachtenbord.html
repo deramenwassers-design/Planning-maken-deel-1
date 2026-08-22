@@ -1,0 +1,542 @@
+<title>Opdrachtenbord</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Public+Sans:wght@400;500;600&family=Roboto+Mono:wght@400;500&display=swap">
+
+<style>
+  :root{
+    --ground:#F4F7F6;
+    --surface:#FFFFFF;
+    --surface-2:#EDF3F1;
+    --ink:#0F1E1C;
+    --muted:#5A6B69;
+    --line:#DCE5E3;
+    --accent:#0E7C74;
+    --accent-ink:#FFFFFF;
+    --accent-soft:#E2F0EE;
+    --ok:#2E7D4F;
+    --warn:#A9670C;
+    --warn-soft:#FBF1DF;
+    --danger:#A8322A;
+    --danger-soft:#FBEBE9;
+    --shadow:0 1px 2px rgba(15,30,28,.06), 0 8px 24px -16px rgba(15,30,28,.28);
+    --radius:10px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#0D1413;
+      --surface:#16201E;
+      --surface-2:#1D2926;
+      --ink:#E6EEEC;
+      --muted:#93A5A2;
+      --line:#26332F;
+      --accent:#46BDB2;
+      --accent-ink:#062222;
+      --accent-soft:#14302D;
+      --ok:#63C48C;
+      --warn:#E0A64A;
+      --warn-soft:#2C2517;
+      --danger:#EE8279;
+      --danger-soft:#2E1A18;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#0D1413;
+    --surface:#16201E;
+    --surface-2:#1D2926;
+    --ink:#E6EEEC;
+    --muted:#93A5A2;
+    --line:#26332F;
+    --accent:#46BDB2;
+    --accent-ink:#062222;
+    --accent-soft:#14302D;
+    --ok:#63C48C;
+    --warn:#E0A64A;
+    --warn-soft:#2C2517;
+    --danger:#EE8279;
+    --danger-soft:#2E1A18;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    background:var(--ground);
+    color:var(--ink);
+    font-family:"Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size:16px;
+    line-height:1.5;
+    -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:620px;margin:0 auto;padding:0 18px 64px}
+
+  /* ---------- kop ---------- */
+  header{
+    padding:28px 0 20px;
+    display:flex;flex-direction:column;gap:6px;
+  }
+  .merk{
+    font-family:"Archivo", system-ui, sans-serif;
+    font-weight:700;
+    font-size:12px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--accent);
+  }
+  h1{
+    font-family:"Archivo", system-ui, sans-serif;
+    font-weight:700;
+    font-size:29px;
+    line-height:1.12;
+    letter-spacing:-.015em;
+    margin:0;
+    text-wrap:balance;
+  }
+  .lead{margin:2px 0 0;color:var(--muted);max-width:46ch}
+
+  .voorwaarde{
+    display:flex;gap:10px;align-items:flex-start;
+    background:var(--warn-soft);
+    border:1px solid color-mix(in srgb, var(--warn) 30%, transparent);
+    border-radius:var(--radius);
+    padding:11px 13px;
+    margin-top:16px;
+    font-size:14.5px;
+    line-height:1.45;
+  }
+  .voorwaarde b{font-weight:600}
+  .voorwaarde svg{flex:none;margin-top:2px;color:var(--warn)}
+
+  /* ---------- groep ---------- */
+  section{margin-top:34px}
+  .groepkop{
+    display:flex;align-items:baseline;gap:10px;
+    padding-bottom:9px;margin-bottom:14px;
+    border-bottom:1px solid var(--line);
+  }
+  .groepkop h2{
+    font-family:"Archivo", system-ui, sans-serif;
+    font-size:15px;font-weight:600;margin:0;
+    letter-spacing:.01em;
+  }
+  .groepkop span{font-size:13px;color:var(--muted)}
+
+  .kaarten{display:flex;flex-direction:column;gap:12px}
+
+  /* ---------- kaart ---------- */
+  .kaart{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:15px 15px 14px;
+  }
+  .kaart.let-op{border-color:color-mix(in srgb, var(--danger) 40%, var(--line))}
+  .kaart h3{
+    font-family:"Archivo", system-ui, sans-serif;
+    font-size:17px;font-weight:600;margin:0;letter-spacing:-.005em;
+  }
+  .kaart .wat{margin:3px 0 0;color:var(--muted);font-size:14.5px;line-height:1.45}
+  .merkje{
+    display:inline-block;vertical-align:2px;margin-left:7px;
+    font-family:"Public Sans",sans-serif;
+    font-size:10.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;
+    padding:2px 7px;border-radius:99px;
+    background:var(--accent-soft);color:var(--accent);
+  }
+  .merkje.waarschuwing{
+    background:var(--danger-soft);
+    color:var(--danger);
+  }
+
+  .rij{display:flex;gap:9px;margin-top:12px;align-items:stretch}
+  .naamveld{
+    flex:1 1 auto;min-width:0;
+    font-family:"Roboto Mono", ui-monospace, monospace;
+    font-size:13px;
+    color:var(--ink);
+    background:var(--surface-2);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:9px 10px;
+  }
+  .naamveld:focus-visible{
+    outline:2px solid var(--accent);
+    outline-offset:1px;
+    background:var(--surface);
+  }
+  .start{
+    flex:none;
+    font-family:"Archivo", system-ui, sans-serif;
+    font-size:14.5px;font-weight:600;letter-spacing:.01em;
+    color:var(--accent-ink);
+    background:var(--accent);
+    border:1px solid transparent;
+    border-radius:8px;
+    padding:9px 17px;
+    cursor:pointer;
+    transition:filter .15s ease, transform .12s ease;
+  }
+  .start:hover:not(:disabled){filter:brightness(1.08)}
+  .start:active:not(:disabled){transform:translateY(1px)}
+  .start:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .start:disabled{opacity:.5;cursor:default}
+  .start.bevestig{background:var(--danger);color:#fff}
+
+  .melding{
+    margin-top:10px;padding:9px 11px;border-radius:8px;
+    font-size:14px;line-height:1.45;
+    display:none;
+  }
+  .melding.toon{display:block}
+  .melding.goed{background:var(--accent-soft);color:var(--ink);border:1px solid color-mix(in srgb, var(--accent) 32%, transparent)}
+  .melding.fout{background:var(--danger-soft);color:var(--ink);border:1px solid color-mix(in srgb, var(--danger) 32%, transparent)}
+  .melding.bezig{background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
+  .melding code{
+    font-family:"Roboto Mono", ui-monospace, monospace;
+    font-size:12.5px;
+    word-break:break-all;
+  }
+  .melding a{color:var(--accent)}
+
+  /* ---------- voet ---------- */
+  footer{
+    margin-top:38px;padding-top:18px;
+    border-top:1px solid var(--line);
+    font-size:14px;color:var(--muted);
+    display:flex;flex-direction:column;gap:9px;
+  }
+  footer a{color:var(--accent);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--accent) 35%,transparent)}
+  footer a:hover{border-bottom-color:var(--accent)}
+  footer p{margin:0;max-width:52ch}
+
+  #geenverbinding{
+    display:none;
+    background:var(--danger-soft);
+    border:1px solid color-mix(in srgb, var(--danger) 32%, transparent);
+    border-radius:var(--radius);
+    padding:13px 15px;margin-top:16px;font-size:14.5px;
+  }
+  #geenverbinding.toon{display:block}
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;animation:none !important}
+  }
+  @media (max-width:420px){
+    .rij{flex-wrap:wrap}
+    .start{width:100%}
+  }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <div class="merk">De Ramenwassers</div>
+    <h1>Opdrachten</h1>
+    <p class="lead">Tik op Start. Er komt een opdrachtbestand in je Drive-map en je pc pikt het binnen twee minuten op.</p>
+  </header>
+
+  <div class="voorwaarde">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+      <path d="M12 8v5M12 17h.01"/><circle cx="12" cy="12" r="9.5"/>
+    </svg>
+    <div>Je pc moet aanstaan met de <b>Claude-app open</b>. Deze taken klikken in Squeegee, en dat gebeurt in de browser op je pc — niet hier op je gsm.</div>
+  </div>
+
+  <div id="geenverbinding"></div>
+
+  <section>
+    <div class="groepkop"><h2>Na de werkdag</h2><span>'s avonds of de volgende ochtend</span></div>
+    <div class="kaarten" id="groep-na"></div>
+  </section>
+
+  <section>
+    <div class="groepkop"><h2>Voor de werkdag</h2><span>de ronde klaarzetten</span></div>
+    <div class="kaarten" id="groep-voor"></div>
+  </section>
+
+  <section>
+    <div class="groepkop"><h2>Bevestigingen</h2><span>elke week</span></div>
+    <div class="kaarten" id="groep-bevestigingen"></div>
+  </section>
+
+  <section>
+    <div class="groepkop"><h2>Iets anders</h2><span>zelf omschrijven</span></div>
+    <div class="kaarten" id="groep-vrij"></div>
+  </section>
+
+  <footer>
+    <p>De bestandsnaam is de opdracht. Je mag hem aanpassen voor je op Start tikt — bijvoorbeeld een andere dag of een woordje uitleg erbij.</p>
+    <p>
+      <a href="https://drive.google.com/drive/folders/1YJt24SXd2nQT-xyim42Cg5qhwJDVnS-R" target="_blank" rel="noopener">Map Claude opdrachten</a>
+      &nbsp;·&nbsp;
+      <a href="https://drive.google.com/drive/folders/15BZkt8mtVl_EBMoqMvXmTiU-5J_A4mTr" target="_blank" rel="noopener">Logboek</a>
+      &nbsp;·&nbsp;
+      <a href="https://drive.google.com/drive/folders/1Dbml1PiNgcn6GwP49D6qf52-U0EIGqJ3" target="_blank" rel="noopener">Weeklijsten bevestigingen</a>
+    </p>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var SERVER = "Google Drive";
+  var TOOL   = "copy_file";
+  var MAP_OPDRACHTEN = "1YJt24SXd2nQT-xyim42Cg5qhwJDVnS-R";
+
+  /* ---- datums in Belgische tijd, in het Nederlands ---- */
+  function dagInBrussel(verschuiving){
+    var nu = new Date();
+    var brussel = new Date(nu.toLocaleString("en-US", {timeZone:"Europe/Brussels"}));
+    brussel.setDate(brussel.getDate() + verschuiving);
+    return brussel;
+  }
+  var MAANDEN = ["januari","februari","maart","april","mei","juni",
+                 "juli","augustus","september","oktober","november","december"];
+  function schrijfDatum(d){ return d.getDate() + " " + MAANDEN[d.getMonth()]; }
+
+  var gisteren = schrijfDatum(dagInBrussel(-1));
+  var morgen   = schrijfDatum(dagInBrussel(1));
+
+  /* ---- de opdrachten ---- */
+  var OPDRACHTEN = [
+    { groep:"groep-na", id:"19qSMUMGl0GF2GwN3QsQt65th91l0JkWe",
+      naam:"Dagverwerking",
+      wat:"Uren vergelijken met Metatrak, facturen aanmaken, de bank inlezen en de omzet per team wegschrijven. Met een nakijkrapport in Excel.",
+      bestand:"dagverwerking " + gisteren + ".txt" },
+
+    { groep:"groep-na", id:"1rSBXHIWn83HBKKW9FM8sCkJHA-_KxiPF",
+      naam:"Squeegee opkuisen",
+      wat:"Klantnamen opschonen en de betalingen registreren van een gereden dag.",
+      bestand:"squeegee-nawerk " + gisteren + ".txt" },
+
+    { groep:"groep-na", id:"1Fw-iSLASA1BP5AglbhIed1LwcgcT74-R",
+      naam:"Tijden overzetten",
+      wat:"De werktijden uit het nakijkrapport invullen in Squeegee. De dagverwerking van die dag moet al gelopen hebben.",
+      bestand:"squeegee-tijden " + gisteren + ".txt" },
+
+    { groep:"groep-voor", id:"1hIpXHq9XGHbR66eKn3iygpOEOjS3lJaU",
+      naam:"Ochtendronde",
+      wat:"Een overzicht per gast met alle adressen van de dag en een Street View-beeld bij elk adres. Door te sturen naar de werktelefoons.",
+      bestand:"ochtendronde morgen.txt" },
+
+    { groep:"groep-voor", id:"1ESoaVZAYOVmOiwS1-JcpcX23GNqdgOBP",
+      naam:"Pijltje zetten",
+      wat:"Bij elke klant met werk op die dag komt er één ⤵️ extra achter de naam.",
+      bestand:"pijltjes zetten morgen.txt" },
+
+    { groep:"groep-bevestigingen", id:"140fHxKvhQzldHek3SH8g9TRgSzzU3t3U",
+      naam:"Weeklijst van 31 augustus", label:"nu te doen",
+      wat:"Eenmalig: de klanten van maandag 31 augustus tot en met vrijdag 4 september uit Squeegee halen. Het weekend blijft eruit.",
+      bestand:"bevestigingen-lijst week van 31 augustus.txt" },
+
+    { groep:"groep-bevestigingen", id:"1zhwV51u7vCEqn--rvLkGdOdFrDvKewrq",
+      naam:"Weeklijst maken",
+      wat:"De klanten van maandag tot en met vrijdag van de komende week uit Squeegee halen, met hun telefoonnummer, mailadres en dienst.",
+      bestand:"bevestigingen-lijst volgende week.txt" },
+
+    { groep:"groep-bevestigingen", id:"1P4mWVtrRsoS1jeS_mdH08U_9veNzGE7G",
+      naam:"Antwoorden nakijken",
+      wat:"Mails en sms'jes vergelijken met de weeklijst en per klant het teken zetten: in orde, actie nodig, of gaat niet door. Je krijgt het overzicht per mail.",
+      bestand:"bevestigingen-opvolgen deze week.txt" },
+
+    { groep:"groep-bevestigingen", id:"1OESloeWQF40QL3Vmi7UaT8SMhk22DUR7",
+      naam:"Herinnering sturen", label:"mailt klanten", waarschuwing:true,
+      wat:"Iedereen die nog niet geantwoord heeft, krijgt één vriendelijke tweede mail. Dit gaat rechtstreeks naar je klanten.",
+      bestand:"bevestigingen-herinnering deze week.txt" },
+
+    { groep:"groep-vrij", id:"1MY26b4QUKZbA1Ss1bitQuG6I7Xxvk9ku",
+      naam:"Vrije opdracht",
+      wat:"Schrijf zelf in het veld wat er moet gebeuren. Wat je typt, is de opdracht.",
+      bestand:"vrije opdracht - .txt" }
+  ];
+
+  /* ---- kaarten bouwen ---- */
+  function maakKaart(op){
+    var kaart = document.createElement("div");
+    kaart.className = "kaart" + (op.waarschuwing ? " let-op" : "");
+
+    var titel = document.createElement("h3");
+    titel.textContent = op.naam;
+    if (op.label){
+      var merkje = document.createElement("span");
+      merkje.className = "merkje" + (op.waarschuwing ? " waarschuwing" : "");
+      merkje.textContent = op.label;
+      titel.appendChild(merkje);
+    }
+
+    var wat = document.createElement("p");
+    wat.className = "wat";
+    wat.textContent = op.wat;
+
+    var rij = document.createElement("div");
+    rij.className = "rij";
+
+    var veld = document.createElement("input");
+    veld.type = "text";
+    veld.className = "naamveld";
+    veld.value = op.bestand;
+    veld.setAttribute("aria-label", "Naam van de opdracht voor " + op.naam);
+    veld.spellcheck = false;
+
+    var knop = document.createElement("button");
+    knop.type = "button";
+    knop.className = "start";
+    knop.textContent = "Start";
+
+    var melding = document.createElement("div");
+    melding.className = "melding";
+    melding.setAttribute("role", "status");
+
+    rij.appendChild(veld);
+    rij.appendChild(knop);
+    kaart.appendChild(titel);
+    kaart.appendChild(wat);
+    kaart.appendChild(rij);
+    kaart.appendChild(melding);
+
+    var bevestigen = false;
+    knop.addEventListener("click", function(){
+      if (op.waarschuwing && !bevestigen){
+        bevestigen = true;
+        knop.classList.add("bevestig");
+        knop.textContent = "Ja, versturen";
+        toon(melding, "fout", "Dit stuurt echte mails naar je klanten. Tik nog eens om door te gaan.");
+        return;
+      }
+      bevestigen = false;
+      knop.classList.remove("bevestig");
+      knop.textContent = "Start";
+      starten(op, veld, knop, melding);
+    });
+
+    document.getElementById(op.groep).appendChild(kaart);
+  }
+
+  function toon(el, soort, html){
+    el.className = "melding toon " + soort;
+    el.innerHTML = html;
+  }
+
+  function ontsnap(s){
+    return String(s).replace(/[&<>"']/g, function(t){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[t];
+    });
+  }
+
+  /* ---- starten ---- */
+  var mcpNamespace = null;
+
+  function starten(op, veld, knop, melding){
+    var titel = veld.value.trim();
+    if (!titel){
+      toon(melding, "fout", "Geef de opdracht eerst een naam.");
+      veld.focus();
+      return;
+    }
+    if (!/\.txt$/i.test(titel)) titel += ".txt";
+
+    if (!mcpNamespace){
+      toon(melding, "fout", "Geen verbinding met je Drive. Open de map hierboven en maak de kopie zelf.");
+      return;
+    }
+
+    knop.disabled = true;
+    toon(melding, "bezig", "Bezig met klaarzetten…");
+
+    mcpNamespace.callTool(SERVER, TOOL, {
+      fileId: op.id,
+      parentId: MAP_OPDRACHTEN,
+      title: titel
+    }).then(function(res){
+      var bestand = res && res.payload ? res.payload : {};
+      var naam = bestand.title || titel;
+      var link = bestand.viewUrl
+        ? ' <a href="' + ontsnap(bestand.viewUrl) + '" target="_blank" rel="noopener">bekijk het bestand</a>'
+        : "";
+      toon(melding, "goed",
+        "Gestart. <code>" + ontsnap(naam) + "</code> staat in je Drive — je pc pikt het binnen twee minuten op." + link);
+      knop.disabled = false;
+      knop.textContent = "Nog eens starten";
+    }).catch(function(err){
+      knop.disabled = false;
+      toon(melding, "fout", foutTekst(err));
+    });
+  }
+
+  function foutTekst(err){
+    var code = err && err.code ? err.code : "upstream_error";
+    switch (code){
+      case "needs_reauth":
+        return "Je Drive-koppeling is verlopen. Herstel ze in claude.ai bij Instellingen → Connectors, en probeer dan opnieuw.";
+      case "server_not_connected":
+        return "Google Drive staat niet gekoppeld aan dit account. Voeg de connector toe in claude.ai bij Instellingen → Connectors.";
+      case "selection_required":
+        return "Er staan meerdere Drive-koppelingen op dit account. Kies er een als claude.ai het vraagt, en probeer dan opnieuw.";
+      case "not_in_manifest":
+      case "blocked_by_policy":
+      case "approval_required":
+        return "Deze pagina mag dit bestand niet kopiëren. Open de map hierboven en maak de kopie zelf.";
+      case "server_unavailable":
+      case "upstream_error":
+        return "Google Drive antwoordde niet. Mogelijk is de kopie tóch gemaakt — kijk eerst even in de map hierboven voor je opnieuw start.";
+      case "tool_error":
+        return "Drive gaf een fout: " + ontsnap(err.message || "onbekend") + ". Bestaat er al een bestand met die naam?";
+      case "rate_limited":
+        return "Even te snel achter elkaar. Wacht een halve minuut en probeer opnieuw.";
+      case "not_granted":
+      case "capability_disabled":
+      case "capability_removed":
+        return "Deze pagina kan hier niet aan je Drive. Open de map hierboven en maak de kopie zelf.";
+      default:
+        return "Het is niet gelukt. Open de map hierboven en maak de kopie zelf.";
+    }
+  }
+
+  /* ---- opbouwen ---- */
+  OPDRACHTEN.forEach(maakKaart);
+
+  var waarschuwing = document.getElementById("geenverbinding");
+
+  function geenDrive(tekst){
+    waarschuwing.className = "toon";
+    waarschuwing.innerHTML = tekst +
+      ' Je kan wel altijd zelf een kopie maken in de ' +
+      '<a href="https://drive.google.com/drive/folders/' + MAP_OPDRACHTEN + '" target="_blank" rel="noopener">map Claude opdrachten</a>.';
+  }
+
+  if (!window.claude || typeof window.claude.use !== "function"){
+    geenDrive("De Start-knoppen werken hier niet — open deze pagina in claude.ai.");
+  } else {
+    window.claude.use("mcp").then(function(ns){
+      if (!ns){
+        geenDrive("De Start-knoppen kunnen niet aan je Drive.");
+        return;
+      }
+      mcpNamespace = ns;
+      return ns.listTools().then(function(res){
+        var servers = (res && res.servers) || [];
+        var drive = null;
+        for (var i = 0; i < servers.length; i++){
+          if (servers[i].server === SERVER) drive = servers[i];
+        }
+        if (!drive){
+          geenDrive("Google Drive staat niet gekoppeld aan dit account.");
+        } else if (drive.authStatus === "needs_reauth"){
+          geenDrive("Je Drive-koppeling is verlopen — herstel ze in claude.ai bij Instellingen → Connectors.");
+        } else if (!drive.tools || !drive.tools.length){
+          geenDrive("Er staan meerdere Drive-koppelingen op dit account. Kies er een als claude.ai het vraagt.");
+        }
+      }).catch(function(){
+        /* listTools is enkel om vooraf te waarschuwen; de Start-knop
+           geeft zelf een nette melding als er iets scheelt. */
+      });
+    }).catch(function(){
+      geenDrive("De Start-knoppen kunnen niet aan je Drive.");
+    });
+  }
+})();
+</script>
