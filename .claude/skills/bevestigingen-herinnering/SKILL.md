@@ -82,15 +82,38 @@ verkooppraat, geen uitroeptekens, geen druk. Het is een herinnering, geen aanman
 
 Onderwerp: `Uw afspraak van <dag> — even bevestigen?`
 
-De middelste zin komt uit kolom F:
+### De middelste zin uit kolom F
 
-| Dienst in kolom F | Zin |
+**Plak kolom F nooit letterlijk in de mail.** In Squeegee staan daar de technische
+dienstregels, vaak meerdere na elkaar, bijvoorbeeld:
+
+```
+Ramenwassen: buitenkant, veluxen buitenkant, valwand buiten en binnenkant
+bijgebouw buitenkant, ramenwassen: huis buitenkant, verandadak bovenkant, coating plaatsen op poort
+zonnepanelen poetsen, veluxen buitenkant, Kader van de raam vooraan op de 1ste verdieping poetsen
+Dakranden poetsen, Dakgoot ledigen
+```
+
+Zoiets in een klantmail zetten leest als een systeemuitdraai. Leid er in plaats daarvan de
+**soort werk** uit af, met deze trefwoorden (hoofdletterongevoelig, ergens in de tekst):
+
+| Trefwoord in kolom F | Soort werk |
 |---|---|
-| Ramen wassen | `Lukt het voor u om <dag> de ramen te laten wassen?` |
-| Zonnepanelen poetsen | `Lukt het voor u om <dag> de zonnepanelen te laten poetsen?` |
-| Twee diensten (`A + B`) | Noem ze allebei: `… de ramen te laten wassen en de zonnepanelen te laten poetsen?` |
-| Iets anders | Gebruik de dienstomschrijving letterlijk: `Lukt het voor u om <dag> <dienst> te laten uitvoeren?` |
-| Leeg | `Lukt het voor u om <dag> langs te komen voor de geplande werken?` |
+| `ramenwassen`, `ramen wassen`, `velux`, `veranda`, `valwand`, `koepel`, `lichtstraat`, `schuiframen`, `vitrine`, `inkom`, `voorkant`, `buitenkant`, `binnenkant` | de ramen wassen |
+| `zonnepanelen`, `panelen` | de zonnepanelen poetsen |
+| `dakgoot`, `dakrand`, `afdak`, `boogdak` | het dakwerk |
+| `poort`, `rolluik`, `screens`, `coating` | (nooit op zich — enkel meenemen naast een van de bovenstaande) |
+
+Regels:
+
+- Eén soort gevonden → `Lukt het voor u om <dag> de ramen te laten wassen?`
+- Twee soorten → noem er hoogstens twee, met "en":
+  `Lukt het voor u om <dag> de ramen te laten wassen en de zonnepanelen te laten poetsen?`
+- Drie of meer, of enkel woorden uit de laatste rij, of kolom F leeg →
+  `Lukt het voor u om <dag> langs te komen voor de geplande werken?`
+
+Bij twijfel neem je altijd de laatste, neutrale zin. Die klopt sowieso, en dat is meer waard dan
+een specifieke zin die ernaast zit.
 
 `<dag>` schrijf je uit zoals mensen praten: "dinsdag 26 augustus", niet "26/08/2026".
 
@@ -113,8 +136,19 @@ De Ramenwassers
 ```
 
 Voor de aanspreking neem je de **voornaam** uit kolom C, dus zonder de haakjes en zonder de tekens
-(⤵️, 🧽, ❗, 📷) die in Squeegee achter de naam staan. Is de voornaam niet met zekerheid af te
-leiden — een bedrijfsnaam, initialen, of enkel een achternaam — gebruik dan `Dag,` op zich.
+(⤵️, 🧽, ❗, 📷) die in Squeegee achter de naam staan. Ook de opmerkingen in HOOFDLETTERS die soms
+los in de naam staan ("ZO SNEL MOGELIJK INPLANNEN", "OK BEVESTIGD", "KLANT VRAAGT WEEK 31 AUG")
+horen er niet bij.
+
+Gebruik `Dag,` op zich zodra de voornaam niet zeker is:
+
+- een bedrijfsnaam (`ILIMMO BV`, `VrijeBasisschool Weg-wijzer Dessel`, `De_Krokodil (Twdm Bv)`);
+- een naam die met `Moeder_`, `Vader_` of `Ouders` begint — dat is de klantadministratie van Geert,
+  geen voornaam (`Moeder_Eddy Stessens`, `Ouders Luc Mortier`);
+- twee namen samen (`Wies - Jef Smets`, `Karin Van Laer - Willy Hendrickx`) — schrijf dan `Dag,`,
+  niet één van de twee;
+- enkel een achternaam of initialen (`Mr.Donckers`).
+
 Nooit gokken naar een voornaam en nooit "Beste heer/mevrouw" verzinnen.
 
 De mail vertrekt vanuit de gekoppelde mailbox `deramenwassers@gmail.com`, dus gewoon met

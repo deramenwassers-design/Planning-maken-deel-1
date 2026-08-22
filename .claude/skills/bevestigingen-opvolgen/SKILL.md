@@ -54,6 +54,24 @@ niet gelopen.
 Bepaal ook het **venster** waarin je antwoorden zoekt: vanaf de aanmaakdatum van het lijstbestand
 (`createdTime` uit Drive) tot nu. Dat is het moment waarop de bevestigingsvragen buiten gingen.
 
+## STAP 0b — Antwoorden die al in de klantnaam staan
+
+Geert noteert afspraken soms rechtstreeks in de klantnaam in Squeegee, en die naam staat
+onveranderd in kolom C. Loop de lijst dus één keer door vóór je Gmail opent:
+
+| Staat er in de naam | Teken | In kolom H |
+|---|---|---|
+| `OK BEVESTIGD` | `✅` | `naam in Squeegee — OK BEVESTIGD` |
+| `KLANT VRAAGT WEEK <datum>` en die datum valt in deze week | `✅` | `naam in Squeegee — klant vroeg zelf deze week` |
+| `KLANT VRAAGT WEEK <datum>` en die datum valt buiten deze week | `☒` | de letterlijke tekst |
+| `ZO SNEL MOGELIJK INPLANNEN`, `MT NT ANTWRDN`, `OPBELLEN` | laat leeg | de letterlijke tekst, als aandachtspunt |
+
+Dat scheelt herinneringsmails naar klanten die de afspraak zelf gevraagd hebben — precies de
+mails die het meest ergerlijk zijn om te krijgen.
+
+Een teken uit deze stap is zwakker dan een echt antwoord: komt er later een mail of sms binnen,
+dan wint die en werk je kolom G en H bij.
+
 ## STAP 1 — Gmail: antwoorden ophalen
 
 Zoek gericht op de mailadressen uit kolom E, niet op de hele inbox. Bouw de query in blokken van
