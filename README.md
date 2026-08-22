@@ -86,6 +86,20 @@ wijzigen.
 Let op de zomertijd: in de winter (UTC+1) wordt het `30 22 * * 5`, `0 5-20 * * 1-5` en
 `30 7 * * 1`.
 
+## De skills op de pc krijgen
+
+De skills leven in deze repo, maar de taken draaien op de pc van Geert — en daar stonden ze niet.
+Bij de eerste run bleek dat: het logboek meldde dat `bevestigingen-lijst` daar niet bestond en de
+lokale Claude heeft het werk gedaan op basis van de opdrachtbeschrijving alleen. Dat liep goed af,
+maar het is niet herhaalbaar.
+
+Daarom staan de drie SKILL.md-bestanden nu ook in Drive, in
+**Claude opdrachten → installatie → skills bevestigingen**, met een menukaartje
+`_installeer de bevestigingen-skills.txt` dat ze op de juiste plaats zet. Eenmalig te draaien.
+
+Wijzig je een skill in deze repo, dan moet je het bestand in Drive mee vervangen en het kaartje
+opnieuw laten lopen — anders draait de pc op de oude versie.
+
 ## Wat er nog nagekeken moet worden
 
 Twee dingen in de skills volgen het patroon van de bestaande Squeegee-skills, maar zijn nog niet

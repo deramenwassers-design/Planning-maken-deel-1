@@ -112,10 +112,12 @@ aantal: dat is je verwachte aantal jobs voor die dag.
 3. Per jobregel staan het adres en de **klantnaam**. Noteer de naam **exact**, inclusief haakjes,
    hoofdletters, spaties en de tekens die er al staan (⤵️, 🧽, ❗, 📷). Die naam gaat later
    ongewijzigd in kolom C.
-4. Noteer ook de **dienst** van de job — de omschrijving op de jobkaart (bv. "Ramen wassen",
-   "Zonnepanelen poetsen"). Staat er niets bruikbaar op de regel, open dan het jobpaneel en lees
-   de dienstomschrijving daar. Die kolom bepaalt later de tekst van de herinneringsmail, dus een
-   lege of foute dienst is een echt probleem — laat ze bij twijfel leeg en meld de klant.
+4. Noteer ook de **dienst** van de job. In Squeegee staan daar de technische dienstregels, vaak
+   meerdere na elkaar, bijvoorbeeld `Ramenwassen: buitenkant, veluxen buitenkant, valwand buiten
+   en binnenkant` of `zonnepanelen poetsen, veluxen buitenkant`. Neem ze **letterlijk** over,
+   gescheiden door komma's — niet samenvatten en niet vertalen. `bevestigingen-herinnering` leidt
+   er zelf de soort werk uit af. Staat er niets bruikbaar op de regel, open dan het jobpaneel en
+   lees de dienstomschrijving daar. Laat de kolom bij twijfel leeg en meld de klant.
 5. Sla "Pauze"/break-items en generieke €0,00-regels over. Die hebben geen echte klant.
 
 ### Doorladen na 50 (belangrijk)
