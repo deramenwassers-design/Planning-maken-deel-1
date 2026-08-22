@@ -23,8 +23,9 @@
 Trek de lijst van de klanten die volgende week ingepland staan.
 Gebruik daarvoor mijn skill "bevestigingen-lijst".
 
-Dat wil zeggen: alle Not Done-jobs van maandag tot en met zondag van de
-komende week uit Squeegee halen, per klant per dag één regel, met dag,
+Dat wil zeggen: alle Not Done-jobs van maandag tot en met vrijdag van de
+komende week uit Squeegee halen (het weekend niet), per klant per dag één
+regel, met dag,
 klantnummer, naam, telefoonnummer, mailadres en dienst. De kolom "teken"
 laat je leeg. Wegschrijven als Excel in mijn Google Drive, map
 "Claude opdrachten", submap "bevestigingen", met de week in de naam.

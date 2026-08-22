@@ -28,15 +28,18 @@ geen mails naar klanten, geen antwoorden controleren, geen tekens zetten, geen k
 
 ## STAP 0 — Doelweek bepalen
 
-De doelweek is standaard de **eerstvolgende maandag t/m zondag**. Geeft Geert iets anders mee
+De doelweek is standaard de **eerstvolgende maandag t/m vrijdag**. Geeft Geert iets anders mee
 ("de week van 1 september", "deze week nog"), volg dat dan.
+
+Het weekend hoort er nooit bij. Zaterdag en zondag worden niet opgehaald, ook niet als er die
+dagen jobs staan — die klanten krijgen geen bevestigingsvraag.
 
 Reken altijd met bash in de juiste tijdzone, nooit uit het hoofd:
 
 ```bash
 TZ=Europe/Brussels date -d "next monday" +%Y-%m-%d    # maandag van de doelweek
 TZ=Europe/Brussels date -d "next monday" +%G-W%V      # bv. 2026-W35 → in de bestandsnaam
-TZ=Europe/Brussels date -d "next monday +6 days" +%Y-%m-%d   # zondag
+TZ=Europe/Brussels date -d "next monday +4 days" +%Y-%m-%d   # vrijdag, de laatste dag
 ```
 
 Let op: draait de taak in de nacht van vrijdag op zaterdag, dan is het al zaterdag. `next monday`
@@ -93,7 +96,8 @@ Blader met `navigate_next` naar de doelweek. Controleer met `get_page_text` dat 
 effectief de doelweek toont vóór je begint te lezen. Een week te ver levert een volledig
 verkeerde lijst op, en die lijst gaat rechtstreeks naar klanten toe.
 
-Loop daarna de dagen van maandag t/m zondag één voor één af. Dagen zonder Not Done-jobs sla je
+Loop daarna de dagen van maandag t/m vrijdag één voor één af. Zaterdag en zondag sla je over,
+ook als er jobs op staan — die horen niet in de bevestigingen. Dagen zonder Not Done-jobs sla je
 gewoon over — ze horen niet in de lijst en verdienen geen melding.
 
 ## STAP 3 — Per dag de Not Done-lijst lezen

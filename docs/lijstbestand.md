@@ -34,6 +34,8 @@ TZ=Europe/Brussels date -d "next monday" +%G-W%V     # 2026-W35
 TZ=Europe/Brussels date -d "next monday" +%Y-%m-%d   # 2026-08-24
 ```
 
+De lijst loopt van **maandag tot en met vrijdag**. Zaterdag en zondag staan er nooit in.
+
 Oude lijsten blijven staan. Er wordt nooit een lijst overschreven van een andere week.
 
 ## Formaat
