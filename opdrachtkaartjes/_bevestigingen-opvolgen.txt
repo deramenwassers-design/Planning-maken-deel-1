@@ -1,0 +1,46 @@
+# LET OP: deze taak stuurt Squeegee, Gmail of de sms-pagina aan via een browser.
+# Dat werkt voorlopig enkel als jij zelf aan je pc zit met de Claude-app open.
+# Start ze dus niet van onderweg: ze loopt vast of levert half werk.
+
+# ==============================================================================
+# DIT IS EEN MENUKAARTJE. Zolang het hier gewoon blijft staan,
+# gebeurt er niets.
+#
+# STARTEN = EEN KOPIE MAKEN
+#   Op je gsm (Google Drive-app): tik op de drie puntjes naast dit
+#   bestand en kies "Een kopie maken".
+#   Die kopie heet dan "Kopie van ..." of "... (1)" en wordt binnen
+#   de 2 minuten door je pc opgepikt en uitgevoerd.
+#
+# DE BESTANDSNAAM IS DE OPDRACHT.
+#   Wil je een andere week of iets extra's? Hernoem dan de KOPIE,
+#   nooit dit menukaartje zelf.
+#
+# Wat er van dit bestand verder in staat (alles zonder #) gaat als
+# extra uitleg mee naar Claude. Regels met # vooraan gaan niet mee.
+# ==============================================================================
+
+Kijk na wie er al bevestigd heeft voor deze week.
+Gebruik daarvoor mijn skill "bevestigingen-opvolgen".
+
+Dat wil zeggen: de weeklijst in mijn Drive vergelijken met de antwoorden die
+binnengekomen zijn in Gmail en in sms (Google Messages voor Web), en per klant
+het juiste teken zetten: een groen vinkje als het gewoon door kan gaan, een
+kruisje in een vakje als er nog iets moet gebeuren, een rood kruis als het niet
+doorgaat. Bij een kruisje in een vakje zet je de inhoud van het bericht ook in
+de klantnotitie in Squeegee. Stuur mij daarna het overzicht per mail zodat ik
+het op mijn gsm kan bekijken.
+
+Krijg je de sms-pagina niet leesbaar, ga dan niet zomaar door: mail mij met
+"CLAUDE WACHT: sms-koppeling herstellen", dan zet ik de wifi op mijn gsm even
+uit en weer aan. De rest van de controle mag wel gewoon doorlopen.
+
+Een andere week nodig? Hernoem de kopie, bijvoorbeeld naar
+"bevestigingen-opvolgen week 36.txt".
+
+Verwittig mij per mail als je vastloopt op iets waar je mij voor nodig hebt:
+onderwerp "CLAUDE WACHT: ..." met daarin wat je nodig hebt. Ben je klaar,
+stuur dan "CLAUDE KLAAR: ..." met een korte samenvatting van wat er gedaan is
+en wat er eventueel nog scheelt. Mail naar het adres dat NIET aan Claude
+gekoppeld is (is deramenwassers@gmail.com gekoppeld, mail dan naar
+geertensanne@gmail.com, en omgekeerd).
