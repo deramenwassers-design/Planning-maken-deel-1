@@ -56,9 +56,17 @@ In een gesprek: `/bevestigingen-lijst`, `/bevestigingen-opvolgen`, `/bevestiging
 Of gewoon in woorden: "trek de lijst van volgende week", "kijk na wie er al bevestigd heeft",
 "stuur de herinneringen".
 
-Van onderweg, via het menukaartjes-mechanisme: zet de drie bestanden uit
-[`opdrachtkaartjes/`](opdrachtkaartjes/) in de Drive-map "Claude opdrachten". Een kopie maken van
-zo'n kaartje start de taak — net zoals bij `_dagverwerking` en `_squeegee-tijden`.
+Van onderweg, via het menukaartjes-mechanisme. De drie kaartjes staan al in de Drive-map
+"Claude opdrachten", naast `_dagverwerking` en `_squeegee-tijden`:
+
+- `_bevestigingen-lijst volgende week.txt`
+- `_bevestigingen-opvolgen deze week.txt`
+- `_bevestigingen-herinnering deze week.txt`
+
+Een kopie maken van zo'n kaartje start de taak. De bronbestanden staan in
+[`opdrachtkaartjes/`](opdrachtkaartjes/) — pas je er iets aan, vervang dan ook het kaartje in Drive.
+
+De submap `bevestigingen` in "Claude opdrachten" is aangemaakt; daar komen de weeklijsten in.
 
 ## Automatisch laten draaien
 
