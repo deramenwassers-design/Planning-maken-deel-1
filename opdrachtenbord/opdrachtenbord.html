@@ -1,0 +1,795 @@
+<title>Opdrachtenbord</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Public+Sans:wght@400;500;600&family=Roboto+Mono:wght@400;500&display=swap">
+
+<style>
+  :root{
+    --ground:#F4F7F6;
+    --surface:#FFFFFF;
+    --surface-2:#EDF3F1;
+    --ink:#0F1E1C;
+    --muted:#5A6B69;
+    --line:#DCE5E3;
+    --accent:#0E7C74;
+    --accent-ink:#FFFFFF;
+    --accent-soft:#E2F0EE;
+    --ok:#2E7D4F;
+    --warn:#A9670C;
+    --warn-soft:#FBF1DF;
+    --danger:#A8322A;
+    --danger-soft:#FBEBE9;
+    --shadow:0 1px 2px rgba(15,30,28,.06), 0 8px 24px -16px rgba(15,30,28,.28);
+    --radius:10px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#0D1413;
+      --surface:#16201E;
+      --surface-2:#1D2926;
+      --ink:#E6EEEC;
+      --muted:#93A5A2;
+      --line:#26332F;
+      --accent:#46BDB2;
+      --accent-ink:#062222;
+      --accent-soft:#14302D;
+      --ok:#63C48C;
+      --warn:#E0A64A;
+      --warn-soft:#2C2517;
+      --danger:#EE8279;
+      --danger-soft:#2E1A18;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#0D1413;
+    --surface:#16201E;
+    --surface-2:#1D2926;
+    --ink:#E6EEEC;
+    --muted:#93A5A2;
+    --line:#26332F;
+    --accent:#46BDB2;
+    --accent-ink:#062222;
+    --accent-soft:#14302D;
+    --ok:#63C48C;
+    --warn:#E0A64A;
+    --warn-soft:#2C2517;
+    --danger:#EE8279;
+    --danger-soft:#2E1A18;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    background:var(--ground);
+    color:var(--ink);
+    font-family:"Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size:16px;
+    line-height:1.5;
+    -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:620px;margin:0 auto;padding:0 18px 64px}
+
+  /* ---------- kop ---------- */
+  header{
+    padding:28px 0 20px;
+    display:flex;flex-direction:column;gap:6px;
+  }
+  .merk{
+    font-family:"Archivo", system-ui, sans-serif;
+    font-weight:700;
+    font-size:12px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--accent);
+  }
+  h1{
+    font-family:"Archivo", system-ui, sans-serif;
+    font-weight:700;
+    font-size:29px;
+    line-height:1.12;
+    letter-spacing:-.015em;
+    margin:0;
+    text-wrap:balance;
+  }
+  .lead{margin:2px 0 0;color:var(--muted);max-width:46ch}
+
+  .voorwaarde{
+    display:flex;gap:10px;align-items:flex-start;
+    background:var(--warn-soft);
+    border:1px solid color-mix(in srgb, var(--warn) 30%, transparent);
+    border-radius:var(--radius);
+    padding:11px 13px;
+    margin-top:16px;
+    font-size:14.5px;
+    line-height:1.45;
+  }
+  .voorwaarde b{font-weight:600}
+  .voorwaarde svg{flex:none;margin-top:2px;color:var(--warn)}
+
+  /* ---------- groep ---------- */
+  section{margin-top:34px}
+  .groepkop{
+    display:flex;align-items:baseline;gap:10px;
+    padding-bottom:9px;margin-bottom:14px;
+    border-bottom:1px solid var(--line);
+  }
+  .groepkop h2{
+    font-family:"Archivo", system-ui, sans-serif;
+    font-size:15px;font-weight:600;margin:0;
+    letter-spacing:.01em;
+  }
+  .groepkop span{font-size:13px;color:var(--muted)}
+
+  .kaarten{display:flex;flex-direction:column;gap:12px}
+
+  /* ---------- kaart ---------- */
+  .kaart{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:15px 15px 14px;
+  }
+  .kaart.let-op{border-color:color-mix(in srgb, var(--danger) 40%, var(--line))}
+  .kaart.hoofd{border-color:color-mix(in srgb, var(--accent) 45%, var(--line))}
+  .kaart h3{
+    font-family:"Archivo", system-ui, sans-serif;
+    font-size:17px;font-weight:600;margin:0;letter-spacing:-.005em;
+  }
+  .kaart .wat{margin:3px 0 0;color:var(--muted);font-size:14.5px;line-height:1.45}
+  .merkje{
+    display:inline-block;vertical-align:2px;margin-left:7px;
+    font-family:"Public Sans",sans-serif;
+    font-size:10.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;
+    padding:2px 7px;border-radius:99px;
+    background:var(--accent-soft);color:var(--accent);
+  }
+  .merkje.waarschuwing{
+    background:var(--danger-soft);
+    color:var(--danger);
+  }
+
+  .rij{display:flex;gap:9px;margin-top:12px;align-items:stretch}
+  .naamveld{
+    flex:1 1 auto;min-width:0;
+    font-family:"Roboto Mono", ui-monospace, monospace;
+    font-size:13px;
+    color:var(--ink);
+    background:var(--surface-2);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:9px 10px;
+  }
+  .naamveld:focus-visible{
+    outline:2px solid var(--accent);
+    outline-offset:1px;
+    background:var(--surface);
+  }
+  .start{
+    flex:none;
+    font-family:"Archivo", system-ui, sans-serif;
+    font-size:14.5px;font-weight:600;letter-spacing:.01em;
+    color:var(--accent-ink);
+    background:var(--accent);
+    border:1px solid transparent;
+    border-radius:8px;
+    padding:9px 17px;
+    cursor:pointer;
+    transition:filter .15s ease, transform .12s ease;
+  }
+  .start:hover:not(:disabled){filter:brightness(1.08)}
+  .start:active:not(:disabled){transform:translateY(1px)}
+  .start:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .start:disabled{opacity:.5;cursor:default}
+  .start.bevestig{background:var(--danger);color:#fff}
+
+  .melding{
+    margin-top:10px;padding:9px 11px;border-radius:8px;
+    font-size:14px;line-height:1.45;
+    display:none;
+  }
+  .melding.toon{display:block}
+  .melding.goed{background:var(--accent-soft);color:var(--ink);border:1px solid color-mix(in srgb, var(--accent) 32%, transparent)}
+  .melding.fout{background:var(--danger-soft);color:var(--ink);border:1px solid color-mix(in srgb, var(--danger) 32%, transparent)}
+  .melding.bezig{background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
+  .melding code{
+    font-family:"Roboto Mono", ui-monospace, monospace;
+    font-size:12.5px;
+    word-break:break-all;
+  }
+  .melding a{color:var(--accent)}
+
+  /* ---------- voet ---------- */
+  footer{
+    margin-top:38px;padding-top:18px;
+    border-top:1px solid var(--line);
+    font-size:14px;color:var(--muted);
+    display:flex;flex-direction:column;gap:9px;
+  }
+  footer a{color:var(--accent);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--accent) 35%,transparent)}
+  footer a:hover{border-bottom-color:var(--accent)}
+  footer p{margin:0;max-width:52ch}
+
+  /* ---------- lopende opdrachten ---------- */
+  #runs{display:none;margin-top:22px}
+  #runs.toon{display:block}
+  .runskop{
+    display:flex;align-items:baseline;justify-content:space-between;gap:10px;
+    padding-bottom:9px;margin-bottom:12px;border-bottom:1px solid var(--line);
+  }
+  .runskop h2{
+    font-family:"Archivo", system-ui, sans-serif;
+    font-size:15px;font-weight:600;margin:0;
+  }
+  .runsknoppen{display:flex;gap:14px;flex:none}
+  .tekstknop{
+    background:none;border:0;padding:0;cursor:pointer;
+    font-family:"Public Sans",sans-serif;font-size:13px;color:var(--accent);
+    border-bottom:1px solid color-mix(in srgb,var(--accent) 35%,transparent);
+  }
+  .tekstknop:disabled{opacity:.45;cursor:default}
+  .tekstknop:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  .run{
+    display:flex;align-items:flex-start;gap:11px;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:11px 13px;margin-bottom:9px;
+  }
+  .stip{
+    flex:none;width:9px;height:9px;border-radius:99px;margin-top:6px;
+    background:var(--muted);
+  }
+  .run.klaar .stip{background:var(--ok)}
+  .run.bezig .stip{background:var(--warn);animation:pols 1.6s ease-in-out infinite}
+  .run.fout  .stip{background:var(--danger)}
+  @keyframes pols{0%,100%{opacity:1}50%{opacity:.25}}
+
+  .runtekst{min-width:0;flex:1 1 auto}
+  .runnaam{
+    font-family:"Roboto Mono", ui-monospace, monospace;
+    font-size:12.5px;color:var(--ink);
+    word-break:break-word;
+  }
+  .runstatus{font-size:13.5px;color:var(--muted);margin-top:3px}
+  .run.klaar .runstatus b{color:var(--ok);font-weight:600}
+  .run.fout  .runstatus b{color:var(--danger);font-weight:600}
+  .runstatus a{color:var(--accent)}
+
+  #geenverbinding{
+    display:none;
+    background:var(--danger-soft);
+    border:1px solid color-mix(in srgb, var(--danger) 32%, transparent);
+    border-radius:var(--radius);
+    padding:13px 15px;margin-top:16px;font-size:14.5px;
+  }
+  #geenverbinding.toon{display:block}
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;animation:none !important}
+  }
+  @media (max-width:420px){
+    .rij{flex-wrap:wrap}
+    .start{width:100%}
+  }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <div class="merk">De Ramenwassers</div>
+    <h1>Opdrachten</h1>
+    <p class="lead">Tik op Start. Er komt een opdrachtbestand in je Drive-map en je pc pikt het binnen twee minuten op.</p>
+  </header>
+
+  <div class="voorwaarde">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+      <path d="M12 8v5M12 17h.01"/><circle cx="12" cy="12" r="9.5"/>
+    </svg>
+    <div>Je pc moet aanstaan met de <b>Claude-app open</b>. Deze taken klikken in Squeegee, en dat gebeurt in de browser op je pc — niet hier op je gsm.</div>
+  </div>
+
+  <div id="geenverbinding"></div>
+
+  <section id="runs" aria-live="polite">
+    <div class="runskop">
+      <h2>Laatste opdrachten</h2>
+      <div class="runsknoppen">
+        <button type="button" class="tekstknop" id="ververs">Ververs</button>
+        <button type="button" class="tekstknop" id="wis">Wissen</button>
+      </div>
+    </div>
+    <div id="runlijst"></div>
+  </section>
+
+  <section>
+    <div class="groepkop"><h2>Na de werkdag</h2><span>'s avonds of de volgende ochtend</span></div>
+    <div class="kaarten" id="groep-na"></div>
+  </section>
+
+  <section>
+    <div class="groepkop"><h2>Voor de werkdag</h2><span>de ronde klaarzetten</span></div>
+    <div class="kaarten" id="groep-voor"></div>
+  </section>
+
+  <section>
+    <div class="groepkop"><h2>Bevestigingen</h2><span>elke week</span></div>
+    <div class="kaarten" id="groep-bevestigingen"></div>
+  </section>
+
+  <section>
+    <div class="groepkop"><h2>Iets anders</h2><span>zelf omschrijven</span></div>
+    <div class="kaarten" id="groep-vrij"></div>
+  </section>
+
+  <footer>
+    <p>De bestandsnaam is de opdracht. Verander het weeknummer of de dag in het veld voor je op Start tikt — wat daar staat, is wat er gebeurt.</p>
+    <p>
+      <a href="https://drive.google.com/drive/folders/1YJt24SXd2nQT-xyim42Cg5qhwJDVnS-R" target="_blank" rel="noopener">Map Claude opdrachten</a>
+      &nbsp;·&nbsp;
+      <a href="https://drive.google.com/drive/folders/15BZkt8mtVl_EBMoqMvXmTiU-5J_A4mTr" target="_blank" rel="noopener">Logboek</a>
+      &nbsp;·&nbsp;
+      <a href="https://drive.google.com/drive/folders/1Dbml1PiNgcn6GwP49D6qf52-U0EIGqJ3" target="_blank" rel="noopener">Weeklijsten bevestigingen</a>
+    </p>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var SERVER = "Google Drive";
+  var TOOL   = "copy_file";
+  var MAP_OPDRACHTEN = "1YJt24SXd2nQT-xyim42Cg5qhwJDVnS-R";
+  var MAP_LOG        = "15BZkt8mtVl_EBMoqMvXmTiU-5J_A4mTr";
+  var BEWAARSLEUTEL  = "ramenwassers.runs";
+
+  /* ---- datums in Belgische tijd, in het Nederlands ---- */
+  function dagInBrussel(verschuiving){
+    var nu = new Date();
+    var brussel = new Date(nu.toLocaleString("en-US", {timeZone:"Europe/Brussels"}));
+    brussel.setDate(brussel.getDate() + verschuiving);
+    return brussel;
+  }
+  var MAANDEN = ["januari","februari","maart","april","mei","juni",
+                 "juli","augustus","september","oktober","november","december"];
+  function schrijfDatum(d){ return d.getDate() + " " + MAANDEN[d.getMonth()]; }
+
+  var gisteren = schrijfDatum(dagInBrussel(-1));
+  var morgen   = schrijfDatum(dagInBrussel(1));
+
+  /* ---- de opdrachten ---- */
+  var OPDRACHTEN = [
+    { groep:"groep-na", id:"1vdmrt9-MbGHvciiao9UePMptOEshCDaS",
+      naam:"Dag afwerken", label:"alles in 1", hoofd:true,
+      wat:"De vier taken hieronder na elkaar, voor dezelfde dag: eerst de namen opschonen, dan de dagverwerking, dan de tijden overzetten, en als laatste de betalingen. Duurt lang \u2014 start hem als je pc een tijd mag blijven staan. Loopt \u00e9\u00e9n stap vast, dan gaat de rest gewoon door.",
+      bestand:"dag afwerken " + gisteren + ".txt" },
+
+    { groep:"groep-na", id:"1jaBU8UUh4V4qS7VLxikswOqh_n7Ex0em",
+      naam:"Metatrak downloaden", label:"elke nacht vanzelf",
+      wat:"Het gps-rapport van een volledige dag ophalen en als CSV in de cowork-map zetten — de dagverwerking heeft dit nodig. Draait 's nachts om 3u vanzelf. Vrijdag, zaterdag en zondag komen samen in één rapport, op naam van de vrijdag. Laat het veld zo staan en hij haalt alles op wat nog ontbreekt.",
+      bestand:"metatrak download.txt" },
+
+    { groep:"groep-na", id:"19qSMUMGl0GF2GwN3QsQt65th91l0JkWe",
+      naam:"Dagverwerking",
+      wat:"Uren vergelijken met Metatrak, facturen aanmaken, de bank inlezen en de omzet per team wegschrijven. Met een nakijkrapport in Excel.",
+      bestand:"dagverwerking " + gisteren + ".txt" },
+
+    { groep:"groep-na", id:"1RP32WJgmT0UFdOOtkrW5ERqvGm8R_xoZ",
+      naam:"Squeegee opkuisen",
+      wat:"De klantnamen van een gereden dag opschonen. De bevestigingstekens gaan er mee uit, zodat er de week erna geen oude tekens blijven hangen.",
+      bestand:"squeegee opkuisen " + gisteren + ".txt" },
+
+    { groep:"groep-na", id:"12T8_d6BxTMrS55poEePMK53RlDtg8_8Z",
+      naam:"Betalingen aanduiden",
+      wat:"Per gefactureerde job van die dag de betaling registreren als Bank Transfer.",
+      bestand:"betalingen aanduiden squeegee " + gisteren + ".txt" },
+
+    { groep:"groep-na", id:"1Fw-iSLASA1BP5AglbhIed1LwcgcT74-R",
+      naam:"Tijden overzetten",
+      wat:"De werktijden uit het nakijkrapport invullen in Squeegee. De dagverwerking van die dag moet al gelopen hebben.",
+      bestand:"squeegee-tijden " + gisteren + ".txt" },
+
+    { groep:"groep-voor", id:"1hIpXHq9XGHbR66eKn3iygpOEOjS3lJaU",
+      naam:"Ochtendronde",
+      wat:"Een overzicht per gast met alle adressen van de dag en een Street View-beeld bij elk adres. Door te sturen naar de werktelefoons.",
+      bestand:"ochtendronde morgen.txt" },
+
+    { groep:"groep-voor", id:"1ESoaVZAYOVmOiwS1-JcpcX23GNqdgOBP",
+      naam:"Pijltje zetten",
+      wat:"Bij elke klant met werk op die dag komt er één ⤵️ extra achter de naam.",
+      bestand:"pijltjes zetten morgen.txt" },
+
+    { groep:"groep-bevestigingen", id:"1ZDStcx6W_I5V7FYiJ42j4V3wq3Hd22mP",
+      naam:"Weeklijst maken",
+      wat:"De klanten van maandag t/m vrijdag van die week uit Squeegee halen, met telefoonnummer, mailadres en dienst. Iedereen begint op ❓ — ook achter de klantnaam in Squeegee.",
+      bestand:"weeklijst van week 36 maken.txt" },
+
+    { groep:"groep-bevestigingen", id:"1uz118Wnjvc2RJ_AXJBBzHZQaw78o5qz1",
+      naam:"Antwoorden nakijken", label:"elke ochtend 07u00 vanzelf",
+      wat:"Mails en sms’jes vergelijken met de weeklijst. Het teken gaat achter de klantnaam, het antwoord in de notitie van de job. Je krijgt het overzicht per mail. Draait elke ochtend om 07u00 vanzelf — met Start kan je er tussendoor nog eens door, dat maakt geen dubbel werk.",
+      bestand:"antwoorden nakijken van week 36.txt" },
+
+    { groep:"groep-bevestigingen", id:"11BXM6fJypffUVliVjXwHKDa4FBB30Yf-",
+      naam:"Herinnering sturen", label:"mailt klanten", waarschuwing:true,
+      wat:"Iedereen die nog op ❓ staat krijgt één vriendelijke tweede mail. Dit gaat rechtstreeks naar je klanten. Doe dit pas nadat de antwoorden nagekeken zijn.",
+      bestand:"herinnering sturen van week 36.txt" },
+
+    { groep:"groep-vrij", id:"1bw2FV4WMWm75LZcYj29zLSFDBG1etI74",
+      naam:"Skills installeren", label:"na elke wijziging",
+      wat:"Zet de skills van de bevestigingen op deze pc en vult squeegee-nawerk aan. Opnieuw draaien telkens als ik zeg dat de skills gewijzigd zijn. Raakt Squeegee niet aan en mailt geen klanten.",
+      bestand:"installeer de bevestigingen-skills.txt" },
+
+    { groep:"groep-vrij", id:"1MY26b4QUKZbA1Ss1bitQuG6I7Xxvk9ku",
+      naam:"Vrije opdracht",
+      wat:"Schrijf zelf in het veld wat er moet gebeuren. Wat je typt, is de opdracht.",
+      bestand:"vrije opdracht - .txt" }
+  ];
+
+  /* ---- kaarten bouwen ---- */
+  function maakKaart(op){
+    var kaart = document.createElement("div");
+    kaart.className = "kaart" + (op.waarschuwing ? " let-op" : "") + (op.hoofd ? " hoofd" : "");
+
+    var titel = document.createElement("h3");
+    titel.textContent = op.naam;
+    if (op.label){
+      var merkje = document.createElement("span");
+      merkje.className = "merkje" + (op.waarschuwing ? " waarschuwing" : "");
+      merkje.textContent = op.label;
+      titel.appendChild(merkje);
+    }
+
+    var wat = document.createElement("p");
+    wat.className = "wat";
+    wat.textContent = op.wat;
+
+    var rij = document.createElement("div");
+    rij.className = "rij";
+
+    var veld = document.createElement("input");
+    veld.type = "text";
+    veld.className = "naamveld";
+    veld.value = op.bestand;
+    veld.setAttribute("aria-label", "Naam van de opdracht voor " + op.naam);
+    veld.spellcheck = false;
+
+    var knop = document.createElement("button");
+    knop.type = "button";
+    knop.className = "start";
+    knop.textContent = "Start";
+
+    var melding = document.createElement("div");
+    melding.className = "melding";
+    melding.setAttribute("role", "status");
+
+    rij.appendChild(veld);
+    rij.appendChild(knop);
+    kaart.appendChild(titel);
+    kaart.appendChild(wat);
+    kaart.appendChild(rij);
+    kaart.appendChild(melding);
+
+    var bevestigen = false;
+    knop.addEventListener("click", function(){
+      if (op.waarschuwing && !bevestigen){
+        bevestigen = true;
+        knop.classList.add("bevestig");
+        knop.textContent = "Ja, versturen";
+        toon(melding, "fout", "Dit stuurt echte mails naar je klanten. Tik nog eens om door te gaan.");
+        return;
+      }
+      bevestigen = false;
+      knop.classList.remove("bevestig");
+      knop.textContent = "Start";
+      starten(op, veld, knop, melding);
+    });
+
+    document.getElementById(op.groep).appendChild(kaart);
+  }
+
+  function toon(el, soort, html){
+    el.className = "melding toon " + soort;
+    el.innerHTML = html;
+  }
+
+  function ontsnap(s){
+    return String(s).replace(/[&<>"']/g, function(t){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[t];
+    });
+  }
+
+  /* ---- starten ---- */
+  var mcpNamespace = null;
+
+  function starten(op, veld, knop, melding){
+    var titel = veld.value.trim();
+    if (!titel){
+      toon(melding, "fout", "Geef de opdracht eerst een naam.");
+      veld.focus();
+      return;
+    }
+    if (!/\.txt$/i.test(titel)) titel += ".txt";
+
+    if (!mcpNamespace){
+      toon(melding, "fout", "Geen verbinding met je Drive. Open de map hierboven en maak de kopie zelf.");
+      return;
+    }
+
+    knop.disabled = true;
+    toon(melding, "bezig", "Bezig met klaarzetten…");
+
+    mcpNamespace.callTool(SERVER, TOOL, {
+      fileId: op.id,
+      parentId: MAP_OPDRACHTEN,
+      title: titel
+    }).then(function(res){
+      var bestand = res && res.payload ? res.payload : {};
+      var naam = bestand.title || titel;
+      var link = bestand.viewUrl
+        ? ' <a href="' + ontsnap(bestand.viewUrl) + '" target="_blank" rel="noopener">bekijk het bestand</a>'
+        : "";
+      toon(melding, "goed",
+        "Gestart. <code>" + ontsnap(naam) + "</code> staat in je Drive — je pc pikt het binnen twee minuten op." + link);
+      knop.disabled = false;
+      knop.textContent = "Nog eens starten";
+      onthoudRun(naam);
+    }).catch(function(err){
+      knop.disabled = false;
+      toon(melding, "fout", foutTekst(err));
+    });
+  }
+
+  function foutTekst(err){
+    var code = err && err.code ? err.code : "upstream_error";
+    switch (code){
+      case "needs_reauth":
+        return "Je Drive-koppeling is verlopen. Herstel ze in claude.ai bij Instellingen → Connectors, en probeer dan opnieuw.";
+      case "server_not_connected":
+        return "Google Drive staat niet gekoppeld aan dit account. Voeg de connector toe in claude.ai bij Instellingen → Connectors.";
+      case "selection_required":
+        return "Er staan meerdere Drive-koppelingen op dit account. Kies er een als claude.ai het vraagt, en probeer dan opnieuw.";
+      case "not_in_manifest":
+      case "blocked_by_policy":
+      case "approval_required":
+        return "Deze pagina mag dit bestand niet kopiëren. Open de map hierboven en maak de kopie zelf.";
+      case "server_unavailable":
+      case "upstream_error":
+        return "Google Drive antwoordde niet. Mogelijk is de kopie tóch gemaakt — kijk eerst even in de map hierboven voor je opnieuw start.";
+      case "tool_error":
+        return "Drive gaf een fout: " + ontsnap(err.message || "onbekend") + ". Bestaat er al een bestand met die naam?";
+      case "rate_limited":
+        return "Even te snel achter elkaar. Wacht een halve minuut en probeer opnieuw.";
+      case "not_granted":
+      case "capability_disabled":
+      case "capability_removed":
+        return "Deze pagina kan hier niet aan je Drive. Open de map hierboven en maak de kopie zelf.";
+      default:
+        return "Het is niet gelukt. Open de map hierboven en maak de kopie zelf.";
+    }
+  }
+
+  /* ---- wat er loopt en wat klaar is ---- */
+
+  // Een afgelopen logboek verandert nooit meer, dus dat onthouden we.
+  var gekend = {};
+  try {
+    gekend = JSON.parse(window.localStorage.getItem(BEWAARSLEUTEL) || "{}") || {};
+  } catch (e) { gekend = {}; }
+
+  function bewaarGekend(){
+    try { window.localStorage.setItem(BEWAARSLEUTEL, JSON.stringify(gekend)); }
+    catch (e) { /* privevenster of opslag uit */ }
+  }
+
+  var runs = [];
+  var netGestart = [];   // namen die je in deze sessie gestart hebt
+
+  function onthoudRun(bestand){
+    netGestart.push({ bestand: bestand, gestart: Date.now() });
+    ververs();
+  }
+
+  function naarTekst(base64){
+    var ruw = atob(base64);
+    var bytes = new Uint8Array(ruw.length);
+    for (var i = 0; i < ruw.length; i++) bytes[i] = ruw.charCodeAt(i);
+    try { return new TextDecoder("utf-8").decode(bytes); }
+    catch (e) { return ruw; }
+  }
+
+  function veld(tekst, patroon){
+    var m = tekst.match(patroon);
+    return m ? m[1].trim() : "";
+  }
+
+  function enkelUur(waarde){
+    // "2026-08-23 09:51:00" -> "09:51"
+    var m = String(waarde).match(/(\d{2}:\d{2})/);
+    return m ? m[1] : String(waarde);
+  }
+
+  function ontleed(tekst, titel){
+    var naam  = veld(tekst, /^\s*Opdracht\s*:\s*(.+)$/m) ||
+                titel.replace(/\.log\.txt$/i, "").replace(/^\d{4}-\d{2}-\d{2}\s+\d{2}-\d{2}-\d{2}\s+/, "");
+    var einde = veld(tekst, /^\s*Einde\s*:\s*(.+)$/m);
+    var code  = veld(tekst, /^\s*Exitcode\s*:\s*(\S+)/m);
+    return {
+      naam: naam,
+      start: enkelUur(veld(tekst, /^\s*Start\s*:\s*(.+)$/m)),
+      einde: einde ? enkelUur(einde) : "",
+      duur: veld(tekst, /^\s*Duur\s*:\s*(.+)$/m),
+      exitcode: code,
+      stand: (!einde || code === "") ? "bezig" : (code === "0" ? "klaar" : "fout"),
+      klaar: !!(einde && code !== "")
+    };
+  }
+
+  function teken(){
+    var vak = document.getElementById("runs");
+    var lijst = document.getElementById("runlijst");
+    vak.className = "toon";
+
+    if (!runs.length){
+      lijst.innerHTML = '<div class="run"><span class="stip"></span><div class="runtekst">' +
+        '<div class="runstatus">Vandaag is er nog niets gestart.</div></div></div>';
+      return;
+    }
+
+    lijst.innerHTML = runs.map(function(r){
+      var tekst;
+      if (r.stand === "klaar"){
+        tekst = "<b>Klaar</b> om " + ontsnap(r.einde) + (r.duur ? " · duurde " + ontsnap(r.duur) : "");
+      } else if (r.stand === "fout"){
+        tekst = "<b>Er liep iets mis</b> — exitcode " + ontsnap(r.exitcode) +
+                ". Kijk in het logboek wat er scheelt.";
+      } else if (r.wacht){
+        tekst = "Net gestart — je pc pikt hem binnen twee minuten op";
+      } else {
+        tekst = "Bezig sinds " + ontsnap(r.start);
+      }
+      if (r.logUrl){
+        tekst += ' · <a href="' + ontsnap(r.logUrl) + '" target="_blank" rel="noopener">logboek</a>';
+      }
+      return '<div class="run ' + r.stand + '">' +
+               '<span class="stip"></span>' +
+               '<div class="runtekst">' +
+                 '<div class="runnaam">' + ontsnap(r.naam) + '</div>' +
+                 '<div class="runstatus">' + tekst + '</div>' +
+               '</div>' +
+             '</div>';
+    }).join("");
+  }
+
+  function wachtenden(){
+    // Wat je net gestart hebt maar waar nog geen logboek van is: je pc moet hem nog oppikken.
+    return netGestart.filter(function(g){
+      if (Date.now() - g.gestart > 15 * 60 * 1000) return false;
+      var kern = g.bestand.replace(/\.txt$/i, "").toLowerCase();
+      return !runs.some(function(r){ return r.naam.toLowerCase().indexOf(kern) !== -1; });
+    }).map(function(g){
+      return {
+        naam: g.bestand, stand: "", start: "", einde: "", duur: "", exitcode: "",
+        logUrl: "", wacht: true
+      };
+    });
+  }
+
+  var bezig = false;
+
+  function ververs(){
+    if (!mcpNamespace || bezig) return Promise.resolve();
+    bezig = true;
+    var knop = document.getElementById("ververs");
+    knop.disabled = true;
+    knop.textContent = "Kijken…";
+
+    var vanaf = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+
+    return mcpNamespace.callTool(SERVER, "search_files", {
+      query: "parentId = '" + MAP_LOG + "' and createdTime > '" + vanaf + "'",
+      pageSize: 20,
+      excludeContentSnippets: true
+    }, {cache:false}).then(function(res){
+      var files = ((res && res.payload && res.payload.files) || [])
+        .sort(function(a, b){ return Date.parse(b.createdTime) - Date.parse(a.createdTime); })
+        .slice(0, 6);
+
+      return Promise.all(files.map(function(f){
+        if (gekend[f.id]){
+          var uit = gekend[f.id];
+          uit.logUrl = f.viewUrl;
+          return Promise.resolve(uit);
+        }
+        return mcpNamespace.callTool(SERVER, "download_file_content", {
+          fileId: f.id
+        }, {cache:false}).then(function(dl){
+          var b64 = dl && dl.payload && dl.payload.content;
+          if (!b64) return null;
+          var uit = ontleed(naarTekst(b64), f.title);
+          uit.logUrl = f.viewUrl;
+          if (uit.klaar){ gekend[f.id] = uit; bewaarGekend(); }
+          return uit;
+        }).catch(function(){ return null; });
+      }));
+    }).then(function(gevonden){
+      runs = wachtenden().concat(gevonden.filter(Boolean));
+      // de wachtenden hebben nog geen stand; toon ze als wachtend
+      runs.forEach(function(r){
+        if (r.wacht){ r.stand = ""; r.start = ""; }
+      });
+      teken();
+    }).catch(function(){
+      var lijst = document.getElementById("runlijst");
+      document.getElementById("runs").className = "toon";
+      lijst.innerHTML = '<div class="run fout"><span class="stip"></span><div class="runtekst">' +
+        '<div class="runstatus">Kon het logboek niet lezen. Probeer opnieuw met Ververs.</div>' +
+        '</div></div>';
+    }).then(function(){
+      bezig = false;
+      knop.disabled = false;
+      knop.textContent = "Ververs";
+    });
+  }
+
+  document.getElementById("ververs").addEventListener("click", function(){ ververs(); });
+  document.getElementById("wis").addEventListener("click", function(){
+    gekend = {}; bewaarGekend(); netGestart = []; ververs();
+  });
+
+  window.setInterval(function(){
+    if (document.visibilityState === "visible") ververs();
+  }, 45000);
+  document.addEventListener("visibilitychange", function(){
+    if (document.visibilityState === "visible") ververs();
+  });
+
+  /* ---- opbouwen ---- */
+  OPDRACHTEN.forEach(maakKaart);
+
+  var waarschuwing = document.getElementById("geenverbinding");
+
+  function geenDrive(tekst){
+    waarschuwing.className = "toon";
+    waarschuwing.innerHTML = tekst +
+      ' Je kan wel altijd zelf een kopie maken in de ' +
+      '<a href="https://drive.google.com/drive/folders/' + MAP_OPDRACHTEN + '" target="_blank" rel="noopener">map Claude opdrachten</a>.';
+  }
+
+  if (!window.claude || typeof window.claude.use !== "function"){
+    geenDrive("De Start-knoppen werken hier niet — open deze pagina in claude.ai.");
+  } else {
+    window.claude.use("mcp").then(function(ns){
+      if (!ns){
+        geenDrive("De Start-knoppen kunnen niet aan je Drive.");
+        return;
+      }
+      mcpNamespace = ns;
+      ververs();
+      return ns.listTools().then(function(res){
+        var servers = (res && res.servers) || [];
+        var drive = null;
+        for (var i = 0; i < servers.length; i++){
+          if (servers[i].server === SERVER) drive = servers[i];
+        }
+        if (!drive){
+          geenDrive("Google Drive staat niet gekoppeld aan dit account.");
+        } else if (drive.authStatus === "needs_reauth"){
+          geenDrive("Je Drive-koppeling is verlopen — herstel ze in claude.ai bij Instellingen → Connectors.");
+        } else if (!drive.tools || !drive.tools.length){
+          geenDrive("Er staan meerdere Drive-koppelingen op dit account. Kies er een als claude.ai het vraagt.");
+        }
+      }).catch(function(){
+        /* listTools is enkel om vooraf te waarschuwen; de Start-knop
+           geeft zelf een nette melding als er iets scheelt. */
+      });
+    }).catch(function(){
+      geenDrive("De Start-knoppen kunnen niet aan je Drive.");
+    });
+  }
+})();
+</script>

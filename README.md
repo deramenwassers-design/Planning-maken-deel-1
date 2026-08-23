@@ -47,19 +47,26 @@ en `squeegee-nawerk`.
 Wil je er een echte knop van maken die elke ochtend vanzelf loopt: maak in Cowork een
 geplande taak met als opdracht `/dag-afwerken`.
 
-## Een knop op je opdrachtenbord
+## De knop op het opdrachtenbord
 
-De volledige, kant-en-klare opdrachttekst staat in
+De knop **Dag afwerken** staat bovenaan bij "Na de werkdag" op het opdrachtenbord:
+https://claude.ai/code/artifact/06f9ca0b-929c-4a42-9b31-1847e98de982
+
+Hoe hij werkt, net als de andere knoppen:
+
+1. Start kopieert het menukaartje `_dag afwerken [datum].txt` uit de Drive-map
+   "Claude opdrachten" naar een nieuw bestand `dag afwerken <gisteren>.txt`.
+2. De pc pikt dat bestand binnen twee minuten op en voert de opdracht uit.
+3. De bestandsnaam is de opdracht — pas de dag in het veld aan voor je op Start tikt.
+
+De inhoud van het menukaartje staat hier ook, als reservekopie:
+[`opdrachtenbord/menukaartje-dag-afwerken.txt`](opdrachtenbord/menukaartje-dag-afwerken.txt).
+De HTML van het bord staat in
+[`opdrachtenbord/opdrachtenbord.html`](opdrachtenbord/opdrachtenbord.html).
+
+Voor Cowork of claude.ai kan je de skill zelf uploaden: `dag-afwerken.zip` bij
+Instellingen → Vaardigheden (Skills). De losse opdrachttekst staat in
 [`opdrachtenbord/dag-afwerken-opdracht.md`](opdrachtenbord/dag-afwerken-opdracht.md).
-
-1. Upload eerst `dag-afwerken.zip` bij Instellingen -> Vaardigheden (Skills).
-2. Ga naar je opdrachtenbord en maak een nieuwe opdracht.
-3. Naam: `⭐ Dag afwerken (alles in 1)`.
-4. Plak als opdrachttekst het blok tussen de streepjeslijnen uit dat bestand.
-5. Schema: geen / handmatig. Kan dat niet, kies dan een tijdstip waarop je toch achter
-   de pc zit en gebruik de knop "Nu uitvoeren".
-
-Voor een bepaalde dag: klik "Nu uitvoeren" en typ erbij "doe 19 augustus".
 
 ## Voorwaarden tijdens de run
 

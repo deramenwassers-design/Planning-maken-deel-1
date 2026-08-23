@@ -1,0 +1,51 @@
+# LET OP: deze taak klikt in Squeegee en werkt in Excel, en dat gebeurt op
+# je pc. Ze werkt enkel als je pc aanstaat met de Claude-app open.
+# Ze doet alle vier de taken na elkaar en duurt dus lang - start ze op een
+# moment dat je de pc een tijd kan laten staan. Chrome open, zichtbaar en
+# gemaximaliseerd, en de Excel-bestanden gesloten.
+#
+# ====================================================================
+# DIT IS EEN MENUKAARTJE. Zolang het hier blijft staan, gebeurt er niets.
+# STARTEN = EEN KOPIE MAKEN (drie puntjes -> "Een kopie maken").
+#
+# DE DATUM IN DE BESTANDSNAAM IS DE OPDRACHT.
+# Hernoem de KOPIE naar de dag die je wil, bijvoorbeeld
+# "dag afwerken 22 augustus.txt". Nooit dit menukaartje zelf.
+# ====================================================================
+
+Werk de werkdag die in de naam van dit bestand staat volledig af.
+Gebruik daarvoor mijn skill "dag-afwerken".
+
+Dat wil zeggen: deze vier taken na elkaar, in exact deze volgorde, voor
+een en dezelfde dag:
+
+1. de klantnamen opschonen (skill squeegee-nawerk, ENKEL bewerking A)
+2. de dagverwerking (skill dagverwerking, de vijf delen A t/m E)
+3. de tijden overzetten naar Squeegee (skill squeegee-tijden)
+4. de betalingen aanduiden (skill squeegee-nawerk, ENKEL bewerking B)
+
+Bestaat de skill "dag-afwerken" nog niet op deze pc, voer dan gewoon die
+vier skills na elkaar uit in die volgorde.
+
+Bepaal de dag een keer, aan het begin, en gebruik diezelfde datum in alle
+vier de stappen. Vraag alle toegang (Excel, mappen, computergebruik) in
+een blok helemaal aan het begin, nog voor je Squeegee of Excel aanraakt.
+Vraag daarna niet meer tussen twee stappen of je mag verdergaan - dat is
+allemaal op voorhand goedgekeurd.
+
+Mislukt een stap, sla ze dan af, noteer waarom en ga door met de
+volgende. Breek de run nooit volledig af. Zonder Metatrak-rapport kan
+stap 3 niet, en zonder aangemaakte facturen kan stap 4 niet - meld dat
+dan gewoon in plaats van te blijven proberen.
+
+Denk eraan: bij het opschonen moeten de bevestigingstekens achter de
+namen mee weg. De spons, het rode uitroepteken en het fototoestel blijven
+altijd staan, net als alles tussen haakjes.
+
+Verwittig mij per mail als je vastloopt op iets waar je mij voor nodig
+hebt: onderwerp "CLAUDE WACHT: ..." met daarin wat je nodig hebt. Ben je
+klaar, stuur dan "CLAUDE KLAAR: dag ... volledig afgewerkt" met per stap
+een paar regels: wat er opgekuist is, wat de dagverwerking opgeleverd
+heeft, welke tijden er ingevuld zijn en hoeveel betalingen er
+geregistreerd zijn, plus alles wat is blijven liggen.
+Mail naar geertensanne@gmail.com.
