@@ -211,6 +211,53 @@
   footer a:hover{border-bottom-color:var(--accent)}
   footer p{margin:0;max-width:52ch}
 
+  /* ---------- lopende opdrachten ---------- */
+  #runs{display:none;margin-top:22px}
+  #runs.toon{display:block}
+  .runskop{
+    display:flex;align-items:baseline;justify-content:space-between;gap:10px;
+    padding-bottom:9px;margin-bottom:12px;border-bottom:1px solid var(--line);
+  }
+  .runskop h2{
+    font-family:"Archivo", system-ui, sans-serif;
+    font-size:15px;font-weight:600;margin:0;
+  }
+  .runsknoppen{display:flex;gap:14px;flex:none}
+  .tekstknop{
+    background:none;border:0;padding:0;cursor:pointer;
+    font-family:"Public Sans",sans-serif;font-size:13px;color:var(--accent);
+    border-bottom:1px solid color-mix(in srgb,var(--accent) 35%,transparent);
+  }
+  .tekstknop:disabled{opacity:.45;cursor:default}
+  .tekstknop:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  .run{
+    display:flex;align-items:flex-start;gap:11px;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:11px 13px;margin-bottom:9px;
+  }
+  .stip{
+    flex:none;width:9px;height:9px;border-radius:99px;margin-top:6px;
+    background:var(--muted);
+  }
+  .run.klaar .stip{background:var(--ok)}
+  .run.bezig .stip{background:var(--warn);animation:pols 1.6s ease-in-out infinite}
+  .run.fout  .stip{background:var(--danger)}
+  @keyframes pols{0%,100%{opacity:1}50%{opacity:.25}}
+
+  .runtekst{min-width:0;flex:1 1 auto}
+  .runnaam{
+    font-family:"Roboto Mono", ui-monospace, monospace;
+    font-size:12.5px;color:var(--ink);
+    word-break:break-word;
+  }
+  .runstatus{font-size:13.5px;color:var(--muted);margin-top:3px}
+  .run.klaar .runstatus b{color:var(--ok);font-weight:600}
+  .run.fout  .runstatus b{color:var(--danger);font-weight:600}
+  .runstatus a{color:var(--accent)}
+
   #geenverbinding{
     display:none;
     background:var(--danger-soft);
@@ -245,6 +292,17 @@
   </div>
 
   <div id="geenverbinding"></div>
+
+  <section id="runs" aria-live="polite">
+    <div class="runskop">
+      <h2>Wat je gestart hebt</h2>
+      <div class="runsknoppen">
+        <button type="button" class="tekstknop" id="ververs">Ververs</button>
+        <button type="button" class="tekstknop" id="wis">Wissen</button>
+      </div>
+    </div>
+    <div id="runlijst"></div>
+  </section>
 
   <section>
     <div class="groepkop"><h2>Na de werkdag</h2><span>'s avonds of de volgende ochtend</span></div>
@@ -286,6 +344,8 @@
   var SERVER = "Google Drive";
   var TOOL   = "copy_file";
   var MAP_OPDRACHTEN = "1YJt24SXd2nQT-xyim42Cg5qhwJDVnS-R";
+  var MAP_LOG        = "15BZkt8mtVl_EBMoqMvXmTiU-5J_A4mTr";
+  var BEWAARSLEUTEL  = "ramenwassers.runs";
 
   /* ---- datums in Belgische tijd, in het Nederlands ---- */
   function dagInBrussel(verschuiving){
@@ -466,6 +526,7 @@
         "Gestart. <code>" + ontsnap(naam) + "</code> staat in je Drive — je pc pikt het binnen twee minuten op." + link);
       knop.disabled = false;
       knop.textContent = "Nog eens starten";
+      onthoudRun(naam, op.naam);
     }).catch(function(err){
       knop.disabled = false;
       toon(melding, "fout", foutTekst(err));
@@ -501,6 +562,161 @@
     }
   }
 
+  /* ---- wat je gestart hebt ---- */
+
+  function leesRuns(){
+    try {
+      var ruw = window.localStorage.getItem(BEWAARSLEUTEL);
+      var lijst = ruw ? JSON.parse(ruw) : [];
+      return Array.isArray(lijst) ? lijst : [];
+    } catch (e) { return []; }
+  }
+
+  function bewaarRuns(lijst){
+    try { window.localStorage.setItem(BEWAARSLEUTEL, JSON.stringify(lijst.slice(0, 12))); }
+    catch (e) { /* privevenster of opslag uit: dan onthouden we het gewoon niet */ }
+  }
+
+  var runs = leesRuns();
+
+  function onthoudRun(bestand, kaart){
+    runs.unshift({ bestand: bestand, kaart: kaart, gestart: Date.now(), stand: "wachtend" });
+    runs = runs.slice(0, 12);
+    bewaarRuns(runs);
+    tekenRuns();
+    ververs();
+  }
+
+  function uurtje(ms){
+    try {
+      return new Date(ms).toLocaleTimeString("nl-BE", {hour:"2-digit", minute:"2-digit"});
+    } catch (e) { return ""; }
+  }
+
+  function tekenRuns(){
+    var vak = document.getElementById("runs");
+    var lijst = document.getElementById("runlijst");
+    if (!runs.length){ vak.className = ""; lijst.innerHTML = ""; return; }
+    vak.className = "toon";
+
+    lijst.innerHTML = runs.map(function(r){
+      var soort = r.stand === "klaar" ? "klaar" : (r.stand === "fout" ? "fout" : (r.stand === "bezig" ? "bezig" : ""));
+      var tekst;
+      if (r.stand === "klaar"){
+        tekst = "<b>Klaar</b> om " + ontsnap(r.einde || "") + (r.duur ? " · " + ontsnap(r.duur) : "");
+      } else if (r.stand === "fout"){
+        tekst = "<b>Er liep iets mis</b> (exitcode " + ontsnap(String(r.exitcode)) + ")";
+      } else if (r.stand === "bezig"){
+        tekst = "Bezig sinds " + ontsnap(r.start || uurtje(r.gestart));
+      } else {
+        tekst = "Gestart om " + uurtje(r.gestart) + " — wacht tot je pc hem oppikt";
+      }
+      if (r.logUrl){
+        tekst += ' · <a href="' + ontsnap(r.logUrl) + '" target="_blank" rel="noopener">logboek</a>';
+      }
+      return '<div class="run ' + soort + '">' +
+               '<span class="stip"></span>' +
+               '<div class="runtekst">' +
+                 '<div class="runnaam">' + ontsnap(r.bestand) + '</div>' +
+                 '<div class="runstatus">' + tekst + '</div>' +
+               '</div>' +
+             '</div>';
+    }).join("");
+  }
+
+  function naarTekst(base64){
+    var ruw = atob(base64);
+    var bytes = new Uint8Array(ruw.length);
+    for (var i = 0; i < ruw.length; i++) bytes[i] = ruw.charCodeAt(i);
+    try { return new TextDecoder("utf-8").decode(bytes); }
+    catch (e) { return ruw; }
+  }
+
+  function eersteRegel(tekst, patroon){
+    var m = tekst.match(patroon);
+    return m ? m[1].trim() : "";
+  }
+
+  function standVan(run){
+    // Het logboek heet "<datum> <tijd> <bestandsnaam zonder .txt>.log.txt".
+    var kern = run.bestand.replace(/\.txt$/i, "").replace(/'/g, "\\'");
+    return mcpNamespace.callTool(SERVER, "search_files", {
+      query: "parentId = '" + MAP_LOG + "' and title contains '" + kern + "'",
+      pageSize: 10,
+      excludeContentSnippets: true
+    }, {cache:false}).then(function(res){
+      var files = (res && res.payload && res.payload.files) || [];
+      // enkel logboeken van na het moment dat we gestart zijn, nieuwste eerst
+      var kandidaten = files.filter(function(f){
+        return Date.parse(f.createdTime) >= run.gestart - 180000;
+      }).sort(function(a, b){
+        return Date.parse(b.createdTime) - Date.parse(a.createdTime);
+      });
+      if (!kandidaten.length){ run.stand = "wachtend"; return; }
+
+      var log = kandidaten[0];
+      run.logUrl = log.viewUrl;
+      run.stand = "bezig";
+
+      return mcpNamespace.callTool(SERVER, "download_file_content", {
+        fileId: log.id
+      }, {cache:false}).then(function(dl){
+        var b64 = dl && dl.payload && dl.payload.content;
+        if (!b64) return;
+        var tekst = naarTekst(b64);
+        run.start = eersteRegel(tekst, /^\s*Start\s*:\s*(.+)$/m).replace(/^\S+\s/, "");
+        var einde = eersteRegel(tekst, /^\s*Einde\s*:\s*(.+)$/m);
+        var code  = eersteRegel(tekst, /^\s*Exitcode\s*:\s*(\S+)/m);
+        if (!einde || code === ""){ run.stand = "bezig"; return; }
+        run.einde = einde.replace(/^\S+\s/, "");
+        run.duur = eersteRegel(tekst, /^\s*Duur\s*:\s*(.+)$/m);
+        run.exitcode = code;
+        run.stand = (code === "0") ? "klaar" : "fout";
+      });
+    });
+  }
+
+  var bezigMetVerversen = false;
+
+  function ververs(){
+    if (!runs.length || !mcpNamespace || bezigMetVerversen) return Promise.resolve();
+    var teDoen = runs.filter(function(r){ return r.stand !== "klaar" && r.stand !== "fout"; });
+    if (!teDoen.length) return Promise.resolve();
+
+    bezigMetVerversen = true;
+    var knop = document.getElementById("ververs");
+    knop.disabled = true;
+    knop.textContent = "Kijken…";
+
+    return Promise.all(teDoen.map(function(r){
+      return standVan(r).catch(function(){ /* laat de vorige stand staan */ });
+    })).then(function(){
+      bewaarRuns(runs);
+      tekenRuns();
+    }).catch(function(){}).then(function(){
+      bezigMetVerversen = false;
+      knop.disabled = false;
+      knop.textContent = "Ververs";
+    });
+  }
+
+  document.getElementById("ververs").addEventListener("click", function(){ ververs(); });
+  document.getElementById("wis").addEventListener("click", function(){
+    runs = [];
+    bewaarRuns(runs);
+    tekenRuns();
+  });
+
+  // elke 45 seconden opnieuw kijken, maar enkel als de pagina in beeld staat
+  window.setInterval(function(){
+    if (document.visibilityState === "visible") ververs();
+  }, 45000);
+  document.addEventListener("visibilitychange", function(){
+    if (document.visibilityState === "visible") ververs();
+  });
+
+  tekenRuns();
+
   /* ---- opbouwen ---- */
   OPDRACHTEN.forEach(maakKaart);
 
@@ -522,6 +738,7 @@
         return;
       }
       mcpNamespace = ns;
+      ververs();
       return ns.listTools().then(function(res){
         var servers = (res && res.servers) || [];
         var drive = null;

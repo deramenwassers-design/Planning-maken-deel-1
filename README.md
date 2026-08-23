@@ -134,7 +134,13 @@ met de Artifact-tool op datzelfde bestandspad, of vanuit een ander gesprek met d
 `url` — dan blijft de link dezelfde.
 
 De Start-knop roept de Google Drive-connector van de kijker aan (`copy_file`) en zet een kopie van
-het bijhorende menukaartje in "Claude opdrachten". De pc pikt die kopie op, net zoals bij een kopie
+het bijhorende menukaartje in "Claude opdrachten".
+
+Onder "Wat je gestart hebt" volgt de pagina daarna zelf op hoe het afloopt. Ze onthoudt de gestarte
+bestandsnamen in `localStorage`, zoekt met `search_files` het bijhorende logboek in de map `log`,
+en leest dat met `download_file_content` uit. Een logboek zonder `Einde`-blok betekent bezig; met
+`Exitcode : 0` klaar; met een ander getal misgelopen. Ze kijkt elke 45 seconden opnieuw zolang de
+pagina in beeld staat en er nog iets loopt. De pc pikt die kopie op, net zoals bij een kopie
 die met de hand gemaakt is. De bestandsnaam is bewerkbaar op de pagina, want die naam ís de
 opdracht.
 
