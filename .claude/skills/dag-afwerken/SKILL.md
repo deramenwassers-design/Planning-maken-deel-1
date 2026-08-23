@@ -93,6 +93,22 @@ wegstappen.
    ervoor). Enkel lezen mag met een lockfile; terugschrijven niet — dan mail je
    `CLAUDE WACHT: sluit <bestandsnaam>` en ga je verder met de rest.
 
+7. **Kijk na wat er van deze dag al gebeurd is.** Er kan al iets gedaan zijn — door jou in een
+   vorige run, of door Geert met de losse knoppen. Doe daarom nooit blind alles opnieuw. Elke stap
+   heeft een eigen controle; gebruik ze, en zet in het eindbericht wat je overgeslagen hebt.
+
+| Stap | Waar je kijkt of het al gebeurd is | Wat je doet als het er al staat |
+|---|---|---|
+| 1 namen | de naam in de dagplanning zelf: staat er enkel naam + haakjes + de drie emoji's? | die klant niet openen |
+| 2 dagverwerking | **per deel**, volgens de herstarttabel in `dagverwerking` (deel A t/m E hebben elk hun eigen controle) | enkel de delen doen die nog ontbreken |
+| 3 tijden | kolom "In Squeegee gezet" in `Nakijken_[datum].xlsx` | die rij overslaan |
+| 4 betalingen | de job staat in Squeegee al op "Paid" | die job overslaan |
+
+Het gevaarlijkste onderdeel is **deel E van de dagverwerking** (`ingave werk.xlsm`): dat is een
+loonbestand, en een tweede registratie betekent dubbel loon. Controleer daar altijd eerst of de
+werkdag al op het tabblad van de werknemers staat, en draai de macro niet opnieuw als ze er staat.
+Ook deel B (rijen in de facturenlijst) en D1 (rijen in "Import bank") mogen niet twee keer.
+
 Houd vanaf hier een **lopende samenvatting** bij (per stap: gelukt / deels / overgeslagen + reden).
 Die heb je op het einde nodig; je gaat de stappen niet opnieuw doorlopen om het te reconstrueren.
 
@@ -124,6 +140,12 @@ E plus de twee rapporten.
   keer dezelfde dag toevoegen.
 - Deze stap neemt Excel over met de muis. Laat Geert weten dat hij intussen best van de pc blijft;
   ziet de skill zijn selectie of filter bewegen, dan neemt ze de muis niet over en meldt ze dat.
+
+**Bruggetje naar stap 3 (belangrijk bij een herstart):** bestaat `Nakijken_[DD-MM-JJJJ].xlsx` al en
+staan er in het tabblad "Tijden voor Squeegee" rijen met "aangepast in Squeegee" in de kolom
+"In Squeegee gezet"? Noteer die rijen dan **vóór** de dagverwerking het rapport overschrijft, en zet
+die markeringen daarna in het nieuwe rapport terug. Doe je dat niet, dan lijkt in stap 3 alles nog
+open en tik je tijden over die er al in staan.
 
 Onthoud voor de volgende stappen:
 
@@ -169,11 +191,22 @@ Kortom: **er is geen enkele reden om de hele run af te breken.** Ga altijd door 
 
 ## Twee keer draaien op dezelfde dag
 
-Dat mag en is veilig, want elke deelskill herkent haar eigen werk: opgeschoonde namen zien er al
-proper uit en worden niet meer geopend, `gefactureerde_dagen.json` blokkeert dubbele facturen, rijen
-met "aangepast in Squeegee" worden overgeslagen, en jobs die al "Paid" staan sla je over bij de
-betalingen. **Eén uitzondering:** deel E van `dagverwerking` (ingave werk.xlsm) is een loonbestand —
-controleer daar altijd eerst of de werkdag er al staat vóór je de macro draait.
+Dat mag en is veilig: geen enkele stap begint met wissen of overschrijven van werk dat al gedaan is,
+en elke deelskill herkent haar eigen werk (zie de tabel in stap 0). Een opgeschoonde naam ziet er
+proper uit en wordt niet meer geopend, `gefactureerde_dagen.json` blokkeert een tweede factuur voor
+dezelfde dag, een coda die al ingelezen is wordt niet nog eens ingelezen, een rij met "aangepast in
+Squeegee" wordt overgeslagen, en een job die op "Paid" staat krijgt geen tweede betaling.
+
+Wat je daarbij niet mag doen:
+
+- **de controle overslaan omdat "het toch snel gaat"** — bij deel B, D1 en E kost een tweede
+  doorloop geld, geen tijd;
+- **een deel opnieuw draaien omdat je niet zeker bent** — ben je niet zeker of het al gebeurd is,
+  ga dan kijken; kan je het niet vaststellen, sla het over en zet het in het eindbericht bij
+  "zelf nakijken". Bij een loon- of bankbestand is niets doen altijd beter dan het dubbel doen.
+
+Zeg in je eindbericht kort wat je overgeslagen hebt omdat het al gebeurd was. Dat is geen ruis:
+zo weet Geert dat de knop tweemaal indrukken niets kapotmaakt.
 
 ## Afronding — één bericht, één mail
 
@@ -186,7 +219,8 @@ Zet pas op het einde alles samen. Kort, in het Nederlands, geen opsomming van al
      klanten), Import bank, aantal coda's, aantal teams in ingave werk;
    - **tijden**: per ingevulde job "klant — was — wordt", plus wat niet lukte;
    - **betalingen**: hoeveel geregistreerd, welke nog manueel moeten.
-3. Alles wat **niet** gelukt is, met de reden en wat hij daarvoor moet doen.
+3. Wat je **overgeslagen** hebt omdat het al gebeurd was, en wat **niet** gelukt is — met de reden
+   en wat hij daarvoor zelf moet doen.
 4. Deel het **nakijkrapport (.xlsx)** met hem: lokaal met `present_files`, in Cowork met
    `SendUserFile`. Geert kan geen .md-bestanden openen.
 5. **Mail** (verplicht — pushmeldingen komen bij hem niet aan, enkel e-mail geeft geluid op zijn gsm):

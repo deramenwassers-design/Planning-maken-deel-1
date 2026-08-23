@@ -54,7 +54,7 @@ https://claude.ai/code/artifact/06f9ca0b-929c-4a42-9b31-1847e98de982
 
 Hoe hij werkt, net als de andere knoppen:
 
-1. Start kopieert het menukaartje `_dag afwerken [datum].txt` uit de Drive-map
+1. Start kopieert het menukaartje `_dag afwerken [datum].txt` (id `1J-v12FHMtsTO6vDFF8oZYL1ITY_nEV_N`) uit de Drive-map
    "Claude opdrachten" naar een nieuw bestand `dag afwerken <gisteren>.txt`.
 2. De pc pikt dat bestand binnen twee minuten op en voert de opdracht uit.
 3. De bestandsnaam is de opdracht — pas de dag in het veld aan voor je op Start tikt.
@@ -67,6 +67,22 @@ De HTML van het bord staat in
 Voor Cowork of claude.ai kan je de skill zelf uploaden: `dag-afwerken.zip` bij
 Instellingen → Vaardigheden (Skills). De losse opdrachttekst staat in
 [`opdrachtenbord/dag-afwerken-opdracht.md`](opdrachtenbord/dag-afwerken-opdracht.md).
+
+## Twee keer starten kan geen kwaad
+
+De knop kijkt per onderdeel of het al gebeurd is en doet enkel wat ontbreekt:
+
+| Stap | Waaraan hij ziet dat het al gebeurd is |
+|---|---|
+| namen opschonen | de naam in de dagplanning is al proper → klant wordt niet geopend |
+| dagverwerking | per deel: bestaat het urenrapport, staan de rijen al in de facturenlijst, staat de dag in `gefactureerde_dagen.json`, loopt "Import bank" al tot die dag, zijn de coda's al ingelezen, staat de dag al op het tabblad van de werknemers |
+| tijden overzetten | de rij is in het rapport gemarkeerd als "aangepast in Squeegee" |
+| betalingen | de job staat in Squeegee al op "Paid" |
+
+De drie onderdelen waar een tweede doorloop echt geld kost, zijn deel B (facturenlijst),
+deel D1 ("Import bank") en deel E (`ingave werk.xlsm`, een loonbestand). Kan hij niet
+vaststellen of iets al gebeurd is, dan slaat hij het over en zet hij het in het
+eindbericht bij "zelf nakijken" — bij zo'n bestand is niets doen beter dan dubbel doen.
 
 ## Voorwaarden tijdens de run
 

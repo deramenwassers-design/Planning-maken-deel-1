@@ -4,6 +4,9 @@
 # moment dat je de pc een tijd kan laten staan. Chrome open, zichtbaar en
 # gemaximaliseerd, en de Excel-bestanden gesloten.
 #
+# Is er al een stuk van die dag gedaan? Geen probleem, je mag deze knop
+# gerust twee keer indrukken - hij kijkt per onderdeel of het al gebeurd is.
+#
 # ====================================================================
 # DIT IS EEN MENUKAARTJE. Zolang het hier blijft staan, gebeurt er niets.
 # STARTEN = EEN KOPIE MAKEN (drie puntjes -> "Een kopie maken").
@@ -27,6 +30,25 @@ een en dezelfde dag:
 Bestaat de skill "dag-afwerken" nog niet op deze pc, voer dan gewoon die
 vier skills na elkaar uit in die volgorde.
 
+KIJK EERST NA WAT ER AL GEBEURD IS. Er kan al een stuk van deze dag
+gedaan zijn, met de losse knoppen of in een vorige poging. Doe dus nooit
+blind alles opnieuw:
+
+- namen: een naam die al proper is, open je niet meer;
+- dagverwerking: controleer PER DEEL of het al gebeurd is (deel A t/m E
+  hebben daar elk hun eigen controle voor) en doe enkel wat ontbreekt.
+  Deel E is "ingave werk" en dus een loonbestand: staat de werkdag al op
+  het tabblad van de werknemers, draai die macro dan NIET opnieuw. Ook de
+  facturenlijst (deel B) en "Import bank" (deel D1) mogen niet twee keer;
+- tijden: rijen die in het rapport al gemarkeerd staan als "aangepast in
+  Squeegee" sla je over. Overschrijft de dagverwerking het rapport, zet
+  die markeringen dan eerst opzij en nadien terug;
+- betalingen: een job die al op "Paid" staat, laat je met rust.
+
+Kan je niet vaststellen of iets al gebeurd is, sla het dan over en zet
+het in je eindbericht bij "zelf nakijken". Bij een loon- of bankbestand
+is niets doen altijd beter dan het dubbel doen.
+
 Bepaal de dag een keer, aan het begin, en gebruik diezelfde datum in alle
 vier de stappen. Vraag alle toegang (Excel, mappen, computergebruik) in
 een blok helemaal aan het begin, nog voor je Squeegee of Excel aanraakt.
@@ -47,5 +69,5 @@ hebt: onderwerp "CLAUDE WACHT: ..." met daarin wat je nodig hebt. Ben je
 klaar, stuur dan "CLAUDE KLAAR: dag ... volledig afgewerkt" met per stap
 een paar regels: wat er opgekuist is, wat de dagverwerking opgeleverd
 heeft, welke tijden er ingevuld zijn en hoeveel betalingen er
-geregistreerd zijn, plus alles wat is blijven liggen.
-Mail naar geertensanne@gmail.com.
+geregistreerd zijn, wat je overgeslagen hebt omdat het al gebeurd was, en
+alles wat is blijven liggen. Mail naar geertensanne@gmail.com.
