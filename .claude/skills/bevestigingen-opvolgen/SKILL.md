@@ -96,8 +96,8 @@ mailadres ontbreekt: zoek op achternaam of op straatnaam uit de lijst, telkens m
 kwam, zodat Geert dat adres kan bijwerken.
 
 Negeer je eigen verzonden mail (`-in:sent`), automatische afwezigheidsberichten en
-bounce-meldingen. Een bounce is geen antwoord: laat het teken leeg en zet in kolom H
-`mail onbestelbaar`.
+bounce-meldingen. Een bounce is geen antwoord: laat het teken op `❓` en zet in kolom H
+`mail onbestelbaar` — die klant moet gebeld worden, niet nog eens gemaild.
 
 ## STAP 2 — sms: Google Messages voor Web
 
@@ -120,7 +120,7 @@ wifi op zijn gsm even uit en weer aan te zetten.
 Zie je een QR-koppelscherm, "Apparaat koppelen", "Wachten op verbinding", of blijft de
 gesprekkenlijst leeg terwijl er wél klanten met een telefoonnummer in de lijst staan:
 
-- **Ga niet stilzwijgend door.** Zet bij de klanten waarvoor je enkel sms had geen teken en zet in
+- **Ga niet stilzwijgend door.** Laat de klanten waarvoor je enkel sms had op `❓` staan en zet in
   kolom H `sms niet leesbaar op DD/MM JJ:MM`.
 - Mail Geert met onderwerp **`CLAUDE WACHT: sms-koppeling herstellen`** en in twee lijnen wat hij
   moet doen (wifi op de gsm uit en weer aan).
@@ -320,4 +320,4 @@ gekoppelde mailbox zelf sturen: is `deramenwassers@gmail.com` gekoppeld, mail da
   `mcp__Gmail__list_labels`) plus `IMPORTANT`. Lukt het labelen niet, laat het en ga verder.
 - Een `CLAUDE KLAAR`-mail hoort hier **niet** bij elke run. Het uurlijkse overzicht uit STAP 6 is
   de melding. Stuur enkel `CLAUDE KLAAR: bevestigingen week <JJJJ-Wnn> volledig` op het moment dat
-  élke rij een teken heeft — dan is de opvolging van die week rond.
+  geen enkele rij nog op `❓` staat — dan is de opvolging van die week rond.

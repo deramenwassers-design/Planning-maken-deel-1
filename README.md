@@ -96,12 +96,15 @@ Bij de eerste run bleek dat: het logboek meldde dat `bevestigingen-lijst` daar n
 lokale Claude heeft het werk gedaan op basis van de opdrachtbeschrijving alleen. Dat liep goed af,
 maar het is niet herhaalbaar.
 
-Daarom staan de drie SKILL.md-bestanden nu ook in Drive, in
+Daarom staan de SKILL.md-bestanden nu ook in Drive, in
 **Claude opdrachten → installatie → skills bevestigingen**, met een menukaartje
-`_installeer de bevestigingen-skills.txt` dat ze op de juiste plaats zet. Eenmalig te draaien.
+`_installeer de bevestigingen-skills.txt` dat ze op de juiste plaats zet. Daar staat ook
+`squeegee-nawerk AANVULLING.md`: geen vervangend bestand, maar één alinea die aan de bestaande
+skill toegevoegd moet worden zodat het opschonen de bevestigingstekens laat staan.
 
 Wijzig je een skill in deze repo, dan moet je het bestand in Drive mee vervangen en het kaartje
-opnieuw laten lopen — anders draait de pc op de oude versie.
+opnieuw laten lopen — anders draait de pc op de oude versie. Het kaartje is bewust herhaalbaar:
+het overschrijft gewoon wat er staat.
 
 ## Wat er nog nagekeken moet worden
 

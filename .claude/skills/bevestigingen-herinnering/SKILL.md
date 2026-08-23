@@ -138,9 +138,9 @@ De Ramenwassers
 ```
 
 Voor de aanspreking neem je de **voornaam** uit kolom C, dus zonder de haakjes en zonder de tekens
-(⤵️, 🧽, ❗, 📷) die in Squeegee achter de naam staan. Ook de opmerkingen in HOOFDLETTERS die soms
-los in de naam staan ("ZO SNEL MOGELIJK INPLANNEN", "OK BEVESTIGD", "KLANT VRAAGT WEEK 31 AUG")
-horen er niet bij.
+(⤵️, 🧽, ❗, 📷, ✅, ❌, ❎, ❓) die in Squeegee achter de naam staan. Ook de opmerkingen in
+HOOFDLETTERS die soms los in de naam staan ("ZO SNEL MOGELIJK INPLANNEN", "OK BEVESTIGD",
+"KLANT VRAAGT WEEK 31 AUG") horen er niet bij.
 
 Gebruik `Dag,` op zich zodra de voornaam niet zeker is:
 
