@@ -113,7 +113,7 @@
     border:1px solid color-mix(in srgb, var(--warn) 30%, transparent);
     border-radius:var(--radius);
     padding:11px 13px;
-    margin-top:16px;
+    margin-top:30px;
     font-size:14.5px;
     line-height:1.45;
   }
@@ -273,7 +273,7 @@
   footer p{margin:0;max-width:52ch}
 
   /* ---------- lopende opdrachten ---------- */
-  #runs{display:none;margin-top:22px}
+  #runs{display:none;margin-top:34px}
   #runs.toon{display:block}
   .runskop{
     display:flex;align-items:baseline;justify-content:space-between;gap:10px;
@@ -345,25 +345,7 @@
     <p class="lead">Tik op Start. Er komt een opdrachtbestand in je Drive-map en je pc pikt het binnen twee minuten op.</p>
   </header>
 
-  <div class="voorwaarde">
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
-      <path d="M12 8v5M12 17h.01"/><circle cx="12" cy="12" r="9.5"/>
-    </svg>
-    <div>Je pc moet aanstaan met de <b>Claude-app open</b>. Deze taken klikken in Squeegee, en dat gebeurt in de browser op je pc — niet hier op je gsm.</div>
-  </div>
-
   <div id="geenverbinding"></div>
-
-  <section id="runs" aria-live="polite">
-    <div class="runskop">
-      <h2>Laatste opdrachten</h2>
-      <div class="runsknoppen">
-        <button type="button" class="tekstknop" id="ververs">Ververs</button>
-        <button type="button" class="tekstknop" id="wis">Wissen</button>
-      </div>
-    </div>
-    <div id="runlijst"></div>
-  </section>
 
   <section>
     <div class="groepkop"><h2>Na de werkdag</h2><span>'s avonds of de volgende ochtend</span></div>
@@ -384,6 +366,24 @@
     <div class="groepkop"><h2>Iets anders</h2><span>zelf omschrijven</span></div>
     <div class="kaarten" id="groep-vrij"></div>
   </section>
+
+  <section id="runs" aria-live="polite">
+    <div class="runskop">
+      <h2>Laatste opdrachten</h2>
+      <div class="runsknoppen">
+        <button type="button" class="tekstknop" id="ververs">Ververs</button>
+        <button type="button" class="tekstknop" id="wis">Wissen</button>
+      </div>
+    </div>
+    <div id="runlijst"></div>
+  </section>
+
+  <div class="voorwaarde">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+      <path d="M12 8v5M12 17h.01"/><circle cx="12" cy="12" r="9.5"/>
+    </svg>
+    <div>Je pc moet aanstaan met de <b>Claude-app open</b>. Deze taken klikken in Squeegee, en dat gebeurt in de browser op je pc — niet hier op je gsm.</div>
+  </div>
 
   <footer>
     <p>De bestandsnaam is de opdracht. Verander het weeknummer of de dag in het veld voor je op Start tikt — wat daar staat, is wat er gebeurt.</p>
