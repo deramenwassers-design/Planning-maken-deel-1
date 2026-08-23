@@ -38,8 +38,20 @@ Dat is een ISO-weeknummer. Reken het om naar de maandag van die week en bevestig
 python3 -c "import datetime;print(datetime.date.fromisocalendar(2026,36,1))"
 ```
 
-Staat er geen weeknummer in de opdracht, neem dan de **eerstvolgende maandag t/m vrijdag**.
-Staat er een andere omschrijving ("de week van 1 september"), volg die.
+Staat er geen weeknummer in de opdracht, neem dan **de maandag ná de eerstvolgende**, dus niet
+de week die morgen begint maar die daarna:
+
+```bash
+TZ=Europe/Brussels date -d "next monday +7 days" +%Y-%m-%d   # maandag van de doelweek
+TZ=Europe/Brussels date -d "next monday +7 days" +%G-W%V     # bv. 2026-W36
+```
+
+Dat volgt het ritme van het bedrijf: **op vrijdag stuurt Geert vanuit Squeegee de bevestigings-
+vragen in bulk naar de klanten van de week die tien dagen later begint.** Op vrijdag 21 augustus
+gingen zo de vragen buiten voor de week van maandag 31 augustus. De lijst hoort bij díe week, niet
+bij de week die er tussenin zit.
+
+Staat er een andere omschrijving in de opdracht ("de week van 1 september"), volg die.
 
 Het weekend hoort er nooit bij. Zaterdag en zondag worden niet opgehaald, ook niet als er die
 dagen jobs staan — die klanten krijgen geen bevestigingsvraag.

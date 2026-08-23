@@ -54,8 +54,26 @@ Geen lijst gevonden: stop, wijzig niets, en mail Geert (`CLAUDE WACHT: geen beve
 voor week <JJJJ-Wnn>`). Deze skill maakt zelf geen lijst aan — dan is `bevestigingen-lijst`
 niet gelopen.
 
-Bepaal ook het **venster** waarin je antwoorden zoekt: vanaf de aanmaakdatum van het lijstbestand
-(`createdTime` uit Drive) tot nu. Dat is het moment waarop de bevestigingsvragen buiten gingen.
+### Het zoekvenster
+
+De **eerste vraag aan de klant stuurt Geert zelf, in bulk vanuit Squeegee**, niet een van deze
+skills. Dat gebeurt **op vrijdag, voor de week die tien dagen later begint** — op vrijdag
+21 augustus gingen de vragen buiten voor de week van maandag 31 augustus.
+
+De antwoorden komen bij hem toe: mails in `deramenwassers@gmail.com`, sms'jes op zijn gsm en dus
+in Google Messages voor Web. Precies de twee bronnen die deze skill afgaat.
+
+Neem als venster: **vanaf 14 dagen vóór de maandag van de doelweek tot nu**. Dat dekt de vrijdag
+waarop de bulk buitenging, met wat marge. Hang het venster niet aan de aanmaakdatum van het
+lijstbestand: de vragen kunnen al dagen eerder verstuurd zijn.
+
+Waarom niet verder terugkijken: klanten komen om de zoveel weken terug, en een "ja hoor" van de
+vorige beurt mag niet als antwoord voor deze week gelezen worden. Twijfel je of een bericht over
+déze afspraak gaat — bijvoorbeeld omdat er een andere datum in staat — zet dan `❎` met de
+letterlijke tekst in kolom H, in plaats van te gokken.
+
+Antwoorden beginnen dus al binnen te komen **vanaf die vrijdag**, niet pas op maandag. Deze skill
+mag daarom vanaf dat moment lopen; wacht niet tot de week zelf begonnen is.
 
 ## STAP 0b — Antwoorden die al in de klantnaam staan
 

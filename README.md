@@ -12,10 +12,15 @@ Bewust drie aparte skills, geen geheel. Elk onderdeel heeft zijn eigen moment en
 planning, en zo blijven de andere twee gewoon draaien als er ergens iets hapert — bijvoorbeeld een
 weggevallen sms-koppeling.
 
+Het ritme van het bedrijf bepaalt de momenten. **Op vrijdag stuurt Geert vanuit Squeegee zelf de
+bevestigingsvragen in bulk**, voor de week die tien dagen later begint — op vrijdag 21 augustus
+gingen zo de vragen buiten voor de week van maandag 31 augustus. Dat eerste bericht maakt geen
+deel uit van deze skills; alles hier hangt erachter.
+
 | Skill | Wanneer | Wat |
 |---|---|---|
-| [`bevestigingen-lijst`](.claude/skills/bevestigingen-lijst/SKILL.md) | vrijdagnacht | Trekt de klanten van de komende week uit Squeegee en zet ze als Excel in Drive. |
-| [`bevestigingen-opvolgen`](.claude/skills/bevestigingen-opvolgen/SKILL.md) | elk uur vanaf maandag 6u | Vergelijkt de lijst met de antwoorden in Gmail en sms, zet de tekens, houdt een overzicht in de mailbox. |
+| [`bevestigingen-lijst`](.claude/skills/bevestigingen-lijst/SKILL.md) | vrijdagnacht, na de bulk | Trekt de klanten van de week die tien dagen later begint uit Squeegee en zet ze als Excel in Drive. Iedereen op ❓. |
+| [`bevestigingen-opvolgen`](.claude/skills/bevestigingen-opvolgen/SKILL.md) | elk uur, vanaf diezelfde vrijdag | Vergelijkt de lijst met de antwoorden in Gmail en sms, zet de tekens, houdt een overzicht in de mailbox. |
 | [`bevestigingen-herinnering`](.claude/skills/bevestigingen-herinnering/SKILL.md) | maandag 8u30 | Stuurt een tweede mail naar wie nog niet geantwoord heeft. |
 
 Ze praten niet rechtstreeks met elkaar. Ze delen één ding: het weeklijstbestand. Dat contract staat
@@ -78,12 +83,12 @@ De momenten uit de blauwdruk, in UTC (België staat in de zomer op UTC+2):
 | Skill | Belgische tijd | Cron (UTC) |
 |---|---|---|
 | `bevestigingen-lijst` | vrijdag 23u30 | `30 21 * * 5` |
-| `bevestigingen-opvolgen` | elk uur, 6u-21u, ma t/m vr | `0 4-19 * * 1-5` |
+| `bevestigingen-opvolgen` | elk uur, 6u-21u, alle dagen | `0 4-19 * * *` |
 | `bevestigingen-herinnering` | maandag 8u30 | `30 6 * * 1` |
 
-De blauwdruk zegt "vanaf maandag 6u, elk uur" zonder einduur. Hierboven staat 6u tot 21u van
-maandag tot vrijdag; antwoorden komen de hele week binnen, dus de opvolging loopt de hele week
-door. Wil je dat anders, pas het cron-schema aan — de skills zelf hoeven daar niet voor te
+De blauwdruk zegt "vanaf maandag 6u, elk uur" zonder einduur. Dat bleek te laat: de bulk gaat op
+vrijdag buiten, dus de eerste antwoorden komen tien dagen vóór die maandag toe. Vandaar 6u tot 21u,
+alle dagen. Wil je dat anders, pas het cron-schema aan — de skills zelf hoeven daar niet voor te
 wijzigen.
 
 Let op de zomertijd: in de winter (UTC+1) wordt het `30 22 * * 5`, `0 5-20 * * 1-5` en
