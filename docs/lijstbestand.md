@@ -82,7 +82,9 @@ Kopieer ze letterlijk uit dit bestand. Nooit natypen, nooit een gelijkend teken 
 Let op `❌` (U+274C, het losse kruis) tegenover `❎` (U+274E, het kruis in een vakje).
 
 Hetzelfde teken staat ook **achter de klantnaam in Squeegee**, zodat de stand van zaken in de
-werkplanner zichtbaar is zonder iets open te klikken. `bevestigingen-lijst` zet iedereen op `❓`;
+werkplanner zichtbaar is zonder iets open te klikken. Het geldt voor die ene week: zodra de dag
+gereden is, haalt `squeegee opkuisen` het teken weer weg samen met de rest van de rommel in de
+naam. Anders hangt er de week erna nog het teken van de vorige keer achter. `bevestigingen-lijst` zet iedereen op `❓`;
 `bevestigingen-opvolgen` vervangt dat teken zodra er een antwoord binnenkomt. Er staat altijd
 precies **één** van de vier achter een naam, helemaal achteraan.
 
