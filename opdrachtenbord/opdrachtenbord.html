@@ -21,6 +21,10 @@
     --danger-soft:#FBEBE9;
     --shadow:0 1px 2px rgba(15,30,28,.06), 0 8px 24px -16px rgba(15,30,28,.28);
     --radius:10px;
+    --zone-na:#0E7C74;
+    --zone-voor:#8F5410;
+    --zone-bev:#3F55A5;
+    --zone-vrij:#5A6B69;
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
@@ -39,6 +43,10 @@
       --danger:#EE8279;
       --danger-soft:#2E1A18;
       --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+      --zone-na:#46BDB2;
+      --zone-voor:#DFA35C;
+      --zone-bev:#9DAEF2;
+      --zone-vrij:#93A5A2;
     }
   }
   :root[data-theme="dark"]{
@@ -57,6 +65,10 @@
     --danger:#EE8279;
     --danger-soft:#2E1A18;
     --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+    --zone-na:#46BDB2;
+    --zone-voor:#DFA35C;
+    --zone-bev:#9DAEF2;
+    --zone-vrij:#93A5A2;
   }
 
   *{box-sizing:border-box}
@@ -110,15 +122,21 @@
 
   /* ---------- groep ---------- */
   section{margin-top:34px}
+  section{--zone:var(--zone-na)}
+  section.z-voor{--zone:var(--zone-voor)}
+  section.z-bev{--zone:var(--zone-bev)}
+  section.z-vrij{--zone:var(--zone-vrij)}
+
   .groepkop{
     display:flex;align-items:baseline;gap:10px;
     padding-bottom:9px;margin-bottom:14px;
-    border-bottom:1px solid var(--line);
+    border-bottom:2px solid color-mix(in srgb, var(--zone) 42%, var(--line));
   }
   .groepkop h2{
     font-family:"Archivo", system-ui, sans-serif;
     font-size:15px;font-weight:600;margin:0;
     letter-spacing:.01em;
+    color:var(--zone);
   }
   .groepkop span{font-size:13px;color:var(--muted)}
 
@@ -144,12 +162,46 @@
     font-family:"Public Sans",sans-serif;
     font-size:10.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;
     padding:2px 7px;border-radius:99px;
-    background:var(--accent-soft);color:var(--accent);
+    background:color-mix(in srgb, var(--zone) 14%, transparent);
+    color:var(--zone);
   }
   .merkje.waarschuwing{
     background:var(--danger-soft);
     color:var(--danger);
   }
+
+  /* taken die vanzelf draaien: aanwezig, maar niet luid */
+  .kaart.vanzelf{background:transparent;border-style:dashed;box-shadow:none}
+  .kaart.vanzelf h3{color:var(--muted)}
+
+  /* de vier stappen van "Dag afwerken", verzonken onder de hoofdknop */
+  .stappen{
+    background:var(--surface-2);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:11px;
+    display:flex;flex-direction:column;gap:9px;
+  }
+  .stappenkop{
+    display:flex;align-items:center;gap:8px;
+    font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--muted);
+    padding:1px 2px 2px;
+  }
+  .stappenkop::after{content:"";flex:1;height:1px;background:var(--line)}
+  .kaart.stap{padding:11px 12px 10px;box-shadow:none}
+  .stapkop{display:flex;align-items:center;gap:9px}
+  .stapnr{
+    flex:none;
+    width:21px;height:21px;border-radius:99px;
+    display:grid;place-items:center;
+    font-family:"Roboto Mono", ui-monospace, monospace;
+    font-size:11.5px;font-weight:500;
+    background:color-mix(in srgb, var(--zone) 13%, transparent);
+    color:var(--zone);
+  }
+  .kaart.stap h3{font-size:15.5px}
+  .kaart.stap .wat{margin-top:5px}
 
   .rij{display:flex;gap:9px;margin-top:12px;align-items:stretch}
   .naamveld{
@@ -167,6 +219,14 @@
     outline-offset:1px;
     background:var(--surface);
   }
+  /* Op een smal scherm kapt de bestandsnaam af, en dat is net de datum die
+     hij moet kunnen aanpassen. Dan zet de knop zich onder het veld. */
+  @media (max-width:520px){
+    .rij{flex-wrap:wrap}
+    .naamveld{flex:1 1 100%}
+    .start{margin-left:auto}
+  }
+
   .start{
     flex:none;
     font-family:"Archivo", system-ui, sans-serif;
@@ -310,17 +370,17 @@
     <div class="kaarten" id="groep-na"></div>
   </section>
 
-  <section>
+  <section class="z-voor">
     <div class="groepkop"><h2>Voor de werkdag</h2><span>de ronde klaarzetten</span></div>
     <div class="kaarten" id="groep-voor"></div>
   </section>
 
-  <section>
+  <section class="z-bev">
     <div class="groepkop"><h2>Bevestigingen</h2><span>elke week</span></div>
     <div class="kaarten" id="groep-bevestigingen"></div>
   </section>
 
-  <section>
+  <section class="z-vrij">
     <div class="groepkop"><h2>Iets anders</h2><span>zelf omschrijven</span></div>
     <div class="kaarten" id="groep-vrij"></div>
   </section>
@@ -366,33 +426,33 @@
   var OPDRACHTEN = [
     { groep:"groep-na", id:"1J-v12FHMtsTO6vDFF8oZYL1ITY_nEV_N",
       naam:"Dag afwerken", label:"alles in 1", hoofd:true,
-      wat:"De vier taken hieronder na elkaar, voor dezelfde dag: eerst de namen opschonen, dan de dagverwerking, dan de tijden overzetten, en als laatste de betalingen. Duurt lang \u2014 start hem als je pc een tijd mag blijven staan. Loopt \u00e9\u00e9n stap vast, dan gaat de rest gewoon door. Is er al een stuk gedaan, dan slaat hij dat over \u2014 je mag hem dus gerust twee keer indrukken.",
+      wat:"De vier stappen hieronder na elkaar, voor dezelfde dag. Duurt lang \u2014 start hem als je pc een tijd mag blijven staan. Loopt \u00e9\u00e9n stap vast, dan gaat de rest gewoon door, en wat al gebeurd was slaat hij over.",
       bestand:"dag afwerken " + gisteren + ".txt" },
 
-    { groep:"groep-na", id:"1jaBU8UUh4V4qS7VLxikswOqh_n7Ex0em",
-      naam:"Metatrak downloaden", label:"elke nacht vanzelf",
-      wat:"Het gps-rapport van een volledige dag ophalen en als CSV in de cowork-map zetten — de dagverwerking heeft dit nodig. Draait 's nachts om 3u vanzelf. Vrijdag, zaterdag en zondag komen samen in één rapport, op naam van de vrijdag. Laat het veld zo staan en hij haalt alles op wat nog ontbreekt.",
-      bestand:"metatrak download.txt" },
-
-    { groep:"groep-na", id:"19qSMUMGl0GF2GwN3QsQt65th91l0JkWe",
-      naam:"Dagverwerking",
-      wat:"Uren vergelijken met Metatrak, facturen aanmaken, de bank inlezen en de omzet per team wegschrijven. Met een nakijkrapport in Excel.",
-      bestand:"dagverwerking " + gisteren + ".txt" },
-
-    { groep:"groep-na", id:"1RP32WJgmT0UFdOOtkrW5ERqvGm8R_xoZ",
-      naam:"Squeegee opkuisen",
-      wat:"De klantnamen van een gereden dag opschonen. De bevestigingstekens gaan er mee uit, zodat er de week erna geen oude tekens blijven hangen.",
+    { groep:"groep-na", stap:1, id:"1RP32WJgmT0UFdOOtkrW5ERqvGm8R_xoZ",
+      naam:"Namen opschonen",
+      wat:"De klantnamen van die dag opkuisen, bevestigingstekens inbegrepen.",
       bestand:"squeegee opkuisen " + gisteren + ".txt" },
 
-    { groep:"groep-na", id:"12T8_d6BxTMrS55poEePMK53RlDtg8_8Z",
+    { groep:"groep-na", stap:2, id:"19qSMUMGl0GF2GwN3QsQt65th91l0JkWe",
+      naam:"Dagverwerking",
+      wat:"Uren vergelijken, facturen aanmaken, bank inlezen, omzet per team. Met nakijkrapport in Excel.",
+      bestand:"dagverwerking " + gisteren + ".txt" },
+
+    { groep:"groep-na", stap:3, id:"1Fw-iSLASA1BP5AglbhIed1LwcgcT74-R",
+      naam:"Tijden overzetten",
+      wat:"De werktijden uit het nakijkrapport in Squeegee invullen. Vraagt stap 2 van diezelfde dag.",
+      bestand:"squeegee-tijden " + gisteren + ".txt" },
+
+    { groep:"groep-na", stap:4, id:"12T8_d6BxTMrS55poEePMK53RlDtg8_8Z",
       naam:"Betalingen aanduiden",
-      wat:"Per gefactureerde job van die dag de betaling registreren als Bank Transfer.",
+      wat:"Elke gefactureerde job van die dag als Bank Transfer betaald zetten.",
       bestand:"betalingen aanduiden squeegee " + gisteren + ".txt" },
 
-    { groep:"groep-na", id:"1Fw-iSLASA1BP5AglbhIed1LwcgcT74-R",
-      naam:"Tijden overzetten",
-      wat:"De werktijden uit het nakijkrapport invullen in Squeegee. De dagverwerking van die dag moet al gelopen hebben.",
-      bestand:"squeegee-tijden " + gisteren + ".txt" },
+    { groep:"groep-na", id:"1jaBU8UUh4V4qS7VLxikswOqh_n7Ex0em",
+      naam:"Metatrak downloaden", label:"elke nacht om 03u", vanzelf:true,
+      wat:"Het gps-rapport van een volledige dag ophalen \u2014 de dagverwerking heeft dit nodig. Draait 's nachts vanzelf; start hem enkel als het rapport ontbreekt. Vrijdag, zaterdag en zondag komen samen in \u00e9\u00e9n rapport, op naam van de vrijdag. Laat het veld zo staan en hij haalt alles op wat nog ontbreekt.",
+      bestand:"metatrak download.txt" },
 
     { groep:"groep-voor", id:"1hIpXHq9XGHbR66eKn3iygpOEOjS3lJaU",
       naam:"Ochtendronde",
@@ -410,7 +470,7 @@
       bestand:"weeklijst van week 36 maken.txt" },
 
     { groep:"groep-bevestigingen", id:"1uz118Wnjvc2RJ_AXJBBzHZQaw78o5qz1",
-      naam:"Antwoorden nakijken", label:"elke ochtend 07u00 vanzelf",
+      naam:"Antwoorden nakijken", label:"elke ochtend om 07u", vanzelf:true,
       wat:"Mails en sms’jes vergelijken met de weeklijst. Het teken gaat achter de klantnaam, het antwoord in de notitie van de job. Je krijgt het overzicht per mail. Draait elke ochtend om 07u00 vanzelf — met Start kan je er tussendoor nog eens door, dat maakt geen dubbel werk.",
       bestand:"antwoorden nakijken van week 36.txt" },
 
@@ -431,9 +491,32 @@
   ];
 
   /* ---- kaarten bouwen ---- */
+  // De vier stappen van "Dag afwerken" komen in een eigen, verzonken blok te
+  // staan: ze horen bij de knop erboven en zijn er geen gelijke van.
+  function stappenblok(groep){
+    var bestaand = document.getElementById("stappen-" + groep);
+    if (bestaand) return bestaand;
+
+    var vak = document.createElement("div");
+    vak.className = "stappen";
+    vak.id = "stappen-" + groep;
+
+    var kop = document.createElement("div");
+    kop.className = "stappenkop";
+    kop.textContent = "of stap per stap";
+    vak.appendChild(kop);
+
+    document.getElementById(groep).appendChild(vak);
+    return vak;
+  }
+
   function maakKaart(op){
     var kaart = document.createElement("div");
-    kaart.className = "kaart" + (op.waarschuwing ? " let-op" : "") + (op.hoofd ? " hoofd" : "");
+    kaart.className = "kaart" +
+      (op.waarschuwing ? " let-op" : "") +
+      (op.hoofd ? " hoofd" : "") +
+      (op.vanzelf ? " vanzelf" : "") +
+      (op.stap ? " stap" : "");
 
     var titel = document.createElement("h3");
     titel.textContent = op.naam;
@@ -442,6 +525,18 @@
       merkje.className = "merkje" + (op.waarschuwing ? " waarschuwing" : "");
       merkje.textContent = op.label;
       titel.appendChild(merkje);
+    }
+
+    // Bij een stap staat het volgnummer voor de naam: de volgorde is echt.
+    var kop = titel;
+    if (op.stap){
+      kop = document.createElement("div");
+      kop.className = "stapkop";
+      var nr = document.createElement("span");
+      nr.className = "stapnr";
+      nr.textContent = op.stap;
+      kop.appendChild(nr);
+      kop.appendChild(titel);
     }
 
     var wat = document.createElement("p");
@@ -469,7 +564,7 @@
 
     rij.appendChild(veld);
     rij.appendChild(knop);
-    kaart.appendChild(titel);
+    kaart.appendChild(kop);
     kaart.appendChild(wat);
     kaart.appendChild(rij);
     kaart.appendChild(melding);
@@ -489,7 +584,8 @@
       starten(op, veld, knop, melding);
     });
 
-    document.getElementById(op.groep).appendChild(kaart);
+    if (op.stap) stappenblok(op.groep).appendChild(kaart);
+    else document.getElementById(op.groep).appendChild(kaart);
   }
 
   function toon(el, soort, html){
