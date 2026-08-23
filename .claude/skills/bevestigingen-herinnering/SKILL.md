@@ -22,7 +22,7 @@ mogen niet overgeslagen worden.
 ## Harde regels
 
 1. **Eén mail per klant per week.** Nooit twee keer. Kolom I is daarvoor.
-2. **Enkel rijen met een leeg teken.** Wie al `✅`, `☒` of `❌` heeft, krijgt niets.
+2. **Enkel rijen met `❓`.** Wie al `✅`, `❌` of `❎` heeft, krijgt niets.
 3. **Enkel per mail.** Geen sms, geen telefoon. Klanten zonder mailadres worden gemeld, niet
    gecontacteerd.
 4. **De dienst uit kolom F bepaalt de tekst.** Staat die kolom leeg, gebruik dan de neutrale
@@ -31,7 +31,8 @@ mogen niet overgeslagen worden.
 
 ## STAP 0 — De lijst van deze week zoeken
 
-Bereken het weeknummer met bash, nooit uit het hoofd:
+Het weeknummer staat meestal in de opdracht: "herinnering sturen van week 36". Gebruik dat.
+Staat er geen weeknummer in, neem dan de week waarin we nu zitten:
 
 ```bash
 TZ=Europe/Brussels date +%G-W%V
@@ -52,23 +53,24 @@ Geen lijst gevonden: stop, verstuur niets, en mail Geert
 
 ## STAP 1 — Bepalen wie een mail krijgt, en drie controles
 
-Kandidaat = een rij met **kolom G leeg**, **kolom E gevuld** en **kolom I leeg**.
+Kandidaat = een rij met **kolom G op `❓`** (of leeg, bij een oude lijst), **kolom E gevuld** en
+**kolom I leeg**.
 
 Doe daarna deze drie controles vóór je ook maar één mail verstuurt:
 
 1. **Klopt de week?** Is de eerste datum in kolom A niet de maandag van deze week, dan heb je de
    verkeerde lijst te pakken. Stop en meld het.
-2. **Heeft `bevestigingen-opvolgen` gedraaid?** Staat er in de **hele** lijst geen enkel teken,
-   dan is de opvolging waarschijnlijk niet gelopen en zou je iederéén mailen, ook wie al netjes
-   geantwoord heeft. Verstuur dan niets, mail Geert
-   (`CLAUDE WACHT: nog geen enkel teken in de lijst — herinneringen niet verstuurd`) en stop.
+2. **Heeft `bevestigingen-opvolgen` gedraaid?** Staat in de **hele** lijst nergens een `✅`, `❌`
+   of `❎` — dus overal nog `❓` — dan is de opvolging waarschijnlijk niet gelopen en zou je
+   iederéén mailen, ook wie al netjes geantwoord heeft. Verstuur dan niets, mail Geert
+   (`CLAUDE WACHT: nog geen enkel antwoord verwerkt — herinneringen niet verstuurd`) en stop.
 3. **Is het aantal geloofwaardig?** Gaan er meer dan 40 mails buiten, of meer dan drie kwart van
    de lijst, stop dan en vraag het eerst na. Dat is geen normale maandag.
 
 Zijn er nul kandidaten, dan is er niets te doen: meld dat in één zin en stop. Dat is een goed
 resultaat, geen fout.
 
-Kandidaten zonder mailadres (kolom G leeg maar kolom E ook leeg) krijgen niets. Zet ze in het
+Kandidaten zonder mailadres (kolom G op `❓` maar kolom E leeg) krijgen niets. Zet ze in het
 eindbericht apart onder "zelf bellen of sms'en" — dat zijn de klanten die anders door de mazen
 vallen.
 

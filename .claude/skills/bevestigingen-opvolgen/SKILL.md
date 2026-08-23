@@ -22,14 +22,17 @@ Dit is deel 2 van drie **losse** skills. Ze maakt zelf geen lijst aan (dat doet
    sms) niet leesbaar, dan mag de andere gewoon verwerkt worden, maar het moet gemeld worden. Zie
    "Als de sms-pagina niet leesbaar is".
 2. **Geen klantmails versturen.** Deze skill mailt enkel naar Geert.
-3. **In Squeegee alleen de klantnotitie.** Nooit een naam, prijs, status of tijd wijzigen.
+3. **In Squeegee alleen twee dingen:** het teken achteraan de klantnaam, en het antwoord in de
+   notitie van de job. Nooit een prijs, status, tijd of adres wijzigen, en aan de naam niets
+   anders dan dat ene teken achteraan.
 4. **Het nieuwste antwoord wint.** Antwoordt een klant twee keer, dan telt het laatste bericht.
 5. **Bouw nooit een half lijstbestand.** Faalt het inlezen of samenstellen, laat het bestaande
    bestand ongemoeid en meld het.
 
 ## STAP 0 — De lijst van deze week zoeken
 
-Bereken eerst het weeknummer, met bash, nooit uit het hoofd:
+Het weeknummer staat meestal in de opdracht: "antwoorden nakijken van week 36". Gebruik dat.
+Staat er geen weeknummer in, neem dan de week waarin we nu zitten:
 
 ```bash
 TZ=Europe/Brussels date +%G-W%V        # de week waarin we nu zitten
@@ -63,8 +66,11 @@ onveranderd in kolom C. Loop de lijst dus één keer door vóór je Gmail opent:
 |---|---|---|
 | `OK BEVESTIGD` | `✅` | `naam in Squeegee — OK BEVESTIGD` |
 | `KLANT VRAAGT WEEK <datum>` en die datum valt in deze week | `✅` | `naam in Squeegee — klant vroeg zelf deze week` |
-| `KLANT VRAAGT WEEK <datum>` en die datum valt buiten deze week | `☒` | de letterlijke tekst |
-| `ZO SNEL MOGELIJK INPLANNEN`, `MT NT ANTWRDN`, `OPBELLEN` | laat leeg | de letterlijke tekst, als aandachtspunt |
+| `KLANT VRAAGT WEEK <datum>` en die datum valt buiten deze week | `❎` | de letterlijke tekst |
+| `ZO SNEL MOGELIJK INPLANNEN`, `MT NT ANTWRDN`, `OPBELLEN` | laat op `❓` | de letterlijke tekst, als aandachtspunt |
+
+Kijk hierbij naar de **woorden** in de naam, niet naar het teken achteraan: dat teken heeft
+`bevestigingen-lijst` er zelf op gezet en zegt dus niets over wat de klant geantwoord heeft.
 
 Dat scheelt herinneringsmails naar klanten die de afspraak zelf gevraagd hebben — precies de
 mails die het meest ergerlijk zijn om te krijgen.
@@ -131,56 +137,115 @@ Kopieer de tekens letterlijk uit dit bestand. Nooit natypen, nooit een gelijkend
 
 | Teken | Unicode | Wanneer |
 |---|---|---|
-| `✅` | U+2705 | Positief en verder niets aan te doen: "ja hoor", "prima", "tot dan", "ok". |
-| `☒` | U+2612 | Positief, maar er is nog actie nodig: een ander uur gevraagd, "bel eens", een poort die op slot is, een extra opdracht, een vraag over de prijs, betaling nog te regelen. |
-| `❌` | U+274C | Overslaan, een week opschuiven, of een andere afmelding: "niet deze keer", "we zijn op reis", "liever volgende maand", opzegging. |
+| `✅` | U+2705 | Klant bevestigt, er is verder niets te doen: "ja hoor", "prima", "tot dan", "ok". |
+| `❌` | U+274C | Klant wil niet gewassen worden: "niet deze keer", "we zijn op reis", "liever volgende maand", een week opschuiven, opzegging. |
+| `❎` | U+274E | Klant bevestigt, maar er is nog actie nodig van Geert: een ander uur gevraagd, "bel eens", een poort die op slot is, een extra opdracht, een vraag over de prijs, betaling nog te regelen. |
+| `❓` | U+2753 | Klant heeft nog niet geantwoord. Dat is de begintoestand die `bevestigingen-lijst` zet. |
+
+Let op het verschil tussen `❌` (U+274C) en `❎` (U+274E): het eerste is het losse kruis, het
+tweede het kruis in een vakje. Kopieer ze letterlijk uit dit bestand.
 
 Regels:
 
-- **Leeg blijft leeg** als er geen antwoord is. Een leeg teken is geen fout, het is de toestand
-  "nog niets gehoord" — daar werkt `bevestigingen-herinnering` mee.
-- **Bij twijfel `☒`**, met de letterlijke tekst in kolom H, en vermeld die klant apart in je
+- **`❓` blijft `❓`** zolang er geen antwoord is. Dat is geen fout, dat is de toestand "nog niets
+  gehoord" — daar werkt `bevestigingen-herinnering` mee.
+- **Bij twijfel `❎`**, met de letterlijke tekst in kolom H, en vermeld die klant apart in je
   eindbericht. Beter dat Geert er even naar kijkt dan dat een afmelding als bevestiging doorgaat.
-- **Staat er al een teken en komt er een nieuwer antwoord**, werk het dan bij en zet in kolom H
+- **Staat er al een antwoord en komt er een nieuwer**, werk het teken dan bij en zet in kolom H
   beide: `was ✅ 25/08 07:14 — nu ❌ 25/08 16:02: toch op reis`. Nooit stilzwijgend overschrijven.
 - Kolom H krijgt altijd bron, tijdstip en de kern van het antwoord, bv.
   `sms 25/08 07:14 — kan pas na 14u`. Kort houden, maar wel de woorden van de klant.
 
-## STAP 4 — Bij `☒`: de klantnotitie in Squeegee
+## STAP 4 — Squeegee bijwerken
 
-Enkel voor klanten die in **deze run** een `☒` krijgen. Een klant die vorige week al een notitie
-kreeg, doe je niet opnieuw — je herkent dat aan het merkteken `[notitie in Squeegee]` achteraan in
-kolom H.
+Doe dit voor **elke klant die in deze run een nieuw of gewijzigd antwoord kreeg**. Klanten die op
+`❓` blijven staan, sla je over — die staan al goed sinds `bevestigingen-lijst` gedraaid heeft.
+Zo blijft deze stap klein genoeg om elk uur te draaien.
 
-Open Squeegee volgens het gewone ritueel:
+Er zijn twee dingen te doen per klant: het teken achter de naam, en het antwoord in de notitie van
+de job.
+
+### Squeegee openen
 
 1. `tabs_context_mcp`; bestaat er een `sqgee.com`-tab, gebruik die en herlaad niet. Anders
    `tabs_create_mcp` + `navigate` naar `https://sqgee.com/schedule`. Wacht de cloudsync af
    (~30-60 sec), controleer met `get_page_text`.
 2. Verschijnt er een inlogscherm: stop met dit onderdeel, typ nooit een wachtwoord, en meld dat
-   Geert via Google SSO moet inloggen. De rest van de skill loopt gewoon door.
-3. Zoek de job van die klant op de dag uit kolom A en klik de jobkaart aan.
-4. Klik onderaan in het jobpaneel de regel met het personage-icoontje aan — de klantfiche opent.
+   Geert via Google SSO moet inloggen. De rest van de skill loopt gewoon door — de Excel en het
+   overzicht in de mailbox kloppen dan nog steeds.
+3. Ga naar **Werkplanner**, staafdiagram-/dagweergave, en kies de dag uit kolom A.
+4. Klik de jobkaart van die klant aan; rechts opent het jobpaneel.
+
+### 4a — Het antwoord in de notitie van de job
+
+Dit is wat Geert altijd moet kunnen nalezen, dus dit gaat vóór het teken. Elk antwoord komt erin —
+ook een gewone `✅`, niet alleen de gevallen waar actie nodig is.
+
+1. Zoek in het geopende jobpaneel het notitieveld van de **job** (niet dat van de klantfiche —
+   de klantfiche geldt voor al zijn jobs, de jobnotitie hoort bij deze ene dag).
+2. Voeg **achteraan een nieuwe regel toe**, in deze vorm:
+
+   ```
+   ✅ 25/08 07:14 sms: "ja hoor, tot dinsdag"
+   ❎ 25/08 09:02 mail: "kan het na 14u? de poort staat op slot"
+   ```
+
+   Dus: teken, datum en uur, bron, en het antwoord van de klant **tussen aanhalingstekens en zo
+   letterlijk mogelijk**. Kort een lang bericht in tot de kern, maar verzin nooit woorden.
+3. Wis nooit wat er al staat. Bestaande notities blijven volledig staan.
+4. Opslaan en met `get_page_text` terugkijken dat de regel er effectief staat.
+
+Komt er later een nieuwer antwoord van dezelfde klant, dan komt daar gewoon een regel bij. De
+geschiedenis blijft dus leesbaar in de job zelf — dat is precies de bedoeling.
+
+### 4b — Het teken achter de klantnaam
+
+Zo ziet Geert in de dagplanning zelf wie bevestigd heeft, zonder iets open te klikken.
+
+1. Klik onderaan in het jobpaneel de regel met het personage-icoontje aan — de klantfiche opent.
    Ga altijd via de job, nooit via het zoekvak in het Klanten-menu: bij naamgenoten open je anders
    de verkeerde fiche.
-5. Controleer dat het klantnummer op de fiche overeenkomt met kolom B. Klopt het niet, sluit af en
+2. Controleer dat het klantnummer op de fiche overeenkomt met kolom B. Klopt het niet, sluit af en
    sla die klant over.
-6. Open het ⋮-menu rechtsboven op de klantfiche → **Klant bewerken** → het notitieveld.
-7. Voeg de notitie **achteraan toe** op een nieuwe regel, in de vorm
-   `25/08 sms: kan pas na 14u`. Nooit bestaande notities wissen of vervangen.
-8. Klik **OPSLAAN** en lees met `get_page_text` terug dat de notitie er effectief staat.
-9. Zet in kolom H achteraan ` [notitie in Squeegee]`.
+3. Open het ⋮-menu rechtsboven → **Klant bewerken** en lees de naam letterlijk uit.
+4. Staat er achteraan al een van de vier tekens (✅ ❌ ❎ ❓), **vervang** dat door het nieuwe.
+   Zet er nooit een tweede bij — anders staan er na een week vijf tekens achter elke naam.
+5. Staat er nog geen, zet het nieuwe teken **helemaal achteraan**, na alles: na ⤵️, 🧽, ❗, 📷 en
+   na de haakjes.
+6. Raak de rest van de naam niet aan. Geen spaties weghalen, geen haakjes opruimen, geen ⤵️
+   verwijderen — dat is werk voor `squeegee-nawerk`.
+7. **OPSLAAN**, en met `get_page_text` terugkijken dat de naam op het juiste teken eindigt.
 
-Weergavefout om te kennen: na het opslaan blijft de titelbalk van de klantkaart soms de oude
-gegevens tonen. Controleer in het veld zelf, niet in de titelbalk.
+Emoji laten zich slecht typen. Werk in deze volgorde: eerst `form_input` op het naamveld met de
+**volledige nieuwe waarde** (naam + teken); lukt dat niet, klik in het veld, druk `End` en gebruik
+de `type`-actie; lukt dat ook niet, zet het teken op het klembord en plak met Ctrl+V.
+
+Heeft dezelfde klant die week meerdere dagen werk, dan is er **één naam** maar zijn er meerdere
+jobs: het teken zet je één keer, de notitie zet je bij de job van de dag waarover het antwoord
+gaat. Gaat het antwoord over de hele week, zet ze dan bij elke job van die klant.
+
+### Bijhouden wat gelukt is
+
+Zet in kolom H achteraan een merkteken zodra het gedaan is:
+
+- ` [job]` — de notitie staat in de job;
+- ` [naam]` — het teken staat achter de klantnaam.
+
+Staan die er al voor dit antwoord, doe het dan niet opnieuw. Zo kan de skill elk uur draaien
+zonder dubbele notitieregels te maken.
+
+### Als het niet lukt
+
+Weergavefout om te kennen: na het opslaan van een naam blijft de titelbalk van de klantkaart soms
+de oude waarde tonen. Dat is een bug in Squeegee — controleer in de klantenlijst links of in het
+veld zelf, niet in de titelbalk.
 
 Reageert een paneel na 2-3 pogingen niet: sla die klant over, noteer het, ga verder. Geen diepe
 debugging met `javascript_tool` of `resize_window` op de sqgee.com-tab — dat maakte de browser
 eerder onstabiel.
 
-> Dit klikpad volgt hetzelfde patroon als de andere Squeegee-skills, maar het notitieveld zelf is
-> nog niet in een begeleide run bevestigd. Wijkt het scherm af van wat hier staat, pas dan niets
-> aan, meld het, en werk dit bestand bij zodra het pad bekend is.
+De Excel is de waarheid, Squeegee is het overzicht. Lukt Squeegee niet, dan is de opvolging niet
+kapot: zet het teken gewoon in de Excel, meld welke klanten niet gelukt zijn, en ga door.
 
 ## STAP 5 — De lijst wegschrijven
 
@@ -215,18 +280,18 @@ Inhoud, kort en leesbaar op een klein scherm:
 
 ```
 Week 35 — 47 klanten
-✅ 31   ☒ 4   ❌ 5   nog niets 7
+✅ 31   ❎ 4   ❌ 5   ❓ 7
 
 Nieuw sinds vorige controle
 ✅ Jan Peeters (di) — "ja hoor, tot dinsdag"
-☒ Mie Willems (wo) — kan pas na 14u  → notitie in Squeegee gezet
+❎ Mie Willems (wo) — kan pas na 14u  → staat in de job en achter de naam
 ❌ Karel Aerts (do) — op reis, week opschuiven
 
-Nog niets gehoord (7)
+Nog niets gehoord — ❓ (7)
 ma: Peeters, Janssens · di: Cools · wo: … 
 ```
 
-Zet de klanten met een `☒` en de twijfelgevallen bovenaan — dat is wat actie vraagt.
+Zet de klanten met een `❎` en de twijfelgevallen bovenaan — dat is wat actie vraagt.
 
 ## STAP 7 — Afronden
 
@@ -234,9 +299,9 @@ Kort bericht in het gesprek:
 
 - welke week en welk lijstbestand;
 - de telling per teken, en hoeveel er in deze run zijn bijgekomen;
-- de `☒`-klanten en de twijfelgevallen, met naam;
+- de `❎`-klanten en de twijfelgevallen, met naam;
 - of de sms-koppeling werkte, en of de wachtmail al eerder verstuurd was;
-- klanten waarvan de klantnotitie niet gelukt is;
+- klanten waarbij de jobnotitie of het teken achter de naam niet gelukt is;
 - of het lijstbestand herschreven is, of dat er niets te wijzigen viel.
 
 Geen opsomming van alles wat al klopte.

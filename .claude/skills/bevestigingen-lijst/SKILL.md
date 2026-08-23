@@ -8,9 +8,10 @@ description: ⭐ bevestigingen-lijst — Trekt uit Squeegee (sqgee.com) alle kla
 Bedrijf: De Ramenwassers (Geert Cools). Antwoord in het Nederlands zoals in België gesproken:
 gemoedelijk, concreet, kort, zonder overdreven vetgedrukte tekst.
 
-Doel: één Excel-bestand met alle klanten die de **komende week** ingepland staan, zodat de
-twee andere skills daarna kunnen bijhouden wie bevestigd heeft. Deze skill vult de gegevens in;
-de kolom "teken" laat ze leeg — die is voor `bevestigingen-opvolgen`.
+Doel: één Excel-bestand met alle klanten die de gevraagde week ingepland staan, zodat de
+twee andere skills daarna kunnen bijhouden wie bevestigd heeft. Deze skill vult de gegevens in en
+zet iedereen op ❓ — nog geen antwoord — zowel in de kolom "teken" als achter de klantnaam in
+Squeegee. Vanaf dan is in de werkplanner in één oogopslag te zien wie nog moet antwoorden.
 
 Dit is deel 1 van drie **losse** skills. Ze draaien apart en op eigen momenten. Loopt deze skill
 vast, dan is dat vervelend maar het breekt de andere twee niet. Doe hier dus niets van hun werk:
@@ -19,7 +20,8 @@ geen mails naar klanten, geen antwoorden controleren, geen tekens zetten, geen k
 ## Harde regels
 
 1. **Enkel Not Done-jobs.** Nooit Done, nooit Skipped. Zie STAP 3.
-2. **Niets wijzigen in Squeegee.** Deze skill leest alleen. Geen namen, geen tijden, geen notities.
+2. **In Squeegee alleen het ❓-teken achter de klantnaam.** Verder niets: geen tijden, geen prijzen,
+   geen notities, en aan de naam zelf niets anders dan dat ene teken achteraan.
 3. **Nooit inloggen of een wachtwoord typen.** Verschijnt er een inlogscherm: stop en meld dat
    Geert opnieuw moet inloggen via Google SSO.
 4. **Nooit een bestaande weeklijst overschrijven.** Elke week krijgt zijn eigen bestandsnaam.
@@ -28,8 +30,16 @@ geen mails naar klanten, geen antwoorden controleren, geen tekens zetten, geen k
 
 ## STAP 0 — Doelweek bepalen
 
-De doelweek is standaard de **eerstvolgende maandag t/m vrijdag**. Geeft Geert iets anders mee
-("de week van 1 september", "deze week nog"), volg dat dan.
+De doelweek staat meestal in de opdracht, als **weeknummer**: "week 36", "weeklijst van week 36".
+Dat is een ISO-weeknummer. Reken het om naar de maandag van die week en bevestig die datum:
+
+```bash
+# maandag van week 36 in 2026
+python3 -c "import datetime;print(datetime.date.fromisocalendar(2026,36,1))"
+```
+
+Staat er geen weeknummer in de opdracht, neem dan de **eerstvolgende maandag t/m vrijdag**.
+Staat er een andere omschrijving ("de week van 1 september"), volg die.
 
 Het weekend hoort er nooit bij. Zaterdag en zondag worden niet opgehaald, ook niet als er die
 dagen jobs staan — die klanten krijgen geen bevestigingsvraag.
@@ -161,6 +171,32 @@ anders de verkeerde fiche, en dan mailt skill 3 de verkeerde persoon.
 Een klant die meerdere keren in de week voorkomt, open je **één keer** — hergebruik de gegevens
 voor al zijn rijen.
 
+### Meteen het ❓-teken zetten
+
+Je staat op de klantfiche en die staat toch al open — zet er dan meteen het beginteken achter de
+naam. Zo hoeft `bevestigingen-opvolgen` straks alleen nog de klanten aan te passen die effectief
+geantwoord hebben, in plaats van er tweehonderd te moeten openen.
+
+Het teken is **❓** (U+2753). Kopieer het letterlijk uit dit bestand; nooit natypen, nooit een
+gelijkend teken gebruiken (❔, ?).
+
+1. Lees de huidige naam letterlijk uit.
+2. Staat er achteraan al een van de vier bevestigingstekens (✅ ❌ ❎ ❓), **vervang** dat door ❓.
+   Zet er nooit een tweede bij. Dat is de hele truc waardoor deze skill twee keer mag draaien.
+3. Staat er nog geen, zet ❓ **helemaal achteraan**, na alles wat er staat — ook na ⤵️, 🧽, ❗, 📷
+   en na de haakjes.
+4. Raak de rest van de naam niet aan: geen spaties weghalen, geen haakjes opruimen, geen ⤵️
+   verwijderen. Dat is werk voor `squeegee-nawerk`, niet voor deze skill.
+5. Klik **OPSLAAN** en lees met `get_page_text` terug dat de naam nu op ❓ eindigt.
+
+Emoji laten zich slecht typen. Werk in deze volgorde: eerst `form_input` op het naamveld met de
+**volledige nieuwe waarde** (oude naam + ❓); lukt dat niet, klik in het veld, druk `End` en gebruik
+de `type`-actie; lukt dat ook niet, zet het teken op het klembord en plak met Ctrl+V.
+
+Lukt het bij een klant na twee pogingen niet: laat die naam staan, zet het teken wél in de Excel,
+en noteer de klant in je eindbericht. De Excel is de waarheid; het teken in Squeegee is het
+overzicht.
+
 Tijdslimiet: ongeveer 25 minuten voor deze stap. Loop je daar tegenaan, schrijf dan de lijst weg
 met de gegevens die je hebt, laat de ontbrekende velden leeg en zet die klanten in het eindbericht
 bij "gegevens ontbreken". Een klant zonder mailadres én zonder telefoonnummer kan skill 2 niet
@@ -178,7 +214,8 @@ dag | klantnummer | naam | telefoonnummer | mailadres | dienst | teken | antwoor
 ```
 
 - **dag**: `DD/MM/JJJJ (ma)` — datum plus de afkorting van de weekdag.
-- **teken**, **antwoord**, **herinnering**: leeg laten. Die zijn voor de andere twee skills.
+- **teken**: bij iedereen `❓`. Dat is de begintoestand: nog geen antwoord.
+- **antwoord**, **herinnering**: leeg laten. Die zijn voor de andere twee skills.
 - Sorteer op dag, en binnen een dag in de volgorde waarin de jobs in Squeegee staan (dat is de
   rijvolgorde) — zo herkent Geert zijn eigen planning terug.
 - Maak de kopregel vet, zet tekstterugloop uit en geef de kolommen een leesbare breedte. Meer

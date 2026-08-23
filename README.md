@@ -32,10 +32,13 @@ bevestigingen-lijst  ──schrijft──▶  Bevestigingen_2026-W35.xlsx  ◀�
 
 | Teken | Betekenis | Gevolg |
 |---|---|---|
-| `✅` | positief, gewoon in te plannen | niets meer te doen |
-| `☒` | positief, maar er is nog actie nodig | inhoud van mail/sms gaat ook in de klantnotitie in Squeegee |
-| `❌` | overslaan, opschuiven of afgemeld | niet inplannen |
-| leeg | nog geen antwoord | krijgt maandag 8u30 een herinnering |
+| `✅` | klant bevestigt, verder niets te doen | gewoon inplannen |
+| `❌` | klant wil niet gewassen worden | niet inplannen |
+| `❎` | klant bevestigt, maar er is actie nodig van Geert | Geert bekijkt het antwoord |
+| `❓` | klant heeft nog niet geantwoord | krijgt een herinnering |
+
+Hetzelfde teken staat achter de klantnaam in Squeegee, zodat het in de werkplanner zichtbaar is.
+Het antwoord zelf komt in de notitie van de job.
 
 ## Installeren
 

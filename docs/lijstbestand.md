@@ -50,7 +50,7 @@ Eén tabblad, **"Bevestigingen"**. Rij 1 is de kopregel, vanaf rij 2 de gegevens
 | D | telefoonnummer | in internationaal formaat waar mogelijk (`+32…`) | skill 1 |
 | E | mailadres | leeg als de klant er geen heeft | skill 1 |
 | F | dienst | de dienst van de job, bv. `Ramen wassen`, `Zonnepanelen poetsen` | skill 1 |
-| G | teken | `✅`, `☒`, `❌` of leeg | skill 2 |
+| G | teken | `✅`, `❌`, `❎` of `❓` | skill 1 zet `❓`, skill 2 werkt bij |
 | H | antwoord | bron, tijdstip en kern van het antwoord, bv. `sms 25/08 07:14 — kan niet, week opschuiven` | skill 2 |
 | I | herinnering | `herinnerd DD/MM JJ:MM` of `NIET GELUKT: <reden>` | skill 3 |
 
@@ -74,10 +74,20 @@ Kopieer ze letterlijk uit dit bestand. Nooit natypen, nooit een gelijkend teken 
 
 | Teken | Unicode | Betekenis | Gevolg |
 |---|---|---|---|
-| `✅` | U+2705 | positief, gewoon in te plannen | niets meer te doen |
-| `☒` | U+2612 | positief, maar er is nog actie nodig | inhoud van mail/sms ook in de klantnotitie in Squeegee |
-| `❌` | U+274C | overslaan, een week opschuiven, of een andere afmelding | niet inplannen |
-| (leeg) | | nog geen antwoord ontvangen | kandidaat voor de herinneringsmail |
+| `✅` | U+2705 | klant bevestigt, verder niets te doen | gewoon inplannen |
+| `❌` | U+274C | klant wil niet gewassen worden | niet inplannen |
+| `❎` | U+274E | klant bevestigt, maar er is actie nodig van Geert | Geert bekijkt het antwoord |
+| `❓` | U+2753 | klant heeft nog niet geantwoord | kandidaat voor de herinneringsmail |
+
+Let op `❌` (U+274C, het losse kruis) tegenover `❎` (U+274E, het kruis in een vakje).
+
+Hetzelfde teken staat ook **achter de klantnaam in Squeegee**, zodat de stand van zaken in de
+werkplanner zichtbaar is zonder iets open te klikken. `bevestigingen-lijst` zet iedereen op `❓`;
+`bevestigingen-opvolgen` vervangt dat teken zodra er een antwoord binnenkomt. Er staat altijd
+precies **één** van de vier achter een naam, helemaal achteraan.
+
+Het antwoord zelf komt in de **notitie van de job**, met teken, tijdstip, bron en de woorden van
+de klant — zo is het achteraf altijd na te lezen.
 
 ## Hoe het bestand bijgewerkt wordt
 
