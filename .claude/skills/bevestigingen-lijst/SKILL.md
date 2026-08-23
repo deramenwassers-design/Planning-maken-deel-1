@@ -189,9 +189,26 @@ gelijkend teken gebruiken (❔, ?).
    verwijderen. Dat is werk voor `squeegee-nawerk`, niet voor deze skill.
 5. Klik **OPSLAAN** en lees met `get_page_text` terug dat de naam nu op ❓ eindigt.
 
-Emoji laten zich slecht typen. Werk in deze volgorde: eerst `form_input` op het naamveld met de
-**volledige nieuwe waarde** (oude naam + ❓); lukt dat niet, klik in het veld, druk `End` en gebruik
-de `type`-actie; lukt dat ook niet, zet het teken op het klembord en plak met Ctrl+V.
+#### De snelle weg: via `sq.Data`
+
+Tweehonderd klantfiches openen en opslaan duurt ruim een uur. Het kan in enkele minuten via
+`sq.Data`, de eigen datalaag van Squeegee: die wijzigingen gaan langs dezelfde `PUT /api/sync` als
+de OPSLAAN-knop. Op 23/08/2026 is dat op het netwerkverkeer nagekeken en op de volledige lijst
+gebruikt — 196 klanten in zestien minuten in plaats van een uur.
+
+Voorwaarden, en die zijn niet vrijblijvend:
+
+1. Kijk **eerst op één klant** of de wijziging effectief langs `PUT /api/sync` gaat, vóór je ze op
+   de hele lijst loslaat.
+2. Wijzig enkel het naamveld, en enkel door er één teken achteraan te zetten.
+3. Controleer achteraf **na een verse laadbeurt** van Squeegee hoeveel klanten in de hele database
+   op ❓ eindigen. Dat aantal moet exact gelijk zijn aan het aantal rijen in je lijst — niet meer,
+   niet minder. Klopt het niet, meld het en zeg bij welke klanten.
+
+Werkt `sq.Data` niet zoals verwacht, val dan terug op het klikpad hierboven. Emoji laten zich
+slecht typen: eerst `form_input` op het naamveld met de **volledige nieuwe waarde** (oude naam +
+❓); lukt dat niet, klik in het veld, druk `End` en gebruik de `type`-actie; lukt dat ook niet, zet
+het teken op het klembord en plak met Ctrl+V.
 
 Lukt het bij een klant na twee pogingen niet: laat die naam staan, zet het teken wél in de Excel,
 en noteer de klant in je eindbericht. De Excel is de waarheid; het teken in Squeegee is het
@@ -242,6 +259,13 @@ Wegschrijven naar Drive:
 
 Zet de lijst **niet** in de wortel van "Claude opdrachten": dat is de opdrachtenwachtrij met de
 menukaartjes.
+
+**Staat de lijst van die week open in Excel, dan mislukt het overschrijven.** Dat is de meest
+voorkomende reden dat deze stap strandt. Schrijf het bestand dan weg naar
+`C:\Users\Geert\squeegee-automation\` onder dezelfde naam, mail Geert
+(`CLAUDE WACHT: sluit Bevestigingen_<JJJJ-Wnn>.xlsx`), en probeer daarna nog een halfuur lang elke
+20 seconden opnieuw. Zeg in je eindbericht duidelijk dat het werk klaar is maar het bestand nog
+niet op zijn plaats staat.
 
 Lever het bestand ook af in het gesprek met `SendUserFile`, zodat Geert het meteen kan openen.
 
