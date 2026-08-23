@@ -295,7 +295,7 @@
 
   <section id="runs" aria-live="polite">
     <div class="runskop">
-      <h2>Wat je gestart hebt</h2>
+      <h2>Laatste opdrachten</h2>
       <div class="runsknoppen">
         <button type="button" class="tekstknop" id="ververs">Ververs</button>
         <button type="button" class="tekstknop" id="wis">Wissen</button>
@@ -526,7 +526,7 @@
         "Gestart. <code>" + ontsnap(naam) + "</code> staat in je Drive — je pc pikt het binnen twee minuten op." + link);
       knop.disabled = false;
       knop.textContent = "Nog eens starten";
-      onthoudRun(naam, op.naam);
+      onthoudRun(naam);
     }).catch(function(err){
       knop.disabled = false;
       toon(melding, "fout", foutTekst(err));
@@ -562,66 +562,25 @@
     }
   }
 
-  /* ---- wat je gestart hebt ---- */
+  /* ---- wat er loopt en wat klaar is ---- */
 
-  function leesRuns(){
-    try {
-      var ruw = window.localStorage.getItem(BEWAARSLEUTEL);
-      var lijst = ruw ? JSON.parse(ruw) : [];
-      return Array.isArray(lijst) ? lijst : [];
-    } catch (e) { return []; }
+  // Een afgelopen logboek verandert nooit meer, dus dat onthouden we.
+  var gekend = {};
+  try {
+    gekend = JSON.parse(window.localStorage.getItem(BEWAARSLEUTEL) || "{}") || {};
+  } catch (e) { gekend = {}; }
+
+  function bewaarGekend(){
+    try { window.localStorage.setItem(BEWAARSLEUTEL, JSON.stringify(gekend)); }
+    catch (e) { /* privevenster of opslag uit */ }
   }
 
-  function bewaarRuns(lijst){
-    try { window.localStorage.setItem(BEWAARSLEUTEL, JSON.stringify(lijst.slice(0, 12))); }
-    catch (e) { /* privevenster of opslag uit: dan onthouden we het gewoon niet */ }
-  }
+  var runs = [];
+  var netGestart = [];   // namen die je in deze sessie gestart hebt
 
-  var runs = leesRuns();
-
-  function onthoudRun(bestand, kaart){
-    runs.unshift({ bestand: bestand, kaart: kaart, gestart: Date.now(), stand: "wachtend" });
-    runs = runs.slice(0, 12);
-    bewaarRuns(runs);
-    tekenRuns();
+  function onthoudRun(bestand){
+    netGestart.push({ bestand: bestand, gestart: Date.now() });
     ververs();
-  }
-
-  function uurtje(ms){
-    try {
-      return new Date(ms).toLocaleTimeString("nl-BE", {hour:"2-digit", minute:"2-digit"});
-    } catch (e) { return ""; }
-  }
-
-  function tekenRuns(){
-    var vak = document.getElementById("runs");
-    var lijst = document.getElementById("runlijst");
-    if (!runs.length){ vak.className = ""; lijst.innerHTML = ""; return; }
-    vak.className = "toon";
-
-    lijst.innerHTML = runs.map(function(r){
-      var soort = r.stand === "klaar" ? "klaar" : (r.stand === "fout" ? "fout" : (r.stand === "bezig" ? "bezig" : ""));
-      var tekst;
-      if (r.stand === "klaar"){
-        tekst = "<b>Klaar</b> om " + ontsnap(r.einde || "") + (r.duur ? " · " + ontsnap(r.duur) : "");
-      } else if (r.stand === "fout"){
-        tekst = "<b>Er liep iets mis</b> (exitcode " + ontsnap(String(r.exitcode)) + ")";
-      } else if (r.stand === "bezig"){
-        tekst = "Bezig sinds " + ontsnap(r.start || uurtje(r.gestart));
-      } else {
-        tekst = "Gestart om " + uurtje(r.gestart) + " — wacht tot je pc hem oppikt";
-      }
-      if (r.logUrl){
-        tekst += ' · <a href="' + ontsnap(r.logUrl) + '" target="_blank" rel="noopener">logboek</a>';
-      }
-      return '<div class="run ' + soort + '">' +
-               '<span class="stip"></span>' +
-               '<div class="runtekst">' +
-                 '<div class="runnaam">' + ontsnap(r.bestand) + '</div>' +
-                 '<div class="runstatus">' + tekst + '</div>' +
-               '</div>' +
-             '</div>';
-    }).join("");
   }
 
   function naarTekst(base64){
@@ -632,69 +591,135 @@
     catch (e) { return ruw; }
   }
 
-  function eersteRegel(tekst, patroon){
+  function veld(tekst, patroon){
     var m = tekst.match(patroon);
     return m ? m[1].trim() : "";
   }
 
-  function standVan(run){
-    // Het logboek heet "<datum> <tijd> <bestandsnaam zonder .txt>.log.txt".
-    var kern = run.bestand.replace(/\.txt$/i, "").replace(/'/g, "\\'");
-    return mcpNamespace.callTool(SERVER, "search_files", {
-      query: "parentId = '" + MAP_LOG + "' and title contains '" + kern + "'",
-      pageSize: 10,
-      excludeContentSnippets: true
-    }, {cache:false}).then(function(res){
-      var files = (res && res.payload && res.payload.files) || [];
-      // enkel logboeken van na het moment dat we gestart zijn, nieuwste eerst
-      var kandidaten = files.filter(function(f){
-        return Date.parse(f.createdTime) >= run.gestart - 180000;
-      }).sort(function(a, b){
-        return Date.parse(b.createdTime) - Date.parse(a.createdTime);
-      });
-      if (!kandidaten.length){ run.stand = "wachtend"; return; }
+  function enkelUur(waarde){
+    // "2026-08-23 09:51:00" -> "09:51"
+    var m = String(waarde).match(/(\d{2}:\d{2})/);
+    return m ? m[1] : String(waarde);
+  }
 
-      var log = kandidaten[0];
-      run.logUrl = log.viewUrl;
-      run.stand = "bezig";
+  function ontleed(tekst, titel){
+    var naam  = veld(tekst, /^\s*Opdracht\s*:\s*(.+)$/m) ||
+                titel.replace(/\.log\.txt$/i, "").replace(/^\d{4}-\d{2}-\d{2}\s+\d{2}-\d{2}-\d{2}\s+/, "");
+    var einde = veld(tekst, /^\s*Einde\s*:\s*(.+)$/m);
+    var code  = veld(tekst, /^\s*Exitcode\s*:\s*(\S+)/m);
+    return {
+      naam: naam,
+      start: enkelUur(veld(tekst, /^\s*Start\s*:\s*(.+)$/m)),
+      einde: einde ? enkelUur(einde) : "",
+      duur: veld(tekst, /^\s*Duur\s*:\s*(.+)$/m),
+      exitcode: code,
+      stand: (!einde || code === "") ? "bezig" : (code === "0" ? "klaar" : "fout"),
+      klaar: !!(einde && code !== "")
+    };
+  }
 
-      return mcpNamespace.callTool(SERVER, "download_file_content", {
-        fileId: log.id
-      }, {cache:false}).then(function(dl){
-        var b64 = dl && dl.payload && dl.payload.content;
-        if (!b64) return;
-        var tekst = naarTekst(b64);
-        run.start = eersteRegel(tekst, /^\s*Start\s*:\s*(.+)$/m).replace(/^\S+\s/, "");
-        var einde = eersteRegel(tekst, /^\s*Einde\s*:\s*(.+)$/m);
-        var code  = eersteRegel(tekst, /^\s*Exitcode\s*:\s*(\S+)/m);
-        if (!einde || code === ""){ run.stand = "bezig"; return; }
-        run.einde = einde.replace(/^\S+\s/, "");
-        run.duur = eersteRegel(tekst, /^\s*Duur\s*:\s*(.+)$/m);
-        run.exitcode = code;
-        run.stand = (code === "0") ? "klaar" : "fout";
-      });
+  function teken(){
+    var vak = document.getElementById("runs");
+    var lijst = document.getElementById("runlijst");
+    vak.className = "toon";
+
+    if (!runs.length){
+      lijst.innerHTML = '<div class="run"><span class="stip"></span><div class="runtekst">' +
+        '<div class="runstatus">Vandaag is er nog niets gestart.</div></div></div>';
+      return;
+    }
+
+    lijst.innerHTML = runs.map(function(r){
+      var tekst;
+      if (r.stand === "klaar"){
+        tekst = "<b>Klaar</b> om " + ontsnap(r.einde) + (r.duur ? " · duurde " + ontsnap(r.duur) : "");
+      } else if (r.stand === "fout"){
+        tekst = "<b>Er liep iets mis</b> — exitcode " + ontsnap(r.exitcode) +
+                ". Kijk in het logboek wat er scheelt.";
+      } else if (r.wacht){
+        tekst = "Net gestart — je pc pikt hem binnen twee minuten op";
+      } else {
+        tekst = "Bezig sinds " + ontsnap(r.start);
+      }
+      if (r.logUrl){
+        tekst += ' · <a href="' + ontsnap(r.logUrl) + '" target="_blank" rel="noopener">logboek</a>';
+      }
+      return '<div class="run ' + r.stand + '">' +
+               '<span class="stip"></span>' +
+               '<div class="runtekst">' +
+                 '<div class="runnaam">' + ontsnap(r.naam) + '</div>' +
+                 '<div class="runstatus">' + tekst + '</div>' +
+               '</div>' +
+             '</div>';
+    }).join("");
+  }
+
+  function wachtenden(){
+    // Wat je net gestart hebt maar waar nog geen logboek van is: je pc moet hem nog oppikken.
+    return netGestart.filter(function(g){
+      if (Date.now() - g.gestart > 15 * 60 * 1000) return false;
+      var kern = g.bestand.replace(/\.txt$/i, "").toLowerCase();
+      return !runs.some(function(r){ return r.naam.toLowerCase().indexOf(kern) !== -1; });
+    }).map(function(g){
+      return {
+        naam: g.bestand, stand: "", start: "", einde: "", duur: "", exitcode: "",
+        logUrl: "", wacht: true
+      };
     });
   }
 
-  var bezigMetVerversen = false;
+  var bezig = false;
 
   function ververs(){
-    if (!runs.length || !mcpNamespace || bezigMetVerversen) return Promise.resolve();
-    var teDoen = runs.filter(function(r){ return r.stand !== "klaar" && r.stand !== "fout"; });
-    if (!teDoen.length) return Promise.resolve();
-
-    bezigMetVerversen = true;
+    if (!mcpNamespace || bezig) return Promise.resolve();
+    bezig = true;
     var knop = document.getElementById("ververs");
     knop.disabled = true;
     knop.textContent = "Kijken…";
 
-    return Promise.all(teDoen.map(function(r){
-      return standVan(r).catch(function(){ /* laat de vorige stand staan */ });
-    })).then(function(){
-      bewaarRuns(runs);
-      tekenRuns();
-    }).catch(function(){}).then(function(){
-      bezigMetVerversen = false;
+    var vanaf = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+
+    return mcpNamespace.callTool(SERVER, "search_files", {
+      query: "parentId = '" + MAP_LOG + "' and createdTime > '" + vanaf + "'",
+      pageSize: 20,
+      excludeContentSnippets: true
+    }, {cache:false}).then(function(res){
+      var files = ((res && res.payload && res.payload.files) || [])
+        .sort(function(a, b){ return Date.parse(b.createdTime) - Date.parse(a.createdTime); })
+        .slice(0, 6);
+
+      return Promise.all(files.map(function(f){
+        if (gekend[f.id]){
+          var uit = gekend[f.id];
+          uit.logUrl = f.viewUrl;
+          return Promise.resolve(uit);
+        }
+        return mcpNamespace.callTool(SERVER, "download_file_content", {
+          fileId: f.id
+        }, {cache:false}).then(function(dl){
+          var b64 = dl && dl.payload && dl.payload.content;
+          if (!b64) return null;
+          var uit = ontleed(naarTekst(b64), f.title);
+          uit.logUrl = f.viewUrl;
+          if (uit.klaar){ gekend[f.id] = uit; bewaarGekend(); }
+          return uit;
+        }).catch(function(){ return null; });
+      }));
+    }).then(function(gevonden){
+      runs = wachtenden().concat(gevonden.filter(Boolean));
+      // de wachtenden hebben nog geen stand; toon ze als wachtend
+      runs.forEach(function(r){
+        if (r.wacht){ r.stand = ""; r.start = ""; }
+      });
+      teken();
+    }).catch(function(){
+      var lijst = document.getElementById("runlijst");
+      document.getElementById("runs").className = "toon";
+      lijst.innerHTML = '<div class="run fout"><span class="stip"></span><div class="runtekst">' +
+        '<div class="runstatus">Kon het logboek niet lezen. Probeer opnieuw met Ververs.</div>' +
+        '</div></div>';
+    }).then(function(){
+      bezig = false;
       knop.disabled = false;
       knop.textContent = "Ververs";
     });
@@ -702,20 +727,15 @@
 
   document.getElementById("ververs").addEventListener("click", function(){ ververs(); });
   document.getElementById("wis").addEventListener("click", function(){
-    runs = [];
-    bewaarRuns(runs);
-    tekenRuns();
+    gekend = {}; bewaarGekend(); netGestart = []; ververs();
   });
 
-  // elke 45 seconden opnieuw kijken, maar enkel als de pagina in beeld staat
   window.setInterval(function(){
     if (document.visibilityState === "visible") ververs();
   }, 45000);
   document.addEventListener("visibilitychange", function(){
     if (document.visibilityState === "visible") ververs();
   });
-
-  tekenRuns();
 
   /* ---- opbouwen ---- */
   OPDRACHTEN.forEach(maakKaart);
