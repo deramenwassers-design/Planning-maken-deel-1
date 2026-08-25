@@ -21,6 +21,10 @@
     --danger-soft:#FBEBE9;
     --shadow:0 1px 2px rgba(15,30,28,.06), 0 8px 24px -16px rgba(15,30,28,.28);
     --radius:10px;
+    --zone-na:#0E7C74;
+    --zone-voor:#8F5410;
+    --zone-bev:#3F55A5;
+    --zone-vrij:#5A6B69;
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
@@ -39,6 +43,10 @@
       --danger:#EE8279;
       --danger-soft:#2E1A18;
       --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+      --zone-na:#46BDB2;
+      --zone-voor:#DFA35C;
+      --zone-bev:#9DAEF2;
+      --zone-vrij:#93A5A2;
     }
   }
   :root[data-theme="dark"]{
@@ -57,6 +65,10 @@
     --danger:#EE8279;
     --danger-soft:#2E1A18;
     --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+    --zone-na:#46BDB2;
+    --zone-voor:#DFA35C;
+    --zone-bev:#9DAEF2;
+    --zone-vrij:#93A5A2;
   }
 
   *{box-sizing:border-box}
@@ -101,7 +113,7 @@
     border:1px solid color-mix(in srgb, var(--warn) 30%, transparent);
     border-radius:var(--radius);
     padding:11px 13px;
-    margin-top:16px;
+    margin-top:30px;
     font-size:14.5px;
     line-height:1.45;
   }
@@ -110,15 +122,21 @@
 
   /* ---------- groep ---------- */
   section{margin-top:34px}
+  section{--zone:var(--zone-na)}
+  section.z-voor{--zone:var(--zone-voor)}
+  section.z-bev{--zone:var(--zone-bev)}
+  section.z-vrij{--zone:var(--zone-vrij)}
+
   .groepkop{
     display:flex;align-items:baseline;gap:10px;
     padding-bottom:9px;margin-bottom:14px;
-    border-bottom:1px solid var(--line);
+    border-bottom:2px solid color-mix(in srgb, var(--zone) 42%, var(--line));
   }
   .groepkop h2{
     font-family:"Archivo", system-ui, sans-serif;
     font-size:15px;font-weight:600;margin:0;
     letter-spacing:.01em;
+    color:var(--zone);
   }
   .groepkop span{font-size:13px;color:var(--muted)}
 
@@ -133,6 +151,7 @@
     padding:15px 15px 14px;
   }
   .kaart.let-op{border-color:color-mix(in srgb, var(--danger) 40%, var(--line))}
+  .kaart.hoofd{border-color:color-mix(in srgb, var(--accent) 45%, var(--line))}
   .kaart h3{
     font-family:"Archivo", system-ui, sans-serif;
     font-size:17px;font-weight:600;margin:0;letter-spacing:-.005em;
@@ -143,12 +162,46 @@
     font-family:"Public Sans",sans-serif;
     font-size:10.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;
     padding:2px 7px;border-radius:99px;
-    background:var(--accent-soft);color:var(--accent);
+    background:color-mix(in srgb, var(--zone) 14%, transparent);
+    color:var(--zone);
   }
   .merkje.waarschuwing{
     background:var(--danger-soft);
     color:var(--danger);
   }
+
+  /* taken die vanzelf draaien: aanwezig, maar niet luid */
+  .kaart.vanzelf{background:transparent;border-style:dashed;box-shadow:none}
+  .kaart.vanzelf h3{color:var(--muted)}
+
+  /* de vier stappen van "Dag afwerken", verzonken onder de hoofdknop */
+  .stappen{
+    background:var(--surface-2);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:11px;
+    display:flex;flex-direction:column;gap:9px;
+  }
+  .stappenkop{
+    display:flex;align-items:center;gap:8px;
+    font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--muted);
+    padding:1px 2px 2px;
+  }
+  .stappenkop::after{content:"";flex:1;height:1px;background:var(--line)}
+  .kaart.stap{padding:11px 12px 10px;box-shadow:none}
+  .stapkop{display:flex;align-items:center;gap:9px}
+  .stapnr{
+    flex:none;
+    width:21px;height:21px;border-radius:99px;
+    display:grid;place-items:center;
+    font-family:"Roboto Mono", ui-monospace, monospace;
+    font-size:11.5px;font-weight:500;
+    background:color-mix(in srgb, var(--zone) 13%, transparent);
+    color:var(--zone);
+  }
+  .kaart.stap h3{font-size:15.5px}
+  .kaart.stap .wat{margin-top:5px}
 
   .rij{display:flex;gap:9px;margin-top:12px;align-items:stretch}
   .naamveld{
@@ -166,6 +219,14 @@
     outline-offset:1px;
     background:var(--surface);
   }
+  /* Op een smal scherm kapt de bestandsnaam af, en dat is net de datum die
+     hij moet kunnen aanpassen. Dan zet de knop zich onder het veld. */
+  @media (max-width:520px){
+    .rij{flex-wrap:wrap}
+    .naamveld{flex:1 1 100%}
+    .start{margin-left:auto}
+  }
+
   .start{
     flex:none;
     font-family:"Archivo", system-ui, sans-serif;
@@ -200,6 +261,24 @@
   }
   .melding a{color:var(--accent)}
 
+  /* De kaart die niets op je pc start, maar de opdracht klaarzet om te plakken:
+     geen naamveld, dus de knop lijnt uit met die van de kaarten erboven. */
+  .rij.alleenknop{justify-content:flex-end}
+  .opdrachtvak{
+    width:100%;
+    margin-top:9px;
+    resize:vertical;
+    font-family:"Roboto Mono", ui-monospace, monospace;
+    font-size:12.5px;
+    line-height:1.5;
+    color:var(--ink);
+    background:var(--surface-2);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:9px 10px;
+  }
+  .opdrachtvak:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+
   /* ---------- voet ---------- */
   footer{
     margin-top:38px;padding-top:18px;
@@ -212,7 +291,7 @@
   footer p{margin:0;max-width:52ch}
 
   /* ---------- lopende opdrachten ---------- */
-  #runs{display:none;margin-top:22px}
+  #runs{display:none;margin-top:34px}
   #runs.toon{display:block}
   .runskop{
     display:flex;align-items:baseline;justify-content:space-between;gap:10px;
@@ -227,6 +306,13 @@
     background:none;border:0;padding:0;cursor:pointer;
     font-family:"Public Sans",sans-serif;font-size:13px;color:var(--accent);
     border-bottom:1px solid color-mix(in srgb,var(--accent) 35%,transparent);
+    text-decoration:none;
+  }
+  /* de klok van een taak die loopt: cijfers even breed, zodat ze niet dansen */
+  .loopt{
+    font-family:"Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric:tabular-nums;
+    font-weight:500;color:var(--warn);
   }
   .tekstknop:disabled{opacity:.45;cursor:default}
   .tekstknop:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -284,19 +370,33 @@
     <p class="lead">Tik op Start. Er komt een opdrachtbestand in je Drive-map en je pc pikt het binnen twee minuten op.</p>
   </header>
 
-  <div class="voorwaarde">
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
-      <path d="M12 8v5M12 17h.01"/><circle cx="12" cy="12" r="9.5"/>
-    </svg>
-    <div>Je pc moet aanstaan met de <b>Claude-app open</b>. Deze taken klikken in Squeegee, en dat gebeurt in de browser op je pc — niet hier op je gsm.</div>
-  </div>
-
   <div id="geenverbinding"></div>
+
+  <section>
+    <div class="groepkop"><h2>Na de werkdag</h2><span>'s avonds of de volgende ochtend</span></div>
+    <div class="kaarten" id="groep-na"></div>
+  </section>
+
+  <section class="z-voor">
+    <div class="groepkop"><h2>Voor de werkdag</h2><span>de ronde klaarzetten</span></div>
+    <div class="kaarten" id="groep-voor"></div>
+  </section>
+
+  <section class="z-bev">
+    <div class="groepkop"><h2>Bevestigingen</h2><span>elke week</span></div>
+    <div class="kaarten" id="groep-bevestigingen"></div>
+  </section>
+
+  <section class="z-vrij">
+    <div class="groepkop"><h2>Iets anders</h2><span>zelf omschrijven</span></div>
+    <div class="kaarten" id="groep-vrij"></div>
+  </section>
 
   <section id="runs" aria-live="polite">
     <div class="runskop">
       <h2>Laatste opdrachten</h2>
       <div class="runsknoppen">
+        <a class="tekstknop" href="https://claude.ai/code/artifact/340b4af8-d38b-4058-be66-e8a61382954c">Looptijden</a>
         <button type="button" class="tekstknop" id="ververs">Ververs</button>
         <button type="button" class="tekstknop" id="wis">Wissen</button>
       </div>
@@ -304,32 +404,22 @@
     <div id="runlijst"></div>
   </section>
 
-  <section>
-    <div class="groepkop"><h2>Na de werkdag</h2><span>'s avonds of de volgende ochtend</span></div>
-    <div class="kaarten" id="groep-na"></div>
-  </section>
-
-  <section>
-    <div class="groepkop"><h2>Voor de werkdag</h2><span>de ronde klaarzetten</span></div>
-    <div class="kaarten" id="groep-voor"></div>
-  </section>
-
-  <section>
-    <div class="groepkop"><h2>Bevestigingen</h2><span>elke week</span></div>
-    <div class="kaarten" id="groep-bevestigingen"></div>
-  </section>
-
-  <section>
-    <div class="groepkop"><h2>Iets anders</h2><span>zelf omschrijven</span></div>
-    <div class="kaarten" id="groep-vrij"></div>
-  </section>
+  <div class="voorwaarde">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+      <path d="M12 8v5M12 17h.01"/><circle cx="12" cy="12" r="9.5"/>
+    </svg>
+    <div>Je pc moet aanstaan met de <b>Claude-app open</b>. Deze taken klikken in Squeegee, en dat gebeurt in de browser op je pc — niet hier op je gsm.</div>
+  </div>
 
   <footer>
+    <p>Enkel de taken met een uur in het label draaien vanzelf. Al de rest start je zelf — er gebeurt niets tot je op Start tikt.</p>
     <p>De bestandsnaam is de opdracht. Verander het weeknummer of de dag in het veld voor je op Start tikt — wat daar staat, is wat er gebeurt.</p>
     <p>
       <a href="https://drive.google.com/drive/folders/1YJt24SXd2nQT-xyim42Cg5qhwJDVnS-R" target="_blank" rel="noopener">Map Claude opdrachten</a>
       &nbsp;·&nbsp;
       <a href="https://drive.google.com/drive/folders/15BZkt8mtVl_EBMoqMvXmTiU-5J_A4mTr" target="_blank" rel="noopener">Logboek</a>
+      &nbsp;·&nbsp;
+      <a href="https://claude.ai/code/artifact/340b4af8-d38b-4058-be66-e8a61382954c">Looptijden</a>
       &nbsp;·&nbsp;
       <a href="https://drive.google.com/drive/folders/1Dbml1PiNgcn6GwP49D6qf52-U0EIGqJ3" target="_blank" rel="noopener">Weeklijsten bevestigingen</a>
     </p>
@@ -363,60 +453,82 @@
 
   /* ---- de opdrachten ---- */
   var OPDRACHTEN = [
-    { groep:"groep-na", id:"1jaBU8UUh4V4qS7VLxikswOqh_n7Ex0em",
-      naam:"Metatrak downloaden", label:"maandagnacht vanzelf",
-      wat:"Het gps-rapport van een volledige dag ophalen en als CSV in de cowork-map zetten — de dagverwerking heeft dit nodig. Vrijdag, zaterdag en zondag komen samen in één rapport, op naam van de vrijdag. Laat het veld zo staan en hij haalt alles op wat nog ontbreekt.",
-      bestand:"metatrak download.txt" },
+    { groep:"groep-na", id:"1VeGCz4HnkjhbYsifs7Ee36FOphsI0Zbh",
+      naam:"Dag afwerken", label:"alles in 1", hoofd:true,
+      wat:"De vier stappen hieronder na elkaar, voor dezelfde dag. Duurt even — start hem als je pc een tijd mag blijven staan. Squeegee gaat via de databank, dus je hoeft geen browser open te hebben en je pc niet ontgrendeld te laten; alleen de Excel-bestanden moeten toe zijn. Loopt één stap vast, dan gaat de rest gewoon door, en wat al gebeurd was slaat hij over.",
+      bestand:"dag afwerken " + gisteren + ".txt" },
 
-    { groep:"groep-na", id:"19qSMUMGl0GF2GwN3QsQt65th91l0JkWe",
-      naam:"Dagverwerking",
-      wat:"Uren vergelijken met Metatrak, facturen aanmaken, de bank inlezen en de omzet per team wegschrijven. Met een nakijkrapport in Excel.",
-      bestand:"dagverwerking " + gisteren + ".txt" },
-
-    { groep:"groep-na", id:"1RP32WJgmT0UFdOOtkrW5ERqvGm8R_xoZ",
-      naam:"Squeegee opkuisen",
-      wat:"De klantnamen van een gereden dag opschonen. De bevestigingstekens gaan er mee uit, zodat er de week erna geen oude tekens blijven hangen.",
+    { groep:"groep-na", stap:1, id:"1RP32WJgmT0UFdOOtkrW5ERqvGm8R_xoZ",
+      naam:"Namen opschonen",
+      wat:"De klantnamen van die dag opkuisen, bevestigingstekens inbegrepen.",
       bestand:"squeegee opkuisen " + gisteren + ".txt" },
 
-    { groep:"groep-na", id:"12T8_d6BxTMrS55poEePMK53RlDtg8_8Z",
-      naam:"Betalingen aanduiden",
-      wat:"Per gefactureerde job van die dag de betaling registreren als Bank Transfer.",
-      bestand:"betalingen aanduiden squeegee " + gisteren + ".txt" },
+    { groep:"groep-na", stap:2, id:"19qSMUMGl0GF2GwN3QsQt65th91l0JkWe",
+      naam:"Dagverwerking",
+      wat:"Uren vergelijken, facturen aanmaken, bank inlezen, omzet per team. Met nakijkrapport in Excel.",
+      bestand:"dagverwerking " + gisteren + ".txt" },
 
-    { groep:"groep-na", id:"1Fw-iSLASA1BP5AglbhIed1LwcgcT74-R",
+    { groep:"groep-na", stap:3, id:"1Fw-iSLASA1BP5AglbhIed1LwcgcT74-R",
       naam:"Tijden overzetten",
-      wat:"De werktijden uit het nakijkrapport invullen in Squeegee. De dagverwerking van die dag moet al gelopen hebben.",
+      wat:"De werktijden uit het nakijkrapport in Squeegee invullen. Vraagt stap 2 van diezelfde dag.",
       bestand:"squeegee-tijden " + gisteren + ".txt" },
 
+    { groep:"groep-na", stap:4, id:"12T8_d6BxTMrS55poEePMK53RlDtg8_8Z",
+      naam:"Betalingen aanduiden",
+      wat:"Elke gefactureerde job van die dag als Bank Transfer betaald zetten.",
+      bestand:"betalingen aanduiden squeegee " + gisteren + ".txt" },
+
+    { groep:"groep-na", naam:"Cash naar Scrada", label:"kopieert de opdracht",
+      wat:"Boekt de paid-rijen uit het laatste Squeegee-rapport in het kasboek.",
+      klembord:"/cash-naar-scrada verwerk het meest recente Squeegee-facturatierapport: " +
+               "boek alle rijen met betalingsstatus paid in het Scrada-kasboek " +
+               "\"De Ramenwassers\" en registreer ze in Eenvoudig Factureren als " +
+               "betaling met betaalwijze cash." },
+
+    { groep:"groep-na", id:"1jaBU8UUh4V4qS7VLxikswOqh_n7Ex0em",
+      naam:"Metatrak downloaden", label:"elke nacht om 03u", vanzelf:true,
+      wat:"Het gps-rapport van een volledige dag ophalen — de dagverwerking heeft dit nodig. Draait 's nachts vanzelf; start hem enkel als het rapport ontbreekt. Vrijdag, zaterdag en zondag komen samen in één rapport, op naam van de vrijdag. Laat het veld zo staan en hij haalt alles op wat nog ontbreekt.",
+      bestand:"metatrak download.txt" },
+
     { groep:"groep-voor", id:"1hIpXHq9XGHbR66eKn3iygpOEOjS3lJaU",
-      naam:"Ochtendronde",
-      wat:"Een overzicht per gast met alle adressen van de dag en een Street View-beeld bij elk adres. Door te sturen naar de werktelefoons.",
-      bestand:"ochtendronde morgen.txt" },
+      naam:"Rondes klaarzetten", label:"elke weekdag om 06u45",
+      wat:"Per gast één Chrome-venster op je scherm, met een tabblad per klant, meteen in Street View en in de volgorde van de ronde. Plus één bestand om door te sturen naar de werktelefoons. Draait elke weekdag om 06u45 vanzelf voor die dag en staat rond 06u55 klaar — met Start zet je hem opnieuw klaar, of voor een andere dag: zet dan “morgen” of een datum in het veld.",
+      bestand:"ochtendronde vandaag.txt" },
 
     { groep:"groep-voor", id:"1ESoaVZAYOVmOiwS1-JcpcX23GNqdgOBP",
       naam:"Pijltje zetten",
       wat:"Bij elke klant met werk op die dag komt er één ⤵️ extra achter de naam.",
       bestand:"pijltjes zetten morgen.txt" },
 
+    { groep:"groep-voor", id:"1_lmDDSNO-c1SrAOO3XGcvynByBJPlijF",
+      naam:"Ziektemelding", label:"stuurt echte berichten", waarschuwing:true,
+      wat:"Een gast heeft ziek gebeld. Zijn klanten van die dag krijgen een mail én een sms dat hun beurt verzet moet worden wegens ziekte van een collega — zijn naam komt er niet in. Zet de naam van de gast en de dag in het veld hieronder; staat er geen dag bij, dan neemt hij vandaag. Hij kijkt eerst na wat er die dag al vertrokken is en leest de planning vers in, want bij een ziekmelding wordt er 's morgens herverdeeld. Wil je de teksten eerst nalezen zonder dat er iets vertrekt, zet er dan “klaarzetten” bij. Het overzicht komt in de Drive-map “afmeldingen ziekte”.",
+      bestand:"ziektemelding <naam> vandaag.txt" },
+
     { groep:"groep-bevestigingen", id:"1ZDStcx6W_I5V7FYiJ42j4V3wq3Hd22mP",
-      naam:"Weeklijst maken",
-      wat:"De klanten van maandag t/m vrijdag van die week uit Squeegee halen, met telefoonnummer, mailadres en dienst. Iedereen begint op ❓ — ook achter de klantnaam in Squeegee.",
+      naam:"Weeklijst maken", label:"zaterdagnacht om 01u", vanzelf:true,
+      wat:"De klanten van maandag t/m vrijdag van die week uit Squeegee halen, met telefoonnummer, mailadres en dienst. Iedereen begint op ❓ — ook achter de klantnaam in Squeegee. Draait vanzelf in de nacht van vrijdag op zaterdag; start hem enkel zelf als die run overgeslagen is. Hier begint alles: zonder deze lijst kan de rest niets.",
       bestand:"weeklijst van week 36 maken.txt" },
 
     { groep:"groep-bevestigingen", id:"1uz118Wnjvc2RJ_AXJBBzHZQaw78o5qz1",
-      naam:"Antwoorden nakijken",
-      wat:"Mails en sms’jes vergelijken met de weeklijst. Het teken gaat achter de klantnaam, het antwoord in de notitie van de job. Je krijgt het overzicht per mail.",
+      naam:"Antwoorden nakijken", label:"om 06u05 en 07u35", vanzelf:true,
+      wat:"Mails en sms’jes vergelijken met de weeklijst. Het teken gaat achter de klantnaam, het antwoord in de notitie van de job. Je krijgt het overzicht per mail. Draait twee keer vanzelf: om 06u05, zodat Tim de lijst heeft tegen 06u45, en nog eens om 07u35 om de late antwoorden op te pikken vóór de herinneringsmail. Met Start kan je er tussendoor nog eens door, dat maakt geen dubbel werk.",
       bestand:"antwoorden nakijken van week 36.txt" },
 
-    { groep:"groep-bevestigingen", id:"11BXM6fJypffUVliVjXwHKDa4FBB30Yf-",
-      naam:"Herinnering sturen", label:"mailt klanten", waarschuwing:true,
-      wat:"Iedereen die nog op ❓ staat krijgt één vriendelijke tweede mail. Dit gaat rechtstreeks naar je klanten. Doe dit pas nadat de antwoorden nagekeken zijn.",
-      bestand:"herinnering sturen van week 36.txt" },
+    { groep:"groep-bevestigingen", id:"1lSELQ4jRmyf0RNP6HClZW6EdJ9YLDNoP",
+      naam:"Planningsberichten uitsturen: maandag", label:"zet concepten klaar",
+      wat:"Start dit pas nadat jullie de planning herwerkt hebben. Eerst gaat de weeklijst opnieuw naast Squeegee: wie eruit ligt, wie erbij gekomen is, wie naar een andere dag verschoven is. Daarna komen de berichten als concept in Gmail — een herinnering voor wie nog niet antwoordde, een eerste vraag voor de nieuw ingeplande klanten, en een melding voor wie verzet of geschrapt is. Klanten zonder mailadres krijgen hun bericht per sms; die teksten komen in de lijst en in de mail die je krijgt, want sms heeft geen conceptenmap. Er vertrekt niets: jij leest ze na en verstuurt ze zelf. Moet het wél meteen buiten, zet dan het woord “versturen” in het veld hieronder. Pas dan worden ook de vraagtekens in Squeegee bijgezet — die stapelen, en ook een eerste vraag telt mee.",
+      bestand:"planningsberichten uitsturen week 36.txt" },
 
-    { groep:"groep-vrij", id:"1Ykw6-EcFUdgQPGw-YyDhKbTKBTZCh1ty",
-      naam:"Skills bijwerken", label:"nu te doen",
-      wat:"Zet de laatste wijzigingen in de skills op deze pc: de juiste doelweek en het juiste zoekvenster voor de antwoorden. Doe dit vóór je de antwoorden nakijkt.",
-      bestand:"skills bijwerken vrijdagritme.txt" },
+    { groep:"groep-bevestigingen", id:"1VRKGcsZzs24Jbmrd7dUkW84CXc-E-o3c",
+      naam:"Planningsberichten uitsturen: dinsdag", label:"nakijken in Excel",
+      wat:"Start dit pas nadat de antwoorden verwerkt zijn en jullie de planning herwerkt hebben — hij meet de planning opnieuw uit Squeegee. Die meting komt erbij als tabblad in de weeklijst, en het eerste blad wordt opnieuw opgebouwd tot de samengestelde lijst. De berichten komen achteraan in dat blad: een laatste kans voor wie nog altijd stil is, een eerste vraag voor wie er sinds maandag bij ingepland is, en een melding voor wie verzet of geschrapt is. Alles per sms deze ronde. Er vertrekt niets: jij leest ze na in de kolom “bericht” en zet je notities in de kolom “opmerking”. Met het woord “versturen” erbij gaan ze pas echt weg en worden de tekens in Squeegee bijgezet — de vraagtekens stapelen.",
+      bestand:"planningsberichten uitsturen dinsdag week 36.txt" },
+
+    { groep:"groep-bevestigingen", id:"11BXM6fJypffUVliVjXwHKDa4FBB30Yf-",
+      naam:"Enkel de herinneringen", label:"zet concepten klaar",
+      wat:"Iedereen die nog op ❓ staat krijgt één vriendelijke tweede mail — meer niet. De weeklijst wordt hier níét bijgewerkt, dus nieuw ingeplande, verzette en geschrapte klanten horen niets. Ook deze zet enkel concepten klaar. Gebruik normaal “Planningsberichten uitsturen” hierboven; deze is voor als je er tussendoor nog eens enkel de herinneringen uit wil halen.",
+      bestand:"herinnering sturen van week 36.txt" },
 
     { groep:"groep-vrij", id:"1bw2FV4WMWm75LZcYj29zLSFDBG1etI74",
       naam:"Skills installeren", label:"na elke wijziging",
@@ -430,9 +542,32 @@
   ];
 
   /* ---- kaarten bouwen ---- */
+  // De vier stappen van "Dag afwerken" komen in een eigen, verzonken blok te
+  // staan: ze horen bij de knop erboven en zijn er geen gelijke van.
+  function stappenblok(groep){
+    var bestaand = document.getElementById("stappen-" + groep);
+    if (bestaand) return bestaand;
+
+    var vak = document.createElement("div");
+    vak.className = "stappen";
+    vak.id = "stappen-" + groep;
+
+    var kop = document.createElement("div");
+    kop.className = "stappenkop";
+    kop.textContent = "of stap per stap";
+    vak.appendChild(kop);
+
+    document.getElementById(groep).appendChild(vak);
+    return vak;
+  }
+
   function maakKaart(op){
     var kaart = document.createElement("div");
-    kaart.className = "kaart" + (op.waarschuwing ? " let-op" : "");
+    kaart.className = "kaart" +
+      (op.waarschuwing ? " let-op" : "") +
+      (op.hoofd ? " hoofd" : "") +
+      (op.vanzelf ? " vanzelf" : "") +
+      (op.stap ? " stap" : "");
 
     var titel = document.createElement("h3");
     titel.textContent = op.naam;
@@ -443,39 +578,62 @@
       titel.appendChild(merkje);
     }
 
+    // Bij een stap staat het volgnummer voor de naam: de volgorde is echt.
+    var kop = titel;
+    if (op.stap){
+      kop = document.createElement("div");
+      kop.className = "stapkop";
+      var nr = document.createElement("span");
+      nr.className = "stapnr";
+      nr.textContent = op.stap;
+      kop.appendChild(nr);
+      kop.appendChild(titel);
+    }
+
     var wat = document.createElement("p");
     wat.className = "wat";
     wat.textContent = op.wat;
 
     var rij = document.createElement("div");
-    rij.className = "rij";
+    rij.className = "rij" + (op.klembord ? " alleenknop" : "");
 
-    var veld = document.createElement("input");
-    veld.type = "text";
-    veld.className = "naamveld";
-    veld.value = op.bestand;
-    veld.setAttribute("aria-label", "Naam van de opdracht voor " + op.naam);
-    veld.spellcheck = false;
+    // Een klembord-kaart heeft geen bestandsnaam: er komt niets in je Drive.
+    var veld = null;
+    if (!op.klembord){
+      veld = document.createElement("input");
+      veld.type = "text";
+      veld.className = "naamveld";
+      veld.value = op.bestand;
+      veld.setAttribute("aria-label", "Naam van de opdracht voor " + op.naam);
+      veld.spellcheck = false;
+    }
 
     var knop = document.createElement("button");
     knop.type = "button";
     knop.className = "start";
-    knop.textContent = "Start";
+    knop.textContent = op.klembord ? "Kopieer opdracht" : "Start";
 
     var melding = document.createElement("div");
     melding.className = "melding";
     melding.setAttribute("role", "status");
 
-    rij.appendChild(veld);
+    if (veld) rij.appendChild(veld);
     rij.appendChild(knop);
-    kaart.appendChild(titel);
+    kaart.appendChild(kop);
     kaart.appendChild(wat);
     kaart.appendChild(rij);
     kaart.appendChild(melding);
 
     var bevestigen = false;
     knop.addEventListener("click", function(){
-      if (op.waarschuwing && !bevestigen){
+      if (op.klembord){
+        kopieer(op, kaart, knop, melding);
+        return;
+      }
+      // Zet je "versturen" in de naam, dan gaan er echte mails buiten in plaats
+      // van concepten. Dat verdient dezelfde dubbele tik als de rode kaarten.
+      var echtVersturen = /versturen/i.test(veld.value);
+      if ((op.waarschuwing || echtVersturen) && !bevestigen){
         bevestigen = true;
         knop.classList.add("bevestig");
         knop.textContent = "Ja, versturen";
@@ -488,7 +646,8 @@
       starten(op, veld, knop, melding);
     });
 
-    document.getElementById(op.groep).appendChild(kaart);
+    if (op.stap) stappenblok(op.groep).appendChild(kaart);
+    else document.getElementById(op.groep).appendChild(kaart);
   }
 
   function toon(el, soort, html){
@@ -500,6 +659,48 @@
     return String(s).replace(/[&<>"']/g, function(t){
       return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[t];
     });
+  }
+
+  /* ---- opdracht naar het klembord ---- */
+  // Deze kaart start niets op je pc. Een pagina hier kan niet bij je sleutels,
+  // je Squeegee-rapport of je kasboek: ze zet enkel de opdracht klaar, en het
+  // echte werk doet de skill op je pc.
+  function toonVak(op, kaart, melding){
+    var vak = kaart.querySelector(".opdrachtvak");
+    if (!vak){
+      vak = document.createElement("textarea");
+      vak.className = "opdrachtvak";
+      vak.rows = 4;
+      vak.readOnly = true;
+      vak.spellcheck = false;
+      vak.setAttribute("aria-label", "De opdracht, om zelf te kopiëren");
+      vak.value = op.klembord;
+      kaart.appendChild(vak);
+    }
+    vak.focus();
+    vak.select();
+    toon(melding, "fout",
+      "Kopiëren lukte niet. De opdracht staat hieronder en is al geselecteerd \u2014 " +
+      "neem ze over met Ctrl+C.");
+  }
+
+  function kopieer(op, kaart, knop, melding){
+    function gelukt(){
+      toon(melding, "goed", "Gekopieerd \u2014 plak dit in Cowork.");
+      knop.textContent = "Nog eens kopiëren";
+    }
+    function mislukt(){
+      toonVak(op, kaart, melding);
+    }
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(op.klembord).then(gelukt, mislukt);
+      } else {
+        mislukt();
+      }
+    } catch (e){
+      mislukt();
+    }
   }
 
   /* ---- starten ---- */
@@ -649,7 +850,9 @@
       } else if (r.wacht){
         tekst = "Net gestart — je pc pikt hem binnen twee minuten op";
       } else {
-        tekst = "Bezig sinds " + ontsnap(r.start);
+        tekst = "Bezig sinds " + ontsnap(r.start) +
+                (r.startMs ? ' \u00b7 <b class="loopt" data-loopt="' + r.startMs + '">' +
+                             klokje(Date.now() - r.startMs) + "</b> bezig" : "");
       }
       if (r.logUrl){
         tekst += ' · <a href="' + ontsnap(r.logUrl) + '" target="_blank" rel="noopener">logboek</a>';
@@ -663,6 +866,24 @@
              '</div>';
     }).join("");
   }
+
+  // 04:12, en na een uur 1:04:12
+  function klokje(ms){
+    var sec = Math.max(0, Math.floor(ms / 1000));
+    var u = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+    function tw(n){ return (n < 10 ? "0" : "") + n; }
+    return u ? u + ":" + tw(m) + ":" + tw(s) : tw(m) + ":" + tw(s);
+  }
+
+  // Elke seconde alleen de cijfers bijwerken, niet de hele lijst opnieuw
+  // opbouwen - anders springt de pagina onder je vinger weg.
+  function tik(){
+    var klokken = document.querySelectorAll("[data-loopt]");
+    for (var i = 0; i < klokken.length; i++){
+      klokken[i].textContent = klokje(Date.now() - (+klokken[i].getAttribute("data-loopt")));
+    }
+  }
+  window.setInterval(tik, 1000);
 
   function wachtenden(){
     // Wat je net gestart hebt maar waar nog geen logboek van is: je pc moet hem nog oppikken.
@@ -702,6 +923,7 @@
         if (gekend[f.id]){
           var uit = gekend[f.id];
           uit.logUrl = f.viewUrl;
+          uit.startMs = Date.parse(f.createdTime);
           return Promise.resolve(uit);
         }
         return mcpNamespace.callTool(SERVER, "download_file_content", {
@@ -711,6 +933,7 @@
           if (!b64) return null;
           var uit = ontleed(naarTekst(b64), f.title);
           uit.logUrl = f.viewUrl;
+          uit.startMs = Date.parse(f.createdTime);
           if (uit.klaar){ gekend[f.id] = uit; bewaarGekend(); }
           return uit;
         }).catch(function(){ return null; });
@@ -792,3 +1015,5 @@
   }
 })();
 </script>
+
+

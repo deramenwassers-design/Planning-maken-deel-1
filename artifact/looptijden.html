@@ -1,0 +1,962 @@
+<title>Looptijden</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Public+Sans:wght@400;500;600&family=Roboto+Mono:wght@400;500&display=swap">
+
+<style>
+  /* Zelfde tekens, zelfde kleuren als het opdrachtenbord: dit is dezelfde
+     familie, alleen kijkt deze pagina toe in plaats van te starten. */
+  :root{
+    --ground:#F4F7F6;
+    --surface:#FFFFFF;
+    --surface-2:#EDF3F1;
+    --ink:#0F1E1C;
+    --muted:#5A6B69;
+    --line:#DCE5E3;
+    --accent:#0E7C74;
+    --accent-ink:#FFFFFF;
+    --accent-soft:#E2F0EE;
+    --ok:#2E7D4F;
+    --warn:#A9670C;
+    --warn-soft:#FBF1DF;
+    --danger:#A8322A;
+    --danger-soft:#FBEBE9;
+    --spoor:#DCE7E4;
+    --shadow:0 1px 2px rgba(15,30,28,.06), 0 8px 24px -16px rgba(15,30,28,.28);
+    --radius:10px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#0D1413;
+      --surface:#16201E;
+      --surface-2:#1D2926;
+      --ink:#E6EEEC;
+      --muted:#93A5A2;
+      --line:#26332F;
+      --accent:#46BDB2;
+      --accent-ink:#062222;
+      --accent-soft:#14302D;
+      --ok:#63C48C;
+      --warn:#E0A64A;
+      --warn-soft:#2C2517;
+      --danger:#EE8279;
+      --danger-soft:#2E1A18;
+      --spoor:#25332F;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#0D1413;
+    --surface:#16201E;
+    --surface-2:#1D2926;
+    --ink:#E6EEEC;
+    --muted:#93A5A2;
+    --line:#26332F;
+    --accent:#46BDB2;
+    --accent-ink:#062222;
+    --accent-soft:#14302D;
+    --ok:#63C48C;
+    --warn:#E0A64A;
+    --warn-soft:#2C2517;
+    --danger:#EE8279;
+    --danger-soft:#2E1A18;
+    --spoor:#25332F;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    background:var(--ground);
+    color:var(--ink);
+    font-family:"Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size:16px;
+    line-height:1.5;
+    -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:640px;margin:0 auto;padding:0 18px 64px}
+
+  header{padding:28px 0 6px;display:flex;flex-direction:column;gap:6px}
+  .merk{
+    font-family:"Archivo", system-ui, sans-serif;
+    font-weight:700;font-size:12px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--accent);
+  }
+  h1{
+    font-family:"Archivo", system-ui, sans-serif;
+    font-weight:700;font-size:29px;line-height:1.12;letter-spacing:-.015em;
+    margin:0;text-wrap:balance;
+  }
+  .lead{margin:2px 0 0;color:var(--muted);max-width:48ch}
+
+  /* ---------- balk met de periode ---------- */
+  .balk{
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+    margin-top:18px;
+  }
+  .keuze{display:flex;gap:0;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+  .keuze button{
+    font-family:"Public Sans",sans-serif;font-size:13.5px;
+    color:var(--muted);background:none;border:0;
+    padding:7px 12px;cursor:pointer;
+  }
+  .keuze button + button{border-left:1px solid var(--line)}
+  .keuze button[aria-pressed="true"]{background:var(--accent-soft);color:var(--ink);font-weight:600}
+  .keuze button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+  .tekstknop{
+    background:none;border:0;padding:0;cursor:pointer;
+    font-family:"Public Sans",sans-serif;font-size:13.5px;color:var(--accent);
+    border-bottom:1px solid color-mix(in srgb,var(--accent) 35%,transparent);
+  }
+  .tekstknop:disabled{opacity:.45;cursor:default}
+  .tekstknop:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  #stand{font-size:13px;color:var(--muted);flex:1 1 100%;min-height:19px}
+
+  /* ---------- meldingen ---------- */
+  .strook{
+    display:none;border-radius:var(--radius);padding:12px 14px;margin-top:16px;
+    font-size:14.5px;line-height:1.45;
+  }
+  .strook.toon{display:block}
+  .strook.fout{background:var(--danger-soft);border:1px solid color-mix(in srgb,var(--danger) 32%,transparent)}
+  .strook.rustig{background:var(--surface-2);border:1px solid var(--line);color:var(--muted)}
+  .strook a{color:var(--accent)}
+
+  /* ---------- groepen ---------- */
+  section{margin-top:32px}
+  .kop2{
+    display:flex;align-items:baseline;justify-content:space-between;gap:10px;
+    padding-bottom:9px;margin-bottom:14px;
+    border-bottom:2px solid color-mix(in srgb, var(--accent) 40%, var(--line));
+  }
+  .kop2 h2{
+    font-family:"Archivo", system-ui, sans-serif;
+    font-size:15px;font-weight:600;margin:0;color:var(--accent);
+  }
+  .kop2 span{font-size:13px;color:var(--muted);flex:none}
+
+  .kaart{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:14px 15px;
+    margin-bottom:10px;
+  }
+  .naam{
+    font-family:"Roboto Mono", ui-monospace, monospace;
+    font-size:12.5px;color:var(--ink);word-break:break-word;
+  }
+  .bij{font-size:13.5px;color:var(--muted);margin-top:3px}
+  .bij a{color:var(--accent)}
+
+  /* ---------- wat nu draait ---------- */
+  .loper{border-color:color-mix(in srgb, var(--warn) 45%, var(--line))}
+  .loperkop{display:flex;align-items:flex-start;gap:11px}
+  .loperkop > div:first-of-type{flex:1 1 auto;min-width:0}
+  .stip{
+    flex:none;width:9px;height:9px;border-radius:99px;margin-top:6px;
+    background:var(--warn);animation:pols 1.6s ease-in-out infinite;
+  }
+  @keyframes pols{0%,100%{opacity:1}50%{opacity:.25}}
+  .klok{
+    flex:none;
+    font-family:"Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric:tabular-nums;
+    font-size:23px;font-weight:500;letter-spacing:-.01em;
+    color:var(--ink);line-height:1.1;padding-top:1px;
+  }
+  .loper.traag .klok{color:var(--warn)}
+  .loper.stil{border-color:color-mix(in srgb, var(--danger) 40%, var(--line))}
+  .loper.stil .stip{background:var(--danger);animation:none}
+
+  /* ---------- staven ---------- */
+  .staaf{
+    height:8px;border-radius:99px;background:var(--spoor);
+    margin-top:10px;overflow:hidden;
+  }
+  .staaf i{
+    display:block;height:100%;border-radius:99px;
+    background:var(--accent);
+  }
+  .loper .staaf i{background:var(--warn)}
+  .staaf.mis i{background:var(--danger)}
+
+  /* ---------- per taak ---------- */
+  .taak{padding:14px 15px 13px}
+  .taakkop{display:flex;align-items:baseline;gap:10px}
+  .taakkop h3{
+    font-family:"Archivo", system-ui, sans-serif;
+    font-size:16px;font-weight:600;margin:0;flex:1 1 auto;min-width:0;
+  }
+  .tel{font-size:12.5px;color:var(--muted);flex:none}
+  .cijfer{
+    font-family:"Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric:tabular-nums;
+    font-size:19px;font-weight:500;margin-top:7px;
+  }
+  .cijfer small{
+    font-family:"Public Sans",sans-serif;font-size:13px;font-weight:400;
+    color:var(--muted);margin-left:7px;
+  }
+  .spreiding{font-size:13.5px;color:var(--muted);margin-top:7px}
+  .dagdelen{
+    margin-top:11px;padding-top:11px;border-top:1px solid var(--line);
+    display:grid;grid-template-columns:auto 1fr auto;gap:5px 9px;align-items:center;
+  }
+  .dagdelen .dl{font-size:13px;color:var(--muted)}
+  .dagdelen .dw{
+    font-family:"Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric:tabular-nums;font-size:13px;text-align:right;color:var(--ink);
+  }
+  .dagdelen .staaf{margin-top:0;height:7px}
+  .les{
+    margin-top:10px;font-size:13.5px;line-height:1.45;
+    background:var(--accent-soft);border-radius:8px;padding:8px 10px;
+  }
+
+  /* ---------- alle runs ---------- */
+  .dagkop{
+    font-family:"Archivo", system-ui, sans-serif;
+    font-size:12.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;
+    color:var(--muted);margin:18px 0 8px;
+  }
+  .run{
+    display:grid;grid-template-columns:44px 1fr auto;gap:4px 11px;
+    align-items:baseline;
+    padding:9px 0;border-bottom:1px solid var(--line);
+  }
+  .uur{
+    font-family:"Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric:tabular-nums;font-size:12.5px;color:var(--muted);
+  }
+  .runduur{
+    font-family:"Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric:tabular-nums;font-size:13.5px;color:var(--ink);
+  }
+  .run.mis .runduur{color:var(--danger)}
+  .run .staaf{grid-column:2 / span 2;margin-top:6px}
+  .runnaam{word-break:break-word;font-size:14.5px}
+  .runnaam a{color:inherit;text-decoration:none;border-bottom:1px solid var(--line)}
+  .runnaam a:hover{border-bottom-color:var(--accent)}
+  .merkje{
+    display:inline-block;margin-left:6px;vertical-align:1px;
+    font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+    padding:1px 6px;border-radius:99px;
+  }
+  .merkje.mis{background:var(--danger-soft);color:var(--danger)}
+  .merkje.geschat{background:var(--surface-2);color:var(--muted)}
+  .merkje.afgebroken{background:var(--warn-soft);color:var(--warn)}
+
+  footer{
+    margin-top:36px;padding-top:18px;border-top:1px solid var(--line);
+    font-size:14px;color:var(--muted);display:flex;flex-direction:column;gap:9px;
+  }
+  footer a{color:var(--accent);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--accent) 35%,transparent)}
+  footer p{margin:0;max-width:54ch}
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;animation:none !important}
+  }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <div class="merk">De Ramenwassers</div>
+    <h1>Looptijden</h1>
+    <p class="lead">Wat er nu draait, met de klok erbij. En daaronder: hoe lang elke taak normaal doet, en of het uitmaakt wanneer je hem start.</p>
+  </header>
+
+  <div class="balk">
+    <div class="keuze" role="group" aria-label="Over hoeveel dagen">
+      <button type="button" data-dagen="7">7 dagen</button>
+      <button type="button" data-dagen="14">14 dagen</button>
+      <button type="button" data-dagen="30">30 dagen</button>
+    </div>
+    <button type="button" class="tekstknop" id="ververs">Ververs</button>
+    <div id="stand" role="status"></div>
+  </div>
+
+  <div class="strook" id="probleem"></div>
+
+  <section id="vak-nu">
+    <div class="kop2"><h2>Nu bezig</h2><span id="nu-tel"></span></div>
+    <div id="nu-lijst"></div>
+  </section>
+
+  <section id="vak-taken">
+    <div class="kop2"><h2>Per taak</h2><span>hoe lang hij normaal doet</span></div>
+    <div id="taaklijst"></div>
+  </section>
+
+  <section id="vak-runs">
+    <div class="kop2"><h2>Alle runs</h2><span id="run-tel"></span></div>
+    <div id="runlijst"></div>
+  </section>
+
+  <footer>
+    <p>De tijden komen uit de logboeken die je pc na elke opdracht in Drive zet: elk logboek heeft een start, een einde en een looptijd. Een logboek zonder einde is een taak die nog bezig is — die krijgt hier een lopende klok.</p>
+    <p>“Typisch” is de middelste run, niet het gemiddelde: één uitschieter trekt hem dus niet scheef. Runs die misgelopen zijn, tellen niet mee in dat cijfer — ze stoppen vroeg en zouden de taak sneller doen lijken dan hij is.</p>
+    <p>
+      <a href="https://claude.ai/code/artifact/06f9ca0b-929c-4a42-9b31-1847e98de982">Opdrachtenbord</a>
+      &nbsp;·&nbsp;
+      <a href="https://drive.google.com/drive/folders/15BZkt8mtVl_EBMoqMvXmTiU-5J_A4mTr" target="_blank" rel="noopener">Map logboek</a>
+    </p>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var SERVER   = "Google Drive";
+  var MAP_LOG  = "15BZkt8mtVl_EBMoqMvXmTiU-5J_A4mTr";
+  var SLEUTEL  = "ramenwassers.looptijden.v1";
+  var PERIODE  = "ramenwassers.looptijden.dagen";
+  var MAX_LEZEN = 60;   // aantal logboeken dat we per beurt binnenhalen
+
+  var mcp = null;
+  var dagen = 14;
+  var bestanden = [];   // alles wat er in de periode in de map staat
+  var perId = {};       // id -> ontleed logboek
+  var bezigMetLezen = false;
+  var nogTeLezen = 0;
+
+  /* ---- onthouden wat afgelopen is ----
+     Een logboek van een afgelopen run verandert nooit meer. Eén keer lezen
+     volstaat dus; daarna komt het uit het geheugen van deze browser en hoeft
+     er niets meer gedownload te worden. */
+  var geheugen = {};
+  try { geheugen = JSON.parse(window.localStorage.getItem(SLEUTEL) || "{}") || {}; }
+  catch (e) { geheugen = {}; }
+
+  function bewaar(){
+    try {
+      var namen = Object.keys(geheugen);
+      if (namen.length > 500){
+        namen.sort(function(a,b){ return (geheugen[a].start||0) - (geheugen[b].start||0); });
+        namen.slice(0, namen.length - 500).forEach(function(n){ delete geheugen[n]; });
+      }
+      window.localStorage.setItem(SLEUTEL, JSON.stringify(geheugen));
+    } catch (e) { /* privévenster of opslag uit */ }
+  }
+
+  try {
+    var vorige = parseInt(window.localStorage.getItem(PERIODE), 10);
+    if (vorige === 7 || vorige === 14 || vorige === 30) dagen = vorige;
+  } catch (e) { /* niets */ }
+
+  /* ---- tijd en tekst ---- */
+  function tweecijfers(n){ return (n < 10 ? "0" : "") + n; }
+
+  // Kort, voor in een staaf of een klok: 4:38, 1u04, 41 s
+  function duurKort(sec){
+    sec = Math.max(0, Math.round(sec));
+    var u = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+    if (u) return u + "u" + tweecijfers(m);
+    if (m) return m + ":" + tweecijfers(s);
+    return s + " s";
+  }
+  // In een zin: 4 min 38, 1 u 04, 41 seconden
+  function duurLang(sec){
+    sec = Math.max(0, Math.round(sec));
+    var u = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+    if (u) return u + " u " + tweecijfers(m);
+    if (m) return m + " min " + tweecijfers(s);
+    return s + " seconden";
+  }
+  // De lopende klok telt de seconden mee: 04:38, 1:04:38
+  function klokTekst(sec){
+    sec = Math.max(0, Math.floor(sec));
+    var u = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+    if (u) return u + ":" + tweecijfers(m) + ":" + tweecijfers(s);
+    return tweecijfers(m) + ":" + tweecijfers(s);
+  }
+
+  // Alles wat je op deze pagina leest, staat in Belgische tijd - ook als je
+  // gsm in een ander land staat. De logboeken zijn dat namelijk ook.
+  function inBrussel(ms, opties){
+    try { return new Date(ms).toLocaleString("nl-BE", Object.assign({timeZone:"Europe/Brussels"}, opties)); }
+    catch (e) { return new Date(ms).toLocaleString("nl-BE", opties); }
+  }
+  function uurTekst(ms){ return inBrussel(ms, {hour:"2-digit", minute:"2-digit"}); }
+  function dagTekst(ms){ return inBrussel(ms, {weekday:"long", day:"numeric", month:"long"}); }
+  function dagSleutel(ms){ return inBrussel(ms, {year:"numeric", month:"2-digit", day:"2-digit"}); }
+  function uurGetal(ms){
+    var t = inBrussel(ms, {hour:"2-digit", hour12:false});
+    var n = parseInt(String(t).slice(0,2), 10);
+    return isNaN(n) ? 12 : n;
+  }
+
+  function ontsnap(s){
+    return String(s).replace(/[&<>"']/g, function(t){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[t];
+    });
+  }
+
+  /* ---- soorten ----
+     De bestandsnaam is de opdracht, en daar staat meestal een datum of een
+     weeknummer in. Om te kunnen vergelijken moet dat er eerst uit: "dag
+     afwerken 24 augustus" en "dag afwerken [datum]" zijn dezelfde taak. */
+  var SOORTEN = [
+    [/^vrije opdracht/i,             "Vrije opdracht"],
+    [/planningsberichten.*dinsdag/i, "Planningsberichten dinsdag"],
+    [/planningsberichten/i,          "Planningsberichten maandag"],
+    [/dag afwerken/i,                "Dag afwerken"],
+    [/dagverwerking/i,               "Dagverwerking"],
+    [/metatrak/i,                    "Metatrak downloaden"],
+    [/ochtendronde|rondes klaarzetten/i, "Rondes klaarzetten"],
+    [/opkuis|opschon|kuis de namen/i,    "Namen opschonen"],
+    [/tijden/i,                      "Tijden overzetten"],
+    [/betaling/i,                    "Betalingen aanduiden"],
+    [/weeklijst|bevestigingen-lijst/i,   "Weeklijst maken"],
+    [/antwoorden nakijken|bevestigingen-opvolgen/i, "Antwoorden nakijken"],
+    [/herinnering/i,                 "Herinneringen sturen"],
+    [/ziektemelding/i,               "Ziektemelding"],
+    [/pijltje/i,                     "Pijltje zetten"],
+    [/installeer|skills bijwerken/i, "Skills installeren"]
+  ];
+  var MAANDEN = "januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december";
+
+  function soortVan(naam){
+    for (var i = 0; i < SOORTEN.length; i++){
+      if (SOORTEN[i][0].test(naam)) return SOORTEN[i][1];
+    }
+    var kaal = naam.toLowerCase()
+      .replace(/^\d+\s+/, "")
+      .replace(/\[datum\]|<naam>/g, "")
+      .replace(new RegExp("\\d{1,2}\\s+(" + MAANDEN + ")", "gi"), "")
+      .replace(/\b(van\s+)?week\s*\d+/gi, "")
+      .replace(/\b(vandaag|morgen|gisteren|maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag)\b/gi, "")
+      .replace(/\d{4}-\d{2}-\d{2}/g, "")
+      .replace(/[\s\-_.]+/g, " ")
+      .trim();
+    if (!kaal) kaal = naam.toLowerCase();
+    var woorden = kaal.split(" ").slice(0, 5).join(" ");
+    return woorden.charAt(0).toUpperCase() + woorden.slice(1);
+  }
+
+  var DAGDELEN = [
+    {van:0,  tot:6,  naam:"'s nachts"},
+    {van:6,  tot:12, naam:"'s ochtends"},
+    {van:12, tot:18, naam:"'s namiddags"},
+    {van:18, tot:24, naam:"'s avonds"}
+  ];
+  function dagdeelVan(ms){
+    var u = uurGetal(ms);
+    for (var i = 0; i < DAGDELEN.length; i++){
+      if (u >= DAGDELEN[i].van && u < DAGDELEN[i].tot) return i;
+    }
+    return 0;
+  }
+
+  /* ---- een logboek ontleden ---- */
+  function naarTekst(base64){
+    var ruw = atob(base64);
+    var bytes = new Uint8Array(ruw.length);
+    for (var i = 0; i < ruw.length; i++) bytes[i] = ruw.charCodeAt(i);
+    try { return new TextDecoder("utf-8").decode(bytes); }
+    catch (e) { return ruw; }
+  }
+
+  function naamUitTitel(titel){
+    var m = /^\d{4}-\d{2}-\d{2}[ _]\d{2}-\d{2}-\d{2}\s+([\s\S]*?)\.log\.txt$/i.exec(titel);
+    return m ? m[1] : String(titel).replace(/\.log\.txt$/i, "");
+  }
+
+  function ontleed(tekst, best){
+    // Het slotblok staat achteraan, na "--- einde ---". Alleen daar kijken we,
+    // want de uitvoer erboven is vrije tekst en kan alles bevatten.
+    var knip = tekst.toLowerCase().lastIndexOf("--- einde");
+    var staart = knip > -1 ? tekst.slice(knip) : "";
+
+    var opdracht = (tekst.match(/^\s*Opdracht\s*:\s*(.+)$/m) || [])[1];
+    var duur = (staart.match(/^\s*Duur\s*:\s*(\d+):(\d{2}):(\d{2})/m) || []);
+    var code = (staart.match(/^\s*Exitcode\s*:\s*(\S+)/m) || [])[1];
+    var afgelopen = !!(staart && code !== undefined);
+
+    return {
+      id: best.id,
+      naam: (opdracht ? opdracht.trim() : naamUitTitel(best.titel)),
+      start: best.gemaakt,
+      duur: duur.length ? (+duur[1] * 3600 + +duur[2] * 60 + +duur[3])
+                        : Math.round((best.gewijzigd - best.gemaakt) / 1000),
+      geschat: !duur.length,
+      exit: afgelopen ? code : "",
+      klaar: afgelopen,
+      logUrl: best.viewUrl
+    };
+  }
+
+  // Zolang een logboek nog niet gelezen is, kunnen we de looptijd al schatten:
+  // het bestand wordt aangemaakt als de taak start en voor het laatst
+  // geschreven als ze klaar is. Dat scheelt seconden, geen minuten.
+  function uitMetadata(best){
+    return {
+      id: best.id,
+      naam: naamUitTitel(best.titel),
+      start: best.gemaakt,
+      duur: Math.round((best.gewijzigd - best.gemaakt) / 1000),
+      geschat: true,
+      exit: "",
+      klaar: null,          // nog niet gelezen: we weten het niet
+      logUrl: best.viewUrl
+    };
+  }
+
+  /* ---- ophalen ---- */
+  function zoekLogboeken(){
+    var vanaf = new Date(Date.now() - dagen * 24 * 60 * 60 * 1000).toISOString();
+    var alles = [];
+
+    function pagina(token){
+      var vraag = {
+        query: "parentId = '" + MAP_LOG + "' and createdTime > '" + vanaf + "'",
+        pageSize: 100,
+        excludeContentSnippets: true
+      };
+      if (token) vraag.pageToken = token;
+      return mcp.callTool(SERVER, "search_files", vraag, {cache:false}).then(function(res){
+        var payload = (res && res.payload) || {};
+        (payload.files || []).forEach(function(f){
+          alles.push({
+            id: f.id,
+            titel: f.title || "",
+            gemaakt: Date.parse(f.createdTime),
+            gewijzigd: Date.parse(f.modifiedTime || f.createdTime),
+            viewUrl: f.viewUrl || ""
+          });
+        });
+        // Drie pagina's is ruim 300 logboeken - meer dan een maand ooit oplevert.
+        if (payload.nextPageToken && alles.length < 300) return pagina(payload.nextPageToken);
+        return alles;
+      });
+    }
+    return pagina(null);
+  }
+
+  function leesLogboeken(lijst){
+    // Vier tegelijk: snel genoeg, en niet zo veel dat Drive begint te knijpen.
+    var wachtrij = lijst.slice(0), gelezen = 0, totaal = lijst.length;
+
+    function volgende(){
+      var best = wachtrij.shift();
+      if (!best) return Promise.resolve();
+      return mcp.callTool(SERVER, "download_file_content", {fileId: best.id}, {cache:false})
+        .then(function(dl){
+          var b64 = dl && dl.payload && dl.payload.content;
+          if (b64){
+            var uit = ontleed(naarTekst(b64), best);
+            perId[best.id] = uit;
+            if (uit.klaar){ geheugen[best.id] = uit; }
+          }
+        })
+        .catch(function(){ /* dit ene logboek lukt niet; de schatting blijft staan */ })
+        .then(function(){
+          gelezen++;
+          if (gelezen % 4 === 0 || !wachtrij.length){
+            zetStand("Bezig met lezen — " + gelezen + " van " + totaal + " logboeken.");
+            teken();
+          }
+          return volgende();
+        });
+    }
+
+    var draden = [];
+    for (var i = 0; i < 4; i++) draden.push(volgende());
+    return Promise.all(draden).then(function(){ bewaar(); });
+  }
+
+  function zetStand(tekst){
+    document.getElementById("stand").textContent = tekst;
+  }
+
+  function toonProbleem(soort, html){
+    var vak = document.getElementById("probleem");
+    vak.className = "strook toon " + soort;
+    vak.innerHTML = html;
+  }
+
+  function foutTekst(err){
+    var code = err && err.code ? err.code : "upstream_error";
+    switch (code){
+      case "needs_reauth":
+        return "Je Drive-koppeling is verlopen. Herstel ze in claude.ai bij Instellingen → Connectors en ververs dan.";
+      case "server_not_connected":
+        return "Google Drive staat niet gekoppeld aan dit account. Voeg de connector toe in claude.ai bij Instellingen → Connectors.";
+      case "selection_required":
+        return "Er staan meerdere Drive-koppelingen op dit account. Kies er een als claude.ai het vraagt en ververs dan.";
+      case "not_in_manifest":
+      case "blocked_by_policy":
+      case "approval_required":
+      case "not_granted":
+      case "capability_disabled":
+      case "capability_removed":
+        return "Deze pagina mag de map met logboeken niet lezen. Je kan ze wel zelf openen in Drive.";
+      case "rate_limited":
+        return "Even te snel achter elkaar. Wacht een halve minuut en ververs dan.";
+      case "server_unavailable":
+      case "upstream_error":
+        return "Google Drive antwoordde niet. Probeer het zo nog eens met Ververs.";
+      default:
+        return "Het lezen van de logboeken lukte niet. Probeer het zo nog eens met Ververs.";
+    }
+  }
+
+  function ophalen(herkansing){
+    if (!mcp || bezigMetLezen) return Promise.resolve();
+    bezigMetLezen = true;
+    var knop = document.getElementById("ververs");
+    knop.disabled = true;
+    zetStand("Kijken wat er in de map staat…");
+
+    return zoekLogboeken().then(function(lijst){
+      document.getElementById("probleem").className = "strook";
+      bestanden = lijst.filter(function(b){ return !isNaN(b.gemaakt); })
+                       .sort(function(a,b){ return b.gemaakt - a.gemaakt; });
+
+      perId = {};
+      var teLezen = [];
+      bestanden.forEach(function(b){
+        // Uit het geheugen komt alleen wat afgelopen is; een taak die vorige
+        // keer nog bezig was, lezen we opnieuw - die is intussen klaar.
+        if (geheugen[b.id]){
+          perId[b.id] = geheugen[b.id];
+          perId[b.id].logUrl = b.viewUrl;
+        } else {
+          perId[b.id] = uitMetadata(b);
+          teLezen.push(b);
+        }
+      });
+
+      teken();
+      nogTeLezen = Math.max(0, teLezen.length - MAX_LEZEN);
+      if (!teLezen.length){
+        zetStand(bestanden.length + " logboeken · bijgewerkt om " + uurTekst(Date.now()));
+        return;
+      }
+      return leesLogboeken(teLezen.slice(0, MAX_LEZEN)).then(function(){
+        teken();
+        zetStand(bestanden.length + " logboeken · bijgewerkt om " + uurTekst(Date.now()) +
+                 (nogTeLezen ? " · " + nogTeLezen + " oudere logboeken nog geschat" : ""));
+      });
+    }).catch(function(err){
+      // Een hapering van Drive mag niet meteen een foutmelding worden: één
+      // keer opnieuw proberen, en pas als dat ook mislukt iets zeggen.
+      if (err && err.retryable && !herkansing){
+        var wacht = Math.min(err.retryAfterMs || 1500, 10000) + Math.round(Math.random() * 500);
+        zetStand("Drive antwoordde niet — nog eens proberen…");
+        window.setTimeout(function(){ bezigMetLezen = false; ophalen(true); }, wacht);
+        return;
+      }
+      toonProbleem("fout", ontsnap(foutTekst(err)));
+      zetStand("");
+    }).then(function(){
+      bezigMetLezen = false;
+      knop.disabled = false;
+    });
+  }
+
+  /* ---- rekenen ---- */
+  function midden(getallen){
+    if (!getallen.length) return 0;
+    var g = getallen.slice(0).sort(function(a,b){ return a - b; });
+    var h = Math.floor(g.length / 2);
+    return g.length % 2 ? g[h] : Math.round((g[h-1] + g[h]) / 2);
+  }
+
+  function alleRuns(){
+    return bestanden.map(function(b){ return perId[b.id]; }).filter(Boolean);
+  }
+
+  // Bezig = het logboek heeft nog geen slot. Blijft dat een halve dag zo, dan
+  // is de run afgebroken en telt hij niet meer als lopend.
+  function isBezig(r){
+    return r.klaar === false && (Date.now() - r.start) < 12 * 60 * 60 * 1000;
+  }
+  function isAfgebroken(r){
+    return r.klaar === false && (Date.now() - r.start) >= 12 * 60 * 60 * 1000;
+  }
+
+  function perSoort(){
+    var kaarten = {};
+    alleRuns().forEach(function(r){
+      if (isBezig(r)) return;
+      var s = soortVan(r.naam);
+      if (!kaarten[s]) kaarten[s] = {soort:s, runs:[], mislukt:0, afgebroken:0};
+      kaarten[s].runs.push(r);
+      if (isAfgebroken(r)) kaarten[s].afgebroken++;
+      else if (r.exit && r.exit !== "0") kaarten[s].mislukt++;
+    });
+    return Object.keys(kaarten).map(function(s){
+      var k = kaarten[s];
+      // Alleen runs die netjes afgelopen zijn, zeggen iets over de looptijd.
+      var goed = k.runs.filter(function(r){
+        if (isAfgebroken(r)) return false;   // nooit afgesloten: dat is geen looptijd
+        if (r.exit === "") return true;      // nog niet gelezen: de schatting telt mee
+        return r.exit === "0";               // misgelopen runs stoppen vroeg en vertekenen
+      });
+      var duren = goed.map(function(r){ return r.duur; });
+      k.aantal = k.runs.length;
+      k.goed = goed;
+      k.typisch = midden(duren);
+      k.snelste = duren.length ? Math.min.apply(null, duren) : 0;
+      k.traagste = duren.length ? Math.max.apply(null, duren) : 0;
+      k.samen = duren.reduce(function(a,b){ return a + b; }, 0);
+      k.dagdelen = DAGDELEN.map(function(d, i){
+        var hier = goed.filter(function(r){ return dagdeelVan(r.start) === i; });
+        return {naam:d.naam, aantal:hier.length,
+                typisch: midden(hier.map(function(r){ return r.duur; }))};
+      });
+      return k;
+    }).sort(function(a,b){ return b.typisch - a.typisch; });
+  }
+
+  function typischVoor(naam){
+    var s = soortVan(naam);
+    var alles = perSoort();
+    for (var i = 0; i < alles.length; i++){
+      if (alles[i].soort === s && alles[i].goed.length) return alles[i].typisch;
+    }
+    return 0;
+  }
+
+  /* ---- tekenen ---- */
+  function staaf(deel, mis){
+    var pct = Math.max(2, Math.min(100, Math.round(deel * 100)));
+    return '<div class="staaf' + (mis ? " mis" : "") + '"><i style="width:' + pct + '%"></i></div>';
+  }
+
+  function tekenNu(){
+    var lijst = document.getElementById("nu-lijst");
+    var bezig = alleRuns().filter(isBezig);
+    var stille = alleRuns().filter(isAfgebroken);
+    document.getElementById("nu-tel").textContent =
+      bezig.length ? (bezig.length === 1 ? "1 taak" : bezig.length + " taken") : "";
+
+    var html = bezig.map(function(r){
+      var normaal = typischVoor(r.naam);
+      return '<div class="kaart loper" data-klok="' + r.start + '" data-normaal="' + normaal + '">' +
+        '<div class="loperkop">' +
+          '<span class="stip"></span>' +
+          '<div>' +
+            '<div class="naam">' + ontsnap(r.naam) + '</div>' +
+            '<div class="bij">gestart om ' + uurTekst(r.start) +
+              (normaal ? ' · normaal ' + ontsnap(duurLang(normaal)) : ' · nog geen vergelijking') +
+            '</div>' +
+          '</div>' +
+          '<div class="klok">' + klokTekst((Date.now() - r.start) / 1000) + '</div>' +
+        '</div>' +
+        (normaal ? staaf(0, false) : "") +
+        '<div class="bij oordeel">' +
+          (r.logUrl ? '<a href="' + ontsnap(r.logUrl) + '" target="_blank" rel="noopener">logboek</a>' : "") +
+        '</div>' +
+      '</div>';
+    }).join("");
+
+    if (!bezig.length){
+      var laatst = alleRuns().filter(function(r){ return r.klaar !== false; })[0];
+      html = '<div class="kaart"><div class="bij">Er loopt nu niets.' +
+        (laatst ? ' De laatste was <b>' + ontsnap(laatst.naam) + '</b>, klaar om ' +
+                  uurTekst(laatst.start + laatst.duur * 1000) + ' na ' + ontsnap(duurLang(laatst.duur)) + '.' : '') +
+        '</div></div>';
+    }
+
+    if (stille.length){
+      html += '<div class="kaart loper stil"><div class="loperkop"><span class="stip"></span><div>' +
+        '<div class="naam">' + ontsnap(stille[0].naam) + '</div>' +
+        '<div class="bij">Gestart om ' + uurTekst(stille[0].start) + ' en nooit afgesloten' +
+        (stille.length > 1 ? ' (en nog ' + (stille.length - 1) + ' zo)' : '') +
+        '. Meestal betekent dat: de pc ging uit of de opdracht is blijven hangen.</div>' +
+        '</div></div></div>';
+    }
+
+    lijst.innerHTML = html;
+    tik();
+  }
+
+  function tekenTaken(){
+    var vak = document.getElementById("taaklijst");
+    var soorten = perSoort().filter(function(k){ return k.goed.length; });
+    if (!soorten.length){
+      vak.innerHTML = '<div class="kaart"><div class="bij">Nog geen afgelopen runs in deze periode.</div></div>';
+      return;
+    }
+    var langste = soorten[0].typisch || 1;
+
+    vak.innerHTML = soorten.map(function(k){
+      // Eén dagdeel zegt niets over "maakt het uit wanneer": dan herhaalt de
+      // strook enkel het cijfer erboven. Twee of meer, dan valt er te vergelijken.
+      var dagdelen = k.dagdelen.filter(function(d){ return d.aantal; });
+      if (dagdelen.length < 2) dagdelen = [];
+      // Bij één run valt er niets te vergelijken: dan is "typisch" gewoon die run.
+      var alleen = k.goed.length === 1 ? k.goed[0] : null;
+      var meest = Math.max.apply(null, dagdelen.map(function(d){ return d.typisch; }).concat([1]));
+
+      var rijen = dagdelen.map(function(d){
+        return '<span class="dl">' + ontsnap(d.naam) + '</span>' +
+               staaf(d.typisch / meest, false) +
+               '<span class="dw">' + ontsnap(duurKort(d.typisch)) + ' <span style="opacity:.6">×' + d.aantal + '</span></span>';
+      }).join("");
+
+      // Alleen iets zeggen als er echt iets te zeggen valt: twee dagdelen met
+      // elk minstens twee runs, en een verschil dat je merkt.
+      var les = "";
+      var telbaar = dagdelen.filter(function(d){ return d.aantal >= 2; });
+      if (telbaar.length >= 2){
+        var snel = telbaar.slice(0).sort(function(a,b){ return a.typisch - b.typisch; })[0];
+        var traag = telbaar.slice(0).sort(function(a,b){ return b.typisch - a.typisch; })[0];
+        var maal = traag.typisch / Math.max(1, snel.typisch);
+        if (maal >= 1.25){
+          les = '<div class="les">' + ontsnap(traag.naam.charAt(0).toUpperCase() + traag.naam.slice(1)) +
+                ' duurt hij ongeveer ' + (Math.round(maal * 10) / 10).toString().replace(".", ",") +
+                '× zo lang als ' + ontsnap(snel.naam) + '.</div>';
+        }
+      }
+
+      return '<div class="kaart taak">' +
+        '<div class="taakkop"><h3>' + ontsnap(k.soort) + '</h3>' +
+          // Bij één geslaagde run staat het aantal al onder het cijfer.
+          (alleen && !k.mislukt && !k.afgebroken ? '' :
+            '<span class="tel">' + k.aantal + (k.aantal === 1 ? " run" : " runs") +
+            (k.mislukt ? ' · ' + k.mislukt + ' mis' : '') + '</span>') + '</div>' +
+        '<div class="cijfer">' + ontsnap(duurLang(k.typisch)) +
+          '<small>' + (alleen ? "\u00e9\u00e9n run" : "typisch") + '</small></div>' +
+        staaf(k.typisch / langste, false) +
+        '<div class="spreiding">' + (alleen
+          ? 'gedraaid op ' + ontsnap(dagTekst(alleen.start)) + ' om ' + uurTekst(alleen.start)
+          : 'snelste ' + ontsnap(duurKort(k.snelste)) +
+            ' · traagste ' + ontsnap(duurKort(k.traagste)) +
+            ' · samen ' + ontsnap(duurLang(k.samen)) + ' deze periode') + '</div>' +
+        (rijen ? '<div class="dagdelen">' + rijen + '</div>' : "") +
+        les +
+      '</div>';
+    }).join("");
+  }
+
+  function tekenRuns(){
+    var vak = document.getElementById("runlijst");
+    var runs = alleRuns().filter(function(r){ return !isBezig(r); });
+    document.getElementById("run-tel").textContent =
+      runs.length ? runs.length + " in " + dagen + " dagen" : "";
+
+    if (!runs.length){
+      vak.innerHTML = '<div class="kaart"><div class="bij">Geen runs in deze periode.</div></div>';
+      return;
+    }
+    var langste = Math.max.apply(null, runs.map(function(r){ return r.duur; }).concat([1]));
+
+    var html = "", vorigeDag = "";
+    runs.forEach(function(r){
+      var dag = dagSleutel(r.start);
+      if (dag !== vorigeDag){
+        vorigeDag = dag;
+        html += '<div class="dagkop">' + ontsnap(dagTekst(r.start)) + '</div>';
+      }
+      var mis = r.exit !== "" && r.exit !== "0";
+      var stuk = isAfgebroken(r);
+      html += '<div class="run' + (mis ? " mis" : "") + '">' +
+        '<span class="uur">' + uurTekst(r.start) + '</span>' +
+        '<span class="runnaam">' +
+          (r.logUrl ? '<a href="' + ontsnap(r.logUrl) + '" target="_blank" rel="noopener">' + ontsnap(r.naam) + '</a>'
+                    : ontsnap(r.naam)) +
+          (mis ? '<span class="merkje mis">exitcode ' + ontsnap(r.exit) + '</span>' : '') +
+          (stuk ? '<span class="merkje afgebroken">afgebroken</span>' : '') +
+          (r.geschat && !stuk ? '<span class="merkje geschat">geschat</span>' : '') +
+        '</span>' +
+        '<span class="runduur">' + ontsnap(duurKort(r.duur)) + '</span>' +
+        staaf(r.duur / langste, mis) +
+      '</div>';
+    });
+    vak.innerHTML = html;
+  }
+
+  function teken(){
+    tekenNu();
+    tekenTaken();
+    tekenRuns();
+  }
+
+  /* ---- de klok ----
+     Eén keer per seconde, en alleen de cijfers van wat draait: de rest van de
+     pagina opnieuw opbouwen zou het scrollen onderbreken. */
+  function tik(){
+    var lopers = document.querySelectorAll(".loper[data-klok]");
+    for (var i = 0; i < lopers.length; i++){
+      var kaart = lopers[i];
+      var sec = (Date.now() - (+kaart.getAttribute("data-klok"))) / 1000;
+      var klok = kaart.querySelector(".klok");
+      if (klok) klok.textContent = klokTekst(sec);
+
+      var normaal = +kaart.getAttribute("data-normaal");
+      var vulling = kaart.querySelector(".staaf i");
+      var oordeel = kaart.querySelector(".oordeel");
+      if (normaal && vulling){
+        var deel = sec / normaal;
+        vulling.style.width = Math.max(2, Math.min(100, Math.round(deel * 100))) + "%";
+        if (oordeel){
+          var tekst = deel > 1.15
+            ? "Al " + (Math.round(deel * 10) / 10).toString().replace(".", ",") + "× de gewone looptijd"
+            : Math.round(deel * 100) + "% van de gewone looptijd";
+          var link = oordeel.querySelector("a");
+          oordeel.textContent = tekst + (link ? " · " : "");
+          if (link) oordeel.appendChild(link);
+        }
+        kaart.className = "kaart loper" + (deel > 1.15 ? " traag" : "");
+      }
+    }
+  }
+
+  /* ---- knoppen ---- */
+  function zetPeriode(n){
+    dagen = n;
+    try { window.localStorage.setItem(PERIODE, String(n)); } catch (e) { /* niets */ }
+    var knoppen = document.querySelectorAll(".keuze button");
+    for (var i = 0; i < knoppen.length; i++){
+      knoppen[i].setAttribute("aria-pressed", String(+knoppen[i].getAttribute("data-dagen") === n));
+    }
+  }
+
+  var keuzeKnoppen = document.querySelectorAll(".keuze button");
+  for (var k = 0; k < keuzeKnoppen.length; k++){
+    keuzeKnoppen[k].addEventListener("click", function(){
+      zetPeriode(+this.getAttribute("data-dagen"));
+      ophalen();
+    });
+  }
+  zetPeriode(dagen);
+  document.getElementById("ververs").addEventListener("click", function(){ ophalen(); });
+
+  window.setInterval(tik, 1000);
+  // Elke drie minuten opnieuw kijken zolang de pagina in beeld staat. Wat al
+  // gelezen is, komt uit het geheugen; er wordt dus weinig heen en weer gepraat.
+  window.setInterval(function(){
+    if (document.visibilityState === "visible") ophalen();
+  }, 180000);
+  document.addEventListener("visibilitychange", function(){
+    if (document.visibilityState === "visible") ophalen();
+  });
+
+  /* ---- opstarten ---- */
+  if (!window.claude || typeof window.claude.use !== "function"){
+    toonProbleem("rustig", "Deze pagina leest de logboeken uit je Drive, en dat kan alleen in claude.ai. " +
+      'Open ze daar, of kijk rechtstreeks in de <a href="https://drive.google.com/drive/folders/' +
+      MAP_LOG + '" target="_blank" rel="noopener">map logboek</a>.');
+  } else {
+    window.claude.use("mcp").then(function(ns){
+      if (!ns){
+        toonProbleem("rustig", "Deze pagina kan hier niet aan je Drive. " +
+          'Kijk rechtstreeks in de <a href="https://drive.google.com/drive/folders/' +
+          MAP_LOG + '" target="_blank" rel="noopener">map logboek</a>.');
+        return;
+      }
+      mcp = ns;
+      ophalen();
+    }).catch(function(){
+      toonProbleem("rustig", "Deze pagina kan hier niet aan je Drive.");
+    });
+  }
+})();
+</script>

@@ -154,3 +154,36 @@ opdracht.
 
 Bestands-id's staan hard in de pagina. Vervang je een menukaartje in Drive (een nieuw bestand krijgt
 een nieuw id), werk dan ook `OPDRACHTEN` in het artifact bij.
+
+Let op: het bord is intussen ook vanuit andere gesprekken bijgewerkt (de knop "Cash naar Scrada",
+de ziektemelding, de nieuwe planningsberichten). `artifact/opdrachtenbord.html` is daarom opnieuw
+opgehaald uit het live artifact, zodat de repo weer gelijkloopt met wat er echt draait. Publiceer
+altijd vanuit dat bestand, met de URL hierboven als `url`.
+
+## Looptijden
+
+Een tweede pagina, voor het kijken in plaats van het starten:
+**https://claude.ai/code/artifact/340b4af8-d38b-4058-be66-e8a61382954c**
+(bron: [`artifact/looptijden.html`](artifact/looptijden.html))
+
+Ze leest dezelfde map `log` als het opdrachtenbord, maar over een langere periode (7, 14 of 30
+dagen) en met een andere vraag: hoe lang duren de taken?
+
+- **Nu bezig** — elke taak zonder `Einde`-blok krijgt een klok die per seconde meeloopt, met
+  ernaast wat die taak normaal doet. Loopt hij over die tijd heen, dan kleurt de klok en zegt de
+  pagina hoeveel keer de gewone looptijd het intussen is. Een logboek dat na twaalf uur nog altijd
+  geen slot heeft, telt niet meer als bezig maar als afgebroken.
+- **Per taak** — de runs worden gegroepeerd op soort (de datum en het weeknummer gaan uit de naam),
+  met de mediaan als "typisch", de snelste en de traagste, en de totale tijd van die periode.
+  Gesorteerd van traag naar snel, zodat de zware taken bovenaan staan.
+- **Per dagdeel** — binnen elke taak de mediaan per dagdeel (nacht, ochtend, namiddag, avond). Zijn
+  er twee dagdelen met elk minstens twee runs en scheelt het meer dan een kwart, dan zegt de pagina
+  het in één zin: "'s namiddags duurt hij ongeveer 1,4× zo lang als 's ochtends."
+- **Alle runs** — per dag, met een staaf per run en de exitcode erbij als er iets misliep.
+
+Twee dingen om te weten bij het lezen. Runs die misliepen tellen niet mee in het typische cijfer:
+ze stoppen vroeg en zouden de taak sneller doen lijken dan hij is. En van logboeken die nog niet
+gelezen zijn (bij een lange periode leest de pagina er hoogstens zestig per beurt) wordt de
+looptijd geschat uit het verschil tussen aanmaak- en wijzigingstijd van het bestand; die staan
+gemerkt als "geschat" en scheelt seconden, geen minuten. Wat afgelopen is, wordt onthouden in de
+browser — een logboek van een afgelopen run verandert toch nooit meer.
