@@ -1,0 +1,538 @@
+<title>Aanwezigheidsregistratie</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: één app met vier tabbladen (Jaar, Maand, Kindjes, Instellingen), tabbalk onderaan op de gsm.
+   Kleuren: blauwe accentkleur van het Excel-bestand, dagstatus in dezelfde kleuren als de kalender daar. */
+:root{
+  --bg:#f4f6f9; --surface:#ffffff; --ink:#1b2430; --muted:#5b6878; --line:#dde3ea; --accent:#2f5597; --accent-ink:#ffffff; --accent-soft:#e6edf8;
+  --ok:#c6efce; --ok-ink:#1b5e2e; --warn:#ffd966; --warn-ink:#5c4400; --bad:#ffc7ce; --bad-ink:#8a1c2b; --off:#dfe3e8; --plan:#bdd7ee; --typed:#a9d08e; --cell:#ffffff;
+  --c-FD:#ffccff; --c-VAK:#c6e6a2; --c-CAO:#99ccff; --c-VAKB:#8bffd0; --c-ZK:#ff9966; --c-OPL:#ffff66; --c-OV:#b07bd7;
+  --font:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --shadow:0 1px 2px rgba(20,30,50,.08),0 4px 14px rgba(20,30,50,.06);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151b; --surface:#1a2029; --ink:#e7ebf0; --muted:#9aa7b6; --line:#2c3541; --accent:#86a9e6; --accent-ink:#0f1620; --accent-soft:#222c3b;
+  --ok:#1f4d2f; --ok-ink:#b8ecc6; --warn:#6b5a1a; --warn-ink:#ffe9a3; --bad:#5c2530; --bad-ink:#ffc4cc; --off:#2a3039; --plan:#27425f; --typed:#3f6b2e; --cell:#1a2029;
+  --c-FD:#5b3a5b; --c-VAK:#3d5a2a; --c-CAO:#26486b; --c-VAKB:#1f6b52; --c-ZK:#7a3f22; --c-OPL:#6b6a1a; --c-OV:#5a3d7a; color-scheme:dark;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.3);}}
+:root[data-theme="dark"]{
+  --bg:#11151b; --surface:#1a2029; --ink:#e7ebf0; --muted:#9aa7b6; --line:#2c3541; --accent:#86a9e6; --accent-ink:#0f1620; --accent-soft:#222c3b;
+  --ok:#1f4d2f; --ok-ink:#b8ecc6; --warn:#6b5a1a; --warn-ink:#ffe9a3; --bad:#5c2530; --bad-ink:#ffc4cc; --off:#2a3039; --plan:#27425f; --typed:#3f6b2e; --cell:#1a2029;
+  --c-FD:#5b3a5b; --c-VAK:#3d5a2a; --c-CAO:#26486b; --c-VAKB:#1f6b52; --c-ZK:#7a3f22; --c-OPL:#6b6a1a; --c-OV:#5a3d7a; color-scheme:dark;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.3);}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.45;
+  padding-block:0 84px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{margin:0;font-weight:650;letter-spacing:-.01em;text-wrap:balance}
+h2{font-size:18px} h3{font-size:15px}
+button{font:inherit;color:inherit;cursor:pointer}
+input,select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 9px;min-width:0}
+input[type=date]{min-width:9.5rem}
+input[type=number]{width:5rem}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:14px 8px;flex-wrap:wrap}
+.brand{display:flex;flex-direction:column}
+.brand b{font-size:17px;letter-spacing:-.01em}
+.brand span{color:var(--muted);font-size:12.5px}
+.sync{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:#2e9e57}.dot.wait{background:#d9a400}.dot.err{background:#d23b4a}
+.bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-block:6px 14px}
+.bar .title{font-size:20px;font-weight:650;min-width:9.5rem;text-align:center;font-variant-numeric:tabular-nums}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:7px 12px;min-height:38px}
+.btn:hover{background:var(--accent-soft)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+.btn.danger{color:var(--bad-ink);border-color:var(--bad)}
+.btn.small{padding:4px 9px;min-height:30px;font-size:13px}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:var(--shadow)}
+.grid-q{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-bottom:16px}
+.q .big{font-size:30px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.q .meta{color:var(--muted);font-size:13px;display:flex;gap:12px;flex-wrap:wrap}
+.q.now{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),var(--shadow)}
+.pill{display:inline-block;border-radius:99px;padding:2px 10px;font-size:12.5px;font-weight:600}
+.pill.ok{background:var(--ok);color:var(--ok-ink)}.pill.bad{background:var(--bad);color:var(--bad-ink)}.pill.mut{background:var(--off);color:var(--muted)}.pill.warn{background:var(--warn);color:var(--warn-ink)}
+.minis{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:12px;margin-bottom:18px}
+.mini{padding:10px}
+.mini button.mt{all:unset;cursor:pointer;display:block;width:100%;font-weight:650;text-align:center;background:var(--accent);color:var(--accent-ink);border-radius:7px;padding:5px;margin-bottom:6px}
+.mini table{width:100%;border-collapse:separate;border-spacing:2px;table-layout:fixed}
+.mini th{font-size:10.5px;color:var(--muted);font-weight:600}
+.mini td{height:24px;text-align:center;font-size:12px;border-radius:4px;font-variant-numeric:tabular-nums;cursor:pointer}
+.mini td.e{cursor:default}
+.s-off{background:var(--off);color:var(--muted)}.s-ok{background:var(--ok)}.s-warn{background:var(--warn);color:var(--warn-ink)}.s-bad{background:var(--bad);color:var(--bad-ink)}.s-none{background:transparent;border:1px dashed var(--line)}
+.s-FD{background:var(--c-FD)}.s-VAK{background:var(--c-VAK)}.s-CAO{background:var(--c-CAO)}.s-VAKB{background:var(--c-VAKB)}.s-ZK{background:var(--c-ZK)}.s-OPL{background:var(--c-OPL);color:#33330a}.s-OV{background:var(--c-OV)}
+.mini td.today{outline:2px solid var(--accent)}
+.legend{display:flex;gap:10px 14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-bottom:16px;align-items:center}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:5px;border:1px solid var(--line)}
+.tbl{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:14px}
+.tbl th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);text-align:right;padding:6px 8px;border-bottom:1px solid var(--line);font-weight:600}
+.tbl td{padding:6px 8px;text-align:right;border-bottom:1px solid var(--line)}
+.tbl th:first-child,.tbl td:first-child{text-align:left}
+.tbl tr.qrow td{background:var(--accent-soft);font-weight:650}
+.tbl tr.yrow td{background:var(--accent);color:var(--accent-ink);font-weight:650;border-bottom:0}
+.tbl td.pos{background:var(--ok);color:var(--ok-ink)}.tbl td.neg{background:var(--bad);color:var(--bad-ink)}.tbl td.warnc{background:var(--warn);color:var(--warn-ink)}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-bottom:18px}
+.sec{margin-block:22px 10px}
+.sec h2{margin-bottom:8px}
+.note{color:var(--muted);font-size:13px}
+/* maandgrid */
+.gwrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface);box-shadow:var(--shadow)}
+.g{border-collapse:separate;border-spacing:0;font-variant-numeric:tabular-nums}
+.g th,.g td{padding:0;text-align:center;height:34px;min-width:33px;border-bottom:1px solid var(--line);border-right:1px solid var(--line);font-size:13px}
+.g .nm{position:sticky;left:0;z-index:2;background:var(--surface);text-align:left;padding:0 10px;min-width:112px;max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600;border-right:2px solid var(--line)}
+.g .nm.off{color:var(--muted);font-weight:500}
+.g thead th{font-size:11.5px;color:var(--muted);font-weight:600;height:24px}
+.g thead tr.dn th{color:var(--ink);font-size:13px;height:28px}
+.g th.we,.g td.we{background:var(--off)}
+.g th.today{box-shadow:inset 0 -3px 0 var(--accent)}
+.g td.code{font-size:10.5px;font-weight:700;cursor:pointer;height:28px}
+.g td.cell{cursor:pointer;background:var(--cell)}
+.g td.cell.dim{background:var(--off)}
+.g td.cell.plan{background:var(--plan);color:var(--muted)}
+.g td.cell.on{background:var(--typed);font-weight:700}
+.g td.cell.abs{background:var(--bad);color:var(--bad-ink);font-weight:700}
+.g td.cell:hover{filter:brightness(.94)}
+.g tr.tot td{font-weight:700;height:32px;background:var(--surface)}
+.g tr.tot td.ok{background:var(--ok);color:var(--ok-ink)}.g tr.tot td.warn{background:var(--warn);color:var(--warn-ink)}.g tr.tot td.bad{background:var(--bad);color:var(--bad-ink)}
+.g td[class*="st-"]{}
+.st-FD{background:var(--c-FD)!important}.st-VAK{background:var(--c-VAK)!important}.st-CAO{background:var(--c-CAO)!important}.st-VAKB{background:var(--c-VAKB)!important}.st-ZK{background:var(--c-ZK)!important}.st-OPL{background:var(--c-OPL)!important;color:#33330a}.st-OV{background:var(--c-OV)!important}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-block:14px}
+.stat{flex:1 1 130px;padding:10px 12px}
+.stat b{display:block;font-size:22px;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.stat span{font-size:12.5px;color:var(--muted)}
+/* kindjes */
+.kid{margin-bottom:12px}
+.kid header{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.kid header input.nm{font-weight:650;font-size:16px;width:11rem;border-color:transparent;background:transparent;padding-inline:4px}
+.kid header input.nm:hover,.kid header input.nm:focus{border-color:var(--line);background:var(--surface)}
+.per{display:flex;gap:8px 12px;flex-wrap:wrap;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.per label{display:flex;flex-direction:column;font-size:11.5px;color:var(--muted);gap:2px}
+.days{display:flex;gap:4px}
+.dbtn{width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:var(--surface);font-size:12.5px;font-weight:600;color:var(--muted)}
+.dbtn[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.dbtn.closed[aria-pressed="false"]{background:var(--off)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.grp{font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:650;margin-block:18px 8px}
+.form{display:flex;gap:10px 14px;flex-wrap:wrap;align-items:flex-end}
+.form label{display:flex;flex-direction:column;font-size:12px;color:var(--muted);gap:3px}
+/* tabbalk + popover + toast */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:center;
+  padding:6px max(10px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px))}
+nav.tabs .in{display:flex;gap:6px;width:100%;max-width:560px}
+nav.tabs button{flex:1;border:0;background:transparent;border-radius:10px;padding:9px 4px;font-weight:600;font-size:13.5px;color:var(--muted)}
+nav.tabs button[aria-current="page"]{background:var(--accent-soft);color:var(--accent)}
+.sheet-bg{position:fixed;inset:0;background:rgba(10,15,25,.45);z-index:40;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--surface);width:100%;max-width:440px;border-radius:16px 16px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));box-shadow:var(--shadow)}
+@media (min-width:600px){.sheet-bg{align-items:center}.sheet{border-radius:16px}}
+.sheet h3{margin-bottom:4px}.sheet .sub{color:var(--muted);font-size:13px;margin-bottom:12px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.opt{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:12px 10px;font-weight:600;text-align:center}
+.opt.cur{outline:2px solid var(--accent)}
+.opt small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(74px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);border-radius:10px;padding:9px 14px;z-index:60;font-size:13.5px;max-width:92vw}
+.banner{background:var(--warn);color:var(--warn-ink);border-radius:10px;padding:9px 12px;margin-bottom:12px;font-size:14px}
+.empty{padding:28px 18px;text-align:center}
+.empty p{max-width:46ch;margin:8px auto 14px;color:var(--muted)}
+@media (max-width:520px){.bar .title{min-width:7.5rem;font-size:18px}.q .big{font-size:26px}}
+@media (prefers-reduced-motion:no-preference){.btn,.opt,.dbtn{transition:background .12s}}
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+
+<div class="wrap" id="app"></div>
+
+<script>
+/*__CALC__*/
+
+(() => {
+  const { iso, pad } = Calc;
+  const MAANDEN = ["januari","februari","maart","april","mei","juni","juli","augustus","september","oktober","november","december"];
+  const DAG = ["ma","di","wo","do","vr","za","zo"];
+  const DAGLANG = ["maandag","dinsdag","woensdag","donderdag","vrijdag","zaterdag","zondag"];
+  const now = new Date();
+  const TODAY = iso(now.getFullYear(), now.getMonth() + 1, now.getDate());
+  const DEFAULT_CODES = [
+    { code: "W", label: "Gewerkte dag", counts: 1 }, { code: "FD", label: "Feestdag", counts: 0 }, { code: "VAK", label: "Vakantie", counts: 0 },
+    { code: "CAO", label: "CAO-verlofdag", counts: 0 }, { code: "VAKB", label: "Vakantie (B)", counts: 0 }, { code: "ZK", label: "Ziekte", counts: 0 },
+    { code: "OPL", label: "Opleiding", counts: 0 }, { code: "OV", label: "Overig", counts: 0 }];
+
+  const S = { view: (location.hash || "#jaar").slice(1), year: now.getFullYear(), month: now.getMonth() + 1, data: { config: null, kids: {}, months: {} },
+    ready: { cfg: false, kids: false, months: false }, db: null, canWrite: true, pop: null, toast: "", confirmDel: null, slow: false, fail: false, pending: null };
+  if (!["jaar", "maand", "kindjes", "instellingen"].includes(S.view)) S.view = "jaar";
+  const $ = document.getElementById("app");
+  const esc = (t) => String(t ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const num = (n, d = 0) => (n === null || n === undefined ? "" : Number(n).toLocaleString("nl-BE", { minimumFractionDigits: d, maximumFractionDigits: d }));
+  const sgn = (n) => (n === null || n === undefined ? "" : (n > 0 ? "+" : "") + num(n, Number.isInteger(n) ? 0 : 1));
+  const fdate = (s) => (s ? `${s.slice(8, 10)}-${s.slice(5, 7)}-${s.slice(0, 4)}` : "");
+  const ready = () => S.ready.cfg && S.ready.kids && S.ready.months;
+  const D = () => S.data;
+
+  /* ---------- opslaan ---------- */
+  const queues = new Map();
+  function toast(t) { S.toast = t; render(); clearTimeout(toast.t); toast.t = setTimeout(() => { S.toast = ""; render(); }, 3200); }
+  function enqueue(key, fn) {
+    if (!S.db) { toast("Opslaan kan niet: de gegevensopslag is niet bereikbaar."); return Promise.resolve(); }
+    const prev = queues.get(key) || Promise.resolve();
+    const p = prev.then(fn).catch((e) => {
+      if (e && e.code === "invalid_argument") { S.canWrite = false; toast("Je mag hier niet wijzigen. Vraag bewerkrechten aan de eigenaar."); }
+      else toast("Opslaan is mislukt" + (e && e.code ? ` (${e.code})` : "") + ". Probeer het opnieuw.");
+    });
+    queues.set(key, p);
+    return p;
+  }
+  const clone = (o) => JSON.parse(JSON.stringify(o));
+  function writeConfig(cfg) { return enqueue("config", () => S.db.doc("config/main").set(clone(cfg))); }
+  function writeKid(id, kid) { return enqueue("kid-" + id, () => S.db.doc("kids/" + id).set(clone(kid))); }
+  function deleteKid(id) { return enqueue("kid-" + id, () => S.db.doc("kids/" + id).delete()); }
+  function writeMonth(ym, patch) {
+    return enqueue("m-" + ym, async () => {
+      const ref = S.db.doc("months/" + ym);
+      if (S.data.months[ym]) await ref.update(patch);
+      else await ref.set({ codes: {}, kids: {}, ...patch });
+    });
+  }
+  const setCell = (id, s, v) => writeMonth(s.slice(0, 7), { kids: { [id]: { [s.slice(8, 10)]: v } } });
+  const setCode = (s, c) => writeMonth(s.slice(0, 7), { codes: { [s.slice(8, 10)]: c } });
+  function newKidId(name) {
+    const base = (name.toLowerCase().normalize("NFD").replace(/[^a-z0-9]/g, "") || "kind").slice(0, 20);
+    let id = base, i = 2;
+    while (S.data.kids[id]) id = base + i++;
+    return id;
+  }
+
+  /* ---------- weergave: delen ---------- */
+  const statusClass = (s) => {
+    const D_ = D(), st = Calc.status(D_, s);
+    if (st === "") return "s-off";
+    if (!Calc.counts(D_, st)) return "s-" + st;
+    const tot = Calc.dayTotal(D_, s);
+    if (tot >= D_.config.norm) return "s-ok";
+    if (tot > 0) return "s-warn";
+    return s <= TODAY ? "s-bad" : "s-none";
+  };
+  function header(sub) {
+    const st = S.fail ? ["err", "Niet bereikbaar"] : ready() ? (S.slow ? ["wait", "Laden…"] : ["", "Live gesynchroniseerd"]) : ["wait", "Laden…"];
+    return `<div class="top"><div class="brand"><b>Aanwezigheidsregistratie</b><span>${esc(sub)}</span></div>
+      <div class="sync"><span class="dot ${st[0]}"></span>${st[1]}</div></div>`;
+  }
+  const tabs = () => `<nav class="tabs"><div class="in">${[["jaar", "Jaar"], ["maand", "Maand"], ["kindjes", "Kindjes"], ["instellingen", "Instellingen"]]
+    .map(([k, l]) => `<button data-a="tab" data-v="${k}" ${S.view === k ? 'aria-current="page"' : ""}>${l}</button>`).join("")}</div></nav>`;
+
+  /* ---------- jaar ---------- */
+  function viewYear() {
+    const D_ = D(), y = S.year, r = Calc.year(D_, y, TODAY), cfg = D_.config;
+    const curQ = y === now.getFullYear() ? Math.floor(now.getMonth() / 3) : -1;
+    const qcards = r.quarters.map((q, i) => {
+      const empty = q.kids === 0 && Calc.iso(y, i * 3 + 1, 1) > TODAY;
+      const ok = q.avg !== null && q.avg >= cfg.norm;
+      return `<div class="card q ${i === curQ ? "now" : ""}"><div class="row" style="justify-content:space-between"><h3>Kwartaal ${i + 1}</h3>
+        ${empty ? '<span class="pill mut">Nog niet begonnen</span>' : `<span class="pill ${ok ? "ok" : "bad"}">${ok ? "Norm gehaald" : "Onder norm"}</span>`}</div>
+        <div class="big">${q.avg === null || empty ? "–" : num(q.avg, 2)}</div>
+        <div class="meta"><span>per gewerkte dag (norm ${num(cfg.norm)})</span></div>
+        <div class="meta" style="margin-top:6px"><span>${num(q.worked)} dagen</span><span>${num(q.kids, 1).replace(",0", "")} kindjes</span><span>${empty ? "" : sgn(q.diff)} ${empty ? "" : "t.o.v. norm"}</span></div></div>`;
+    }).join("");
+    const minis = MAANDEN.map((nm, i) => {
+      const m = i + 1, first = iso(y, m, 1), off = Calc.weekday(first), n = Calc.daysInMonth(y, m);
+      let rows = "";
+      for (let w = 0; w < 6; w++) {
+        let tr = "";
+        for (let k = 0; k < 7; k++) {
+          const d = w * 7 + k - off + 1;
+          if (d < 1 || d > n) { tr += '<td class="e"></td>'; continue; }
+          const s = iso(y, m, d);
+          tr += `<td class="${statusClass(s)} ${s === TODAY ? "today" : ""}" data-a="openMonth" data-y="${y}" data-m="${m}" title="${fdate(s)}">${d}</td>`;
+        }
+        if (w < 5 || tr.includes("data-a")) rows += `<tr>${tr}</tr>`;
+      }
+      return `<div class="card mini"><button class="mt" data-a="openMonth" data-y="${y}" data-m="${m}">${nm[0].toUpperCase() + nm.slice(1)}</button>
+        <table><thead><tr>${DAG.map((d) => `<th>${d[0]}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div>`;
+    }).join("");
+    const colour = (v) => (v === null || v === "" ? "" : v < 0 ? "neg" : "pos");
+    let body = "";
+    for (let q = 0; q < 4; q++) {
+      for (let k = 0; k < 3; k++) {
+        const m = q * 3 + k, x = r.months[m];
+        body += `<tr><td>${MAANDEN[m][0].toUpperCase() + MAANDEN[m].slice(1)}</td><td>${num(x.worked)}</td><td>${num(x.kids, 1).replace(",0", "")}</td><td>${x.avg === null ? "" : num(x.avg, 2)}</td><td>${x.norm === null ? "" : num(x.norm)}</td>
+          <td class="${colour(x.diff)}">${sgn(x.diff)}</td><td class="${colour(x.run)}">${sgn(x.run)}</td><td class="${x.empty > 0 ? "warnc" : ""}">${x.empty}</td></tr>`;
+      }
+      const t = r.quarters[q], ok = t.avg !== null && t.avg >= cfg.norm;
+      body += `<tr class="qrow"><td>Kwartaal ${q + 1}</td><td>${num(t.worked)}</td><td>${num(t.kids, 1).replace(",0", "")}</td><td class="${t.kids ? (ok ? "pos" : "neg") : ""}">${t.avg === null ? "" : num(t.avg, 2)}</td><td>${num(t.norm)}</td><td>${sgn(t.diff)}</td><td></td><td>${t.empty}</td></tr>`;
+    }
+    const T = r.total;
+    body += `<tr class="yrow"><td>Jaar ${y}</td><td>${num(T.worked)}</td><td>${num(T.kids, 1).replace(",0", "")}</td><td>${T.avg === null ? "" : num(T.avg, 2)}</td><td>${num(T.norm)}</td><td>${sgn(T.diff)}</td><td></td><td>${T.empty}</td></tr>`;
+    const codes = r.perCode.map((c) => `<tr><td><span class="pill" style="background:${c.code === "W" ? "var(--accent-soft)" : `var(--c-${c.code})`}">${esc(c.code)}</span> ${esc(c.label)}</td>${c.q.map((v) => `<td>${v}</td>`).join("")}<td><b>${c.total}</b></td></tr>`).join("");
+    const kidIds = Calc.sortedKids(D_, TODAY);
+    const kidRows = kidIds.map((id) => {
+      const k = D_.kids[id], act = Calc.kidActive(k, TODAY);
+      return `<tr><td>${esc(k.name)} ${act ? "" : '<span class="pill mut">gestopt</span>'}</td><td><b>${num(r.perKid[id] || 0, 1).replace(",0", "")}</b></td></tr>`;
+    }).join("");
+    const holi = [...Calc.holidays(y)].map(([d, n]) => `<tr><td>${esc(n)}</td><td>${fdate(d)} (${DAG[Calc.weekday(d)]})</td></tr>`).join("");
+    return `${header("Jaaroverzicht")}
+      <div class="bar"><button class="btn" data-a="year" data-d="-1" aria-label="Vorig jaar">‹</button><div class="title">${y}</div><button class="btn" data-a="year" data-d="1" aria-label="Volgend jaar">›</button>
+      <button class="btn" data-a="thisyear">Dit jaar</button></div>
+      <div class="grid-q">${qcards}</div>
+      <div class="legend"><span><i style="background:var(--ok)"></i>norm gehaald</span><span><i style="background:var(--warn)"></i>onder norm</span><span><i style="background:var(--bad)"></i>verleden dag zonder kindjes</span>
+        <span><i style="background:var(--off)"></i>weekend of gesloten</span>${D_.config.codes.filter((c) => c.code !== "W").map((c) => `<span><i style="background:var(--c-${c.code})"></i>${esc(c.code)}</span>`).join("")}</div>
+      <div class="minis">${minis}</div>
+      <div class="sec"><h2>Per maand en kwartaal</h2><div class="card scroll"><table class="tbl"><thead><tr><th>Maand</th><th>Dagen</th><th>Kindjes</th><th>Gem.</th><th>Norm</th><th>+/−</th><th>Teller</th><th title="Gewerkte dagen tot vandaag zonder kindjes">Leeg</th></tr></thead><tbody>${body}</tbody></table></div>
+      <p class="note">Een kwartaal telt als gehaald wanneer het gemiddelde minstens ${num(cfg.norm)} kindjes per gewerkte dag is. “Leeg” zijn gewerkte dagen tot vandaag zonder één kindje.</p></div>
+      <div class="two"><div><h2 style="margin-bottom:8px">Dagen per code</h2><div class="card scroll"><table class="tbl"><thead><tr><th>Code</th><th>Kw 1</th><th>Kw 2</th><th>Kw 3</th><th>Kw 4</th><th>Jaar</th></tr></thead><tbody>${codes}</tbody></table></div>
+        <p class="note">Telt enkel dagen waarop je open bent.</p></div>
+        <div><h2 style="margin-bottom:8px">Aanwezige dagen per kindje</h2><div class="card scroll"><table class="tbl"><thead><tr><th>Kindje</th><th>Dagen</th></tr></thead><tbody>${kidRows}</tbody></table></div></div>
+        <div><h2 style="margin-bottom:8px">Feestdagen ${y}</h2><div class="card scroll"><table class="tbl"><tbody>${holi}</tbody></table></div></div></div>`;
+  }
+
+  /* ---------- maand ---------- */
+  function viewMonth() {
+    const D_ = D(), y = S.year, m = S.month, n = Calc.daysInMonth(y, m), cfg = D_.config;
+    const kids = Calc.monthKids(D_, y, m, TODAY), sum = Calc.month(D_, y, m, TODAY);
+    let h1 = "", h2 = "", code = "", tot = "";
+    const days = [];
+    for (let d = 1; d <= n; d++) days.push(iso(y, m, d));
+    for (const s of days) {
+      const wd = Calc.weekday(s), st = Calc.status(D_, s), wk = Calc.counts(D_, st) && st !== "";
+      const we = wd > 4 && st === "";
+      h1 += `<th class="${we ? "we" : ""} ${s === TODAY ? "today" : ""}">${DAG[wd]}</th>`;
+      h2 += `<th class="${we ? "we" : ""} ${s === TODAY ? "today" : ""}">${+s.slice(8)}</th>`;
+      const typedC = Calc.typedCode(D_, s);
+      code += `<td class="code ${st && st !== "W" ? "st-" + st : st === "" ? "we" : ""}" data-a="code" data-s="${s}" title="${esc(st)}${typedC ? " (zelf ingesteld)" : ""}">${st && st !== "W" ? esc(st) : ""}${typedC === "W" ? "W" : ""}</td>`;
+      const t = Calc.dayTotal(D_, s);
+      const cls = !wk ? "" : t >= cfg.norm ? "ok" : t > 0 ? "warn" : s <= TODAY ? "bad" : "";
+      tot += `<td class="${cls} ${!wk && st === "" ? "we" : ""}">${t ? num(t, t % 1 ? 1 : 0) : ""}</td>`;
+    }
+    const rows = kids.map((id) => {
+      const k = D_.kids[id], act = Calc.kidActive(k, TODAY);
+      let tds = "";
+      for (const s of days) {
+        const st = Calc.status(D_, s), wk = Calc.counts(D_, st) && st !== "";
+        const t = Calc.typed(D_, id, s), p = Calc.planned(D_, id, s);
+        let cls = "cell", txt = "";
+        if (t !== null) { if (t === 0) { cls += " abs"; txt = "0"; } else { cls += " on"; txt = t === 0.5 ? "½" : num(t, 1).replace(",0", ""); } }
+        else if (p) { cls += " plan"; txt = "•"; }
+        else if (!wk) cls += " dim";
+        tds += `<td class="${cls}" data-a="cell" data-id="${id}" data-s="${s}">${txt}</td>`;
+      }
+      return `<tr><td class="nm ${act ? "" : "off"}" title="${esc(k.name)}">${esc(k.name)}</td>${tds}</tr>`;
+    }).join("");
+    const stats = `<div class="stats"><div class="card stat"><b>${num(sum.worked)}</b><span>gewerkte dagen</span></div><div class="card stat"><b>${num(sum.kids, 1).replace(",0", "")}</b><span>kindjes in totaal</span></div>
+      <div class="card stat"><b>${sum.avg === null ? "–" : num(sum.avg, 2)}</b><span>gemiddeld per dag</span></div>
+      <div class="card stat"><b>${sum.diff === null ? "–" : sgn(sum.diff)}</b><span>t.o.v. norm (${num(cfg.norm)} per dag)</span></div></div>`;
+    return `${header("Invoer per maand")}
+      <div class="bar"><button class="btn" data-a="month" data-d="-1" aria-label="Vorige maand">‹</button><div class="title">${MAANDEN[m - 1][0].toUpperCase() + MAANDEN[m - 1].slice(1)} ${y}</div><button class="btn" data-a="month" data-d="1" aria-label="Volgende maand">›</button>
+      <button class="btn" data-a="today">Vandaag</button></div>
+      ${S.canWrite ? "" : '<div class="banner">Je kan hier alleen kijken. Vraag bewerkrechten aan de eigenaar om te wijzigen.</div>'}
+      ${kids.length ? `<div class="gwrap"><table class="g"><thead><tr><th class="nm"></th>${h1}</tr><tr class="dn"><th class="nm">Kindje</th>${h2}</tr><tr><th class="nm" style="font-size:11px;color:var(--muted)">Code</th>${code}</tr></thead>
+        <tbody>${rows}</tbody><tfoot><tr class="tot"><td class="nm">Totaal</td>${tot}</tr></tfoot></table></div>` :
+        `<div class="card empty"><h3>Geen kindjes in deze maand</h3><p>Voeg bij “Kindjes” een kindje toe met een startdatum, dan verschijnt het hier.</p></div>`}
+      <div class="legend" style="margin-top:12px"><span><i style="background:var(--plan)"></i>standaarddag (telt mee)</span><span><i style="background:var(--typed)"></i>getypt aanwezig (1 of ½)</span><span><i style="background:var(--bad)"></i>0 = afwezig</span>
+        <span><i style="background:var(--off)"></i>gesloten of weekend</span></div>
+      <p class="note">Tik op een vakje om een dag aan te passen. Tik op de coderij om een dag als vakantie, CAO, ziekte… te markeren.</p>${stats}`;
+  }
+
+  /* ---------- kindjes ---------- */
+  const dayBtns = (id, pi, days) => DAG.slice(0, 5).map((d, i) => `<button class="dbtn" data-a="kday" data-id="${id}" data-p="${pi}" data-d="${i}" aria-pressed="${days[i] === 1}" ${S.canWrite ? "" : "disabled"}>${d}</button>`).join("");
+  function viewKids() {
+    const D_ = D(), ids = Calc.sortedKids(D_, TODAY);
+    const card = (id) => {
+      const k = D_.kids[id], act = Calc.kidActive(k, TODAY), ro = S.canWrite ? "" : "disabled";
+      const pers = k.periods.map((p, i) => `<div class="per"><label>Van<input type="date" value="${p.from || ""}" data-c="pfrom" data-id="${id}" data-p="${i}" ${ro}></label>
+        <label>Tot (leeg = loopt door)<input type="date" value="${p.to || ""}" data-c="pto" data-id="${id}" data-p="${i}" ${ro}></label>
+        <div class="days">${dayBtns(id, i, p.days)}</div>
+        ${k.periods.length > 1 ? `<button class="btn small danger" data-a="delper" data-id="${id}" data-p="${i}" ${ro}>Verwijder periode</button>` : ""}</div>`).join("");
+      const open = k.periods.find((p) => !p.to);
+      return `<div class="card kid"><header><input class="nm" value="${esc(k.name)}" data-c="kname" data-id="${id}" aria-label="Naam" ${ro}>
+        <span class="pill ${act ? "ok" : "mut"}">${act ? "Actief" : "Gestopt"}</span></header>${pers}
+        <div class="row" style="margin-top:8px"><button class="btn small" data-a="addper" data-id="${id}" ${ro}>+ Nieuwe periode of ander schema</button>
+        ${open ? `<span class="row"><input type="date" id="stop-${id}" value="${TODAY}" ${ro}><button class="btn small" data-a="stop" data-id="${id}" ${ro}>Stoppen op deze datum</button></span>` : ""}
+        ${S.confirmDel === id ? `<button class="btn small danger" data-a="delkid" data-id="${id}">Ja, verwijder ${esc(k.name)}</button><button class="btn small" data-a="cancel">Annuleer</button>`
+          : `<button class="btn small danger" data-a="askdel" data-id="${id}" ${ro}>Verwijder kindje</button>`}</div></div>`;
+    };
+    const active = ids.filter((id) => Calc.kidActive(D_.kids[id], TODAY)), gone = ids.filter((id) => !Calc.kidActive(D_.kids[id], TODAY));
+    return `${header("Kindjes en standaarddagen")}
+      <p class="note" style="margin-top:0">Per kindje geef je een startdatum, een einddatum en de dagen waarop het normaal komt. Die dagen staan blauw in de maandinvoer en tellen automatisch mee. Het kindje verschijnt vanaf de startdatum in de maanden. De lijst staat altijd netjes geordend: actieve kindjes eerst, het langst aanwezige bovenaan.</p>
+      <div class="card" style="margin-bottom:6px"><h3 style="margin-bottom:8px">Nieuw kindje</h3><div class="form">
+        <label>Naam<input id="nk-name" placeholder="Voornaam" ${S.canWrite ? "" : "disabled"}></label>
+        <label>Eerste dag<input type="date" id="nk-from" value="${TODAY}" ${S.canWrite ? "" : "disabled"}></label>
+        <div><div class="note" style="margin-bottom:3px">Komt op</div><div class="days" id="nk-days">${DAG.slice(0, 5).map((d, i) => `<button class="dbtn" data-a="nkday" data-d="${i}" aria-pressed="true">${d}</button>`).join("")}</div></div>
+        <button class="btn primary" data-a="addkid" ${S.canWrite ? "" : "disabled"}>Toevoegen</button></div></div>
+      <div class="grp">Actief (${active.length})</div>${active.map(card).join("") || '<p class="note">Geen actieve kindjes.</p>'}
+      ${gone.length ? `<div class="grp">Gestopt (${gone.length})</div>${gone.map(card).join("")}` : ""}`;
+  }
+
+  /* ---------- instellingen ---------- */
+  function viewSettings() {
+    const cfg = D().config, ro = S.canWrite ? "" : "disabled";
+    const open = cfg.open.map((p, i) => `<div class="per"><label>Vanaf<input type="date" value="${p.from}" data-c="ofrom" data-p="${i}" ${ro}></label>
+      <div class="days">${DAG.map((d, k) => `<button class="dbtn ${k > 4 ? "closed" : ""}" data-a="oday" data-p="${i}" data-d="${k}" aria-pressed="${p.days[k] === 1}" ${ro}>${d}</button>`).join("")}</div>
+      ${cfg.open.length > 1 ? `<button class="btn small danger" data-a="delopen" data-p="${i}" ${ro}>Verwijder</button>` : ""}</div>`).join("");
+    const codes = cfg.codes.map((c, i) => `<tr><td><span class="pill" style="background:${c.code === "W" ? "var(--accent-soft)" : `var(--c-${c.code})`}">${esc(c.code)}</span></td>
+      <td style="text-align:left"><input value="${esc(c.label)}" data-c="clabel" data-p="${i}" ${ro}></td><td>${c.counts ? "ja" : "nee"}</td></tr>`).join("");
+    return `${header("Instellingen")}
+      <div class="card"><h3 style="margin-bottom:8px">Norm</h3><div class="row"><input type="number" min="0" step="0.5" value="${cfg.norm}" data-c="norm" ${ro}> <span>kindjes gemiddeld per gewerkte dag, per kwartaal bekeken</span></div></div>
+      <div class="sec"><h2>Open op</h2><div class="card"><p class="note" style="margin-top:0">Per periode de weekdagen waarop je open bent. Een nieuwe regeling begint op de datum bij “Vanaf”. Dagen daarvoor blijven volgens de oude regeling tellen.</p>${open}
+        <div style="margin-top:8px"><button class="btn small" data-a="addopen" ${ro}>+ Nieuwe periode</button></div></div></div>
+      <div class="sec"><h2>Codes</h2><div class="card scroll"><table class="tbl"><thead><tr><th>Code</th><th style="text-align:left">Betekenis</th><th>Telt als gewerkte dag</th></tr></thead><tbody>${codes}</tbody></table></div>
+        <p class="note">Een dag zonder code telt als gewerkt als je die weekdag open bent en het geen feestdag is. Feestdagen en Pasen worden automatisch berekend.</p></div>
+      <div class="sec"><h2>Back-up</h2><div class="card"><p class="note" style="margin-top:0">Sla alle gegevens op als bestand, voor je eigen veiligheid. Met zo'n bestand kan je de gegevens ook terugzetten of voor het eerst laden.</p>
+        <div class="row"><button class="btn" data-a="backup">Back-up downloaden</button></div>
+        <div class="row" style="margin-top:12px"><input type="file" id="imp-file" accept=".json,application/json" ${ro}><button class="btn" data-a="import" ${ro}>Bestand inlezen</button></div>
+        ${S.pending ? `<div class="banner" style="margin-top:12px">Dit bestand bevat ${S.pending.kids} kindjes en ${S.pending.months} maanden. Terugzetten overschrijft de bestaande gegevens met dezelfde naam.
+          <div class="row" style="margin-top:8px"><button class="btn primary small" data-a="doimport">Ja, terugzetten</button><button class="btn small" data-a="cancelimport">Annuleer</button></div></div>` : ""}</div></div>`;
+  }
+
+  function viewSetup() {
+    return `${header("Eerste keer")}<div class="card empty"><h2>Nog geen gegevens</h2><p>Begin met de standaardinstellingen: open van maandag tot vrijdag en een norm van 4 kindjes per dag. Daarna voeg je de kindjes toe.</p>
+      <button class="btn primary" data-a="init" ${S.canWrite ? "" : "disabled"}>Starten</button>
+      <div class="row" style="justify-content:center;margin-top:18px"><input type="file" id="imp-file" accept=".json,application/json"><button class="btn" data-a="import">Back-up inlezen</button></div>
+      ${S.pending ? `<div class="banner" style="margin-top:12px">Dit bestand bevat ${S.pending.kids} kindjes en ${S.pending.months} maanden.
+        <div class="row" style="margin-top:8px;justify-content:center"><button class="btn primary small" data-a="doimport">Ja, laden</button><button class="btn small" data-a="cancelimport">Annuleer</button></div></div>` : ""}</div>`;
+  }
+
+  /* ---------- popover ---------- */
+  function popup() {
+    const p = S.pop;
+    if (!p) return "";
+    const D_ = D();
+    if (p.type === "cell") {
+      const k = D_.kids[p.id], t = Calc.typed(D_, p.id, p.s), pl = Calc.planned(D_, p.id, p.s), wd = Calc.weekday(p.s);
+      const o = (v, label, sub) => `<button class="opt ${(v === "std" ? t === null : t === +v) ? "cur" : ""}" data-a="setval" data-v="${v}">${label}<small>${sub}</small></button>`;
+      return `<div class="sheet-bg" data-a="closepop"><div class="sheet" role="dialog" aria-label="Aanwezigheid aanpassen" data-keep="1"><h3>${esc(k ? k.name : "")}</h3>
+        <div class="sub">${DAGLANG[wd]} ${+p.s.slice(8)} ${MAANDEN[+p.s.slice(5, 7) - 1]} ${p.s.slice(0, 4)} · standaard: ${pl ? "komt" : "komt niet"}</div>
+        <div class="opts">${o("std", "Standaard", "volgt het schema")}${o("1", "Aanwezig", "hele dag")}${o("0.5", "Halve dag", "telt als ½")}${o("0", "Afwezig", "komt niet")}</div>
+        <div style="margin-top:12px"><button class="btn" data-a="closepop">Sluiten</button></div></div></div>`;
+    }
+    const st = Calc.status(D_, p.s), typedC = Calc.typedCode(D_, p.s), wd = Calc.weekday(p.s);
+    const opts = D_.config.codes.map((c) => `<button class="opt ${typedC === c.code ? "cur" : ""}" data-a="setcode" data-v="${c.code}">${esc(c.code)}<small>${esc(c.label)}</small></button>`).join("");
+    return `<div class="sheet-bg" data-a="closepop"><div class="sheet" role="dialog" aria-label="Dagcode kiezen" data-keep="1"><h3>${DAGLANG[wd]} ${+p.s.slice(8)} ${MAANDEN[+p.s.slice(5, 7) - 1]}</h3>
+      <div class="sub">Nu: ${esc(st || "gesloten")}${typedC ? " (zelf ingesteld)" : " (automatisch)"}</div><div class="opts">${opts}
+      <button class="opt ${typedC ? "" : "cur"}" data-a="setcode" data-v="">Automatisch<small>feestdag of openingsdag</small></button></div>
+      <div style="margin-top:12px"><button class="btn" data-a="closepop">Sluiten</button></div></div></div>`;
+  }
+
+  /* ---------- hoofdrender ---------- */
+  function render() {
+    const keepScroll = { x: document.querySelector(".gwrap")?.scrollLeft || 0, y: window.scrollY };
+    let body;
+    if (S.fail && !ready()) body = `${header("")}<div class="card empty"><h2>De gegevens zijn niet bereikbaar</h2><p>Controleer je internet en laad de pagina opnieuw. Meld je aan bij Claude als dat gevraagd wordt.</p></div>`;
+    else if (!ready()) body = `${header("")}<div class="card empty"><h2>Laden…</h2><p>${S.slow ? "Dit duurt langer dan normaal. De gegevens zijn nog niet bereikbaar." : "Even geduld, de gegevens worden opgehaald."}</p></div>`;
+    else if (!S.data.config) body = viewSetup();
+    else body = { jaar: viewYear, maand: viewMonth, kindjes: viewKids, instellingen: viewSettings }[S.view]();
+    $.innerHTML = body + tabs() + popup() + (S.toast ? `<div class="toast" role="status">${esc(S.toast)}</div>` : "");
+    const gw = document.querySelector(".gwrap");
+    if (gw) gw.scrollLeft = keepScroll.x;
+    window.scrollTo(0, keepScroll.y);
+    if (S.view === "maand" && gw && !render.centered) { render.centered = true; const t = gw.querySelector("th.today"); if (t) gw.scrollLeft = Math.max(0, t.offsetLeft - 140); }
+  }
+
+  /* ---------- acties ---------- */
+  const mut = (fn) => { if (!S.canWrite) return toast("Je kan hier alleen kijken."); fn(); };
+  const kid = (id) => clone(S.data.kids[id]);
+  const cfgc = () => clone(S.data.config);
+  const nk = { days: [1, 1, 1, 1, 1] };
+  document.addEventListener("click", (e) => {
+    const el = e.target.closest("[data-a]");
+    if (!el) return;
+    const a = el.dataset.a, ds = el.dataset;
+    if (a === "closepop") { if (e.target.closest("[data-keep]") && !e.target.closest("button")) return; S.pop = null; return render(); }
+    switch (a) {
+      case "tab": S.view = ds.v; history.replaceState(null, "", "#" + ds.v); render.centered = false; return render();
+      case "year": S.year += +ds.d; return render();
+      case "thisyear": S.year = now.getFullYear(); return render();
+      case "month": { let m = S.month + +ds.d, y = S.year; if (m < 1) { m = 12; y--; } if (m > 12) { m = 1; y++; } S.month = m; S.year = y; render.centered = false; return render(); }
+      case "today": S.year = now.getFullYear(); S.month = now.getMonth() + 1; render.centered = false; return render();
+      case "openMonth": S.year = +ds.y; S.month = +ds.m; S.view = "maand"; history.replaceState(null, "", "#maand"); render.centered = false; window.scrollTo(0, 0); return render();
+      case "cell": return mut(() => { S.pop = { type: "cell", id: ds.id, s: ds.s }; render(); });
+      case "code": return mut(() => { S.pop = { type: "code", s: ds.s }; render(); });
+      case "setval": { const p = S.pop; S.pop = null; render(); return setCell(p.id, p.s, ds.v === "std" ? null : +ds.v); }
+      case "setcode": { const p = S.pop; S.pop = null; render(); return setCode(p.s, ds.v); }
+      case "init": return mut(() => writeConfig({ norm: 4, open: [{ from: iso(now.getFullYear(), 1, 1), days: [1, 1, 1, 1, 1, 0, 0] }], codes: DEFAULT_CODES }));
+      case "nkday": { const i = +ds.d; nk.days[i] = nk.days[i] ? 0 : 1; el.setAttribute("aria-pressed", nk.days[i] === 1); return; }
+      case "addkid": return mut(() => {
+        const name = document.getElementById("nk-name").value.trim(), from = document.getElementById("nk-from").value;
+        if (!name) return toast("Geef eerst een naam in.");
+        if (!from) return toast("Kies de eerste dag.");
+        const id = newKidId(name);
+        S.data.kids[id] = { name, periods: [{ from, to: null, days: nk.days.slice() }] };
+        writeKid(id, S.data.kids[id]).then(() => toast(`${name} is toegevoegd.`));
+      });
+      case "kday": return mut(() => { const k = kid(ds.id); k.periods[+ds.p].days[+ds.d] = k.periods[+ds.p].days[+ds.d] ? 0 : 1; writeKid(ds.id, k); });
+      case "addper": return mut(() => { const k = kid(ds.id); const last = k.periods[k.periods.length - 1]; k.periods.push({ from: TODAY, to: null, days: (last ? last.days : [1, 1, 1, 1, 1]).slice() });
+        if (last && !last.to) last.to = Calc.addDays(TODAY, -1); writeKid(ds.id, k); toast("Nieuwe periode toegevoegd. De vorige loopt tot gisteren."); });
+      case "delper": return mut(() => { const k = kid(ds.id); k.periods.splice(+ds.p, 1); writeKid(ds.id, k); });
+      case "stop": return mut(() => { const v = document.getElementById("stop-" + ds.id).value; if (!v) return toast("Kies een datum."); const k = kid(ds.id);
+        const p = k.periods.find((x) => !x.to); if (p) { if (v < p.from) return toast("De einddatum ligt voor de startdatum."); p.to = v; } writeKid(ds.id, k); toast("Einddatum gezet."); });
+      case "askdel": S.confirmDel = ds.id; return render();
+      case "cancel": S.confirmDel = null; return render();
+      case "delkid": S.confirmDel = null; return mut(() => { deleteKid(ds.id); toast("Kindje verwijderd."); });
+      case "oday": return mut(() => { const c = cfgc(); c.open[+ds.p].days[+ds.d] = c.open[+ds.p].days[+ds.d] ? 0 : 1; writeConfig(c); });
+      case "addopen": return mut(() => { const c = cfgc(); const last = c.open[c.open.length - 1]; c.open.push({ from: TODAY, days: last ? last.days.slice() : [1, 1, 1, 1, 1, 0, 0] }); c.open.sort((x, y) => (x.from < y.from ? -1 : 1)); writeConfig(c); });
+      case "delopen": return mut(() => { const c = cfgc(); c.open.splice(+ds.p, 1); writeConfig(c); });
+      case "backup": return doBackup();
+      case "import": return readImport();
+      case "cancelimport": S.pending = null; return render();
+      case "doimport": return mut(() => runImport());
+    }
+  });
+  document.addEventListener("change", (e) => {
+    const el = e.target.closest("[data-c]");
+    if (!el) return;
+    const c = el.dataset.c, ds = el.dataset;
+    if (!S.canWrite) return;
+    if (c === "kname") { const k = kid(ds.id); const v = el.value.trim(); if (!v) return render(); k.name = v; writeKid(ds.id, k); }
+    else if (c === "pfrom" || c === "pto") {
+      const k = kid(ds.id), p = k.periods[+ds.p], v = el.value || null;
+      if (c === "pfrom") { if (!v) { toast("De startdatum mag niet leeg zijn."); return render(); } p.from = v; } else p.to = v;
+      if (p.to && p.from && p.to < p.from) { toast("De einddatum ligt voor de startdatum."); return render(); }
+      writeKid(ds.id, k);
+    } else if (c === "norm") { const c2 = cfgc(); const v = parseFloat(String(el.value).replace(",", ".")); if (isNaN(v) || v < 0) return render(); c2.norm = v; writeConfig(c2); }
+    else if (c === "ofrom") { const c2 = cfgc(); if (!el.value) return render(); c2.open[+ds.p].from = el.value; c2.open.sort((x, y) => (x.from < y.from ? -1 : 1)); writeConfig(c2); }
+    else if (c === "clabel") { const c2 = cfgc(); c2.codes[+ds.p].label = el.value.trim() || c2.codes[+ds.p].label; writeConfig(c2); }
+  });
+  window.addEventListener("hashchange", () => { const v = location.hash.slice(1); if (["jaar", "maand", "kindjes", "instellingen"].includes(v) && v !== S.view) { S.view = v; render(); } });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && S.pop) { S.pop = null; render(); } });
+
+  async function readImport() {
+    const f = document.getElementById("imp-file")?.files?.[0];
+    if (!f) return toast("Kies eerst een back-upbestand.");
+    try {
+      const j = JSON.parse(await f.text());
+      const docs = {};
+      if (j.config) docs["config/main"] = j.config;
+      for (const [id, k] of Object.entries(j.kindjes || {})) docs["kids/" + id] = k;
+      for (const [ym, m] of Object.entries(j.maanden || {})) docs["months/" + ym] = m;
+      if (!docs["config/main"]) throw new Error("geen instellingen");
+      S.pending = { docs, kids: Object.keys(j.kindjes || {}).length, months: Object.keys(j.maanden || {}).length };
+      render();
+    } catch (e) { toast("Dit bestand is geen geldige back-up."); }
+  }
+  async function runImport() {
+    const docs = S.pending.docs;
+    S.pending = null;
+    toast("Bezig met terugzetten…");
+    for (const [p, d] of Object.entries(docs)) await enqueue("imp-" + p, () => S.db.doc(p).set(clone(d)));
+    toast("Back-up is teruggezet.");
+  }
+  async function doBackup() {
+    const dl = await claude.use("downloads");
+    const data = JSON.stringify({ gemaakt: TODAY, config: S.data.config, kindjes: S.data.kids, maanden: S.data.months }, null, 1);
+    if (!dl) { toast("Downloaden kan hier niet."); return; }
+    try { await dl.save({ filename: `aanwezigheden-backup-${TODAY}.json`, data }); toast("Back-up opgeslagen."); } catch (e) { if (!e || e.code !== "declined") toast("Back-up opslaan is niet gelukt."); }
+  }
+
+  /* ---------- opstarten ---------- */
+  render();
+  (async () => {
+    const timer = setTimeout(() => { S.slow = true; if (!ready()) S.fail = true; render(); }, 10000);
+    const db = await claude.use("db");
+    if (!db) { clearTimeout(timer); S.fail = true; render(); return; }
+    S.db = db;
+    const user = await claude.use("user");
+    if (user) { try { const w = await user.can("data.write"); if (w === false) S.canWrite = false; } catch (e) {} }
+    const fail = () => { S.fail = true; render(); };
+    const done = (k) => { S.ready[k] = true; if (ready()) { clearTimeout(timer); S.slow = false; S.fail = false; } render(); };
+    db.doc("config/main").onSnapshot((s) => { S.data.config = s.exists ? s.data() : null; done("cfg"); }, fail);
+    db.collection("kids").onSnapshot((q) => { const o = {}; q.docs.forEach((d) => (o[d.id] = d.data())); S.data.kids = o; done("kids"); }, fail);
+    db.collection("months").onSnapshot((q) => { const o = {}; q.docs.forEach((d) => (o[d.id] = d.data())); S.data.months = o; done("months"); }, fail);
+  })();
+})();
+</script>

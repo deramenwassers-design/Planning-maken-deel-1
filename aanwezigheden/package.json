@@ -1,0 +1,10 @@
+{
+  "name": "aanwezigheden",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Aanwezigheidsregistratie voor de kinderopvang van Sanne",
+  "dependencies": {
+    "@netlify/blobs": "^11.1.0"
+  }
+}
